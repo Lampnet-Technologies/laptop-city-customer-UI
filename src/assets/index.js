@@ -49,6 +49,10 @@ const IMAGES = {
     productSide: require("./product-description/product-side-view.png"),
     productBack: require("./product-description/product-back-view.png"),
   },
+  about: {
+    about: require("./about/about.jpg"),
+    ourMission: require("./about/our-mission.jpg"),
+  },
 };
 
 export default IMAGES;

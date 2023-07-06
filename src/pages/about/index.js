@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 
 function Company() {
   return (
-    <div className="my-20 p-4">
+    <div className="my-16 p-4">
       <Outlet />
     </div>
   );

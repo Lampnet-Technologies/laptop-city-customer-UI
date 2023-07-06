@@ -160,11 +160,11 @@ function SignUp() {
             <p className="self-start font-light">
               By clicking “Sign up” above, you acknowledge that you have read
               and understood, and agree to Laptop city’s{" "}
-              <Link to="" className="text-green font-medium">
+              <Link to="/terms-&-conditions" className="text-green font-medium">
                 Terms & Conditions
               </Link>{" "}
               and{" "}
-              <Link to="" className="text-green font-medium">
+              <Link to="/privacy-policy" className="text-green font-medium">
                 Privacy Policy
               </Link>
               .

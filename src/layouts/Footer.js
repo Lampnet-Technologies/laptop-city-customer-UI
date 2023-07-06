@@ -7,7 +7,7 @@ const linksCollection = [
     title: "About laptop city",
     links: [
       {
-        to: "",
+        to: "/about",
         name: "About Us",
       },
       {
@@ -36,11 +36,11 @@ const linksCollection = [
         name: "Replacement & Refund",
       },
       {
-        to: "",
+        to: "/terms-&-conditions",
         name: "Terms & Conditions",
       },
       {
-        to: "",
+        to: "/privacy-policy",
         name: "Private Policy",
       },
     ],
