@@ -27,6 +27,8 @@ import {
   ShippingAddress,
   ShippingMethod,
 } from "./views/payment";
+import Company from "./pages/about";
+import { About, PrivacyPolicy, TermsOfUse } from "./views/company";
 
 function App() {
   return (
@@ -71,6 +73,11 @@ function App() {
               <Route path="/payment/review-order" element={<OrderReview />} />
               <Route path="/payment/successful" element={<OrderSuccessful />} />
             </Route> */}
+            <Route element={<Company />}>
+              <Route path="/about" element={<About />} />
+              <Route path="/terms-&-conditions" element={<TermsOfUse />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            </Route>
           </Routes>
         </div>
 
