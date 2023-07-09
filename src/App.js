@@ -10,6 +10,7 @@ import { Nav, Footer } from "./layouts";
 import Homepage from "./pages/Homepage";
 import { ProductsListing, ProductDesc } from "./pages/products";
 import Blog from "./pages/blog";
+import SingleBlogPost from "./views/blog/SingleBlogPost";
 import { Login, SignUp } from "./pages/auth";
 import {
   ContactInfo,
@@ -29,6 +30,7 @@ import {
 } from "./views/payment";
 import Company from "./pages/about";
 import { About, PrivacyPolicy, TermsOfUse } from "./views/company";
+import PageNotFound from "./pages/404";
 
 function App() {
   return (
@@ -43,6 +45,7 @@ function App() {
             <Route path="/products" element={<ProductsListing />} />
             <Route path="/product-desc" element={<ProductDesc />} />
             <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<SingleBlogPost />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route element={<Profile />}>
@@ -78,6 +81,7 @@ function App() {
               <Route path="/terms-&-conditions" element={<TermsOfUse />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             </Route>
+            <Route path="*" element={<PageNotFound />} />
           </Routes>
         </div>
 

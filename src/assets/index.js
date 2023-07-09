@@ -26,6 +26,7 @@ const IMAGES = {
     filter: require("./icons/filter.png"),
     search: require("./icons/search.png"),
     checkSuccessful: require("./icons/Check-icon.png"),
+    blogStar: require("./icons/blog-star.png"),
   },
   productTypes: {
     accessories: require("./product-types/accessories.jpg"),
@@ -52,6 +53,9 @@ const IMAGES = {
   about: {
     about: require("./about/about.jpg"),
     ourMission: require("./about/our-mission.jpg"),
+  },
+  err: {
+    404: require("./error/404-1.png"),
   },
 };
 

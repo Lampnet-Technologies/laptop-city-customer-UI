@@ -33,6 +33,7 @@ module.exports = {
         "banner-text": "#323C4D",
         pagination: "#DAE3EA",
         "secondary-button": "#2E7D32",
+        "blog-title": "#323C4D",
       },
       borderWidth: {
         tiny: "0.5px",
