@@ -239,7 +239,7 @@ function ProductDetails() {
 
         <Banner />
 
-        <div className="mt-8 px-4">
+        <div className="mt-8 px-4 md:px-12 lg:px-24">
           <Groups
             heading="featured products"
             products={featuredProducts}
@@ -247,7 +247,7 @@ function ProductDetails() {
           />
         </div>
 
-        <div className="mt-8 px-4">
+        <div className="mt-8 px-4 md:px-12 lg:px-24">
           <Groups heading="recently viewed" products={recentlyViewed} seeMore />
         </div>
       </div>

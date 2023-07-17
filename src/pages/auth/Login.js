@@ -26,20 +26,20 @@ function Login() {
   };
 
   return (
-    <div className="my-10">
+    <div className="my-10 md:my-16 lg:my-20">
       <Banner />
 
-      <div className="my-8 p-4">
-        <h1 className="text-3xl text-center font-bold mb-8">
+      <div className="my-8 p-4 lg:my-20 md:w-4/5 lg:w-9/12 md:mx-auto">
+        <h1 className="text-3xl text-center font-bold mb-8 md:text-4xl lg:text-[45px] lg:mb-12">
           <span className="text-green">Log</span>in
         </h1>
 
         <form
           onSubmit={handleSubmit}
-          className="border border-green border-solid rounded-md px-4 py-14"
+          className="border border-green border-solid rounded-md px-4 py-14 md:px-40 md:py-24"
         >
-          <div className="flex flex-col gap-3 mb-4">
-            <label className="text-sm font-medium" htmlFor="email">
+          <div className="flex flex-col gap-3 mb-4 md:gap-8 md:mb-8">
+            <label className="text-sm font-medium md:text-lg" htmlFor="email">
               Email address *
             </label>
             <input
@@ -50,12 +50,15 @@ function Login() {
               id="email"
               value={values.email}
               onChange={handleChange("email")}
-              className="w-full h-11 rounded-sm bg-pagination p-3 outline-0 font-light text-sm"
+              className="w-full h-11 md:h-14 md:rounded rounded-sm bg-pagination p-3 outline-0 font-light text-sm"
             />
           </div>
 
-          <div className="flex flex-col gap-3 mb-4">
-            <label className="text-sm font-medium" htmlFor="password">
+          <div className="flex flex-col gap-3 mb-4 md:gap-8 md:mb-8">
+            <label
+              className="text-sm font-medium md:text-lg"
+              htmlFor="password"
+            >
               Password *
             </label>
             <div className="relative">
@@ -66,7 +69,7 @@ function Login() {
                 type={showPassword ? "text" : "password"}
                 value={values.password}
                 onChange={handleChange("password")}
-                className="w-full h-11 rounded-sm bg-pagination p-3 pr-12 outline-0 font-light text-sm"
+                className="w-full h-11 md:h-14 md:rounded rounded-sm bg-pagination p-3 pr-12 outline-0 font-light text-sm"
               />
               <button
                 type="button"
@@ -82,18 +85,18 @@ function Login() {
             </div>
           </div>
 
-          <div className="mb-4">
-            <Link to="" className="text-sm text-green">
+          <div className="mb-4 md:mb-8">
+            <Link to="" className="text-sm text-green md:text-lg">
               Forgot Password?
             </Link>
           </div>
 
-          <div className="mt-10 flex flex-col items-center gap-10">
+          <div className="mt-14 flex flex-col items-center gap-10 text-sm font-normal md:text-base md:gap-12 lg:gap-16">
             <LaptopCityButton onClick={handleSubmit}>Login</LaptopCityButton>
 
-            <p className="text-sm">
+            <p>
               Don’t have an account?{" "}
-              <Link to="/signup" className="text-green">
+              <Link to="/signup" className="text-green font-semibold">
                 Sign up
               </Link>{" "}
             </p>

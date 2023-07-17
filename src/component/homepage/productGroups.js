@@ -79,10 +79,10 @@ function ProductContainer({ product }) {
 
   return (
     <div
-      className="w-44 h-56 rounded flex flex-col justify-between cursor-pointer border-gray-200 border-tiny border-solid"
+      className="w-44 h-56 rounded flex flex-col justify-between cursor-pointer border-gray-200 border-tiny border-solid lg:w-60 lg:h-80 lg:inline-block lg:space-y-3"
       onClick={() => navigate("/product-desc")}
     >
-      <div className="h-32 rounded bg-gray-200 flex justify-center items-center relative">
+      <div className="h-32 rounded bg-gray-200 flex justify-center items-center relative lg:h-48">
         <div className="w-4/5 h-4/5 flex justify-center items-center">
           <img
             src={product.img || ""}
@@ -106,7 +106,7 @@ function ProductContainer({ product }) {
           />
         </div>
       </div>
-      <div className="flex flex-col gap-4 justify-between h-20 px-2 pb-4">
+      <div className="flex flex-col gap-4 justify-between h-20 px-2 pb-4 lg:h-28 lg:pt-2">
         <p className="text-xs font-medium capitalize">{product.name}</p>
         <p className="text-base font-bold text-green">
           <NairaSymbol />
@@ -124,22 +124,25 @@ export function Groups({ heading, products, seeMore }) {
         <h1 className="text-xl font-semibold capitalize">{heading}</h1>
       )}
 
-      <div className="mt-8 flex flex-wrap justify-between gap-x-2 gap-y-4">
+      <div className="mt-8 flex flex-wrap justify-between gap-x-2 gap-y-4 md:justify-start md:gap-x-6 lg:block lg:space-x-12 lg:whitespace-nowrap lg:overflow-x-auto">
         {products.map((product, index) => {
           return <ProductContainer key={index} product={product} />;
         })}
 
         {seeMore && (
           <div
-            style={{ flexBasis: "100%", flexShrink: 0 }}
+            style={{
+              flexBasis: "100%",
+              flexShrink: 0,
+            }}
             className="flex justify-end items-center text-sm font-medium"
           >
-            See more{" "}
-            <img
-              className="ml-2"
-              src={IMAGES.icons.arrowForward}
-              alt="see more"
-            />{" "}
+            <Link
+              to="/products"
+              className="flex justify-between items-center hover:text-green hover:font-bold"
+            >
+              See more <i className="bx bx-chevron-right bx-sm ml-0"></i>
+            </Link>
           </div>
         )}
       </div>
@@ -149,7 +152,7 @@ export function Groups({ heading, products, seeMore }) {
 
 function ProductGroups() {
   return (
-    <div className="my-10 px-4 flex flex-col justify-between gap-10">
+    <div className="my-10 px-4 flex flex-col justify-between gap-10 md:px-12 lg:px-24">
       <Groups heading="New Arrivals" products={newArrivals} seeMore />
       <Groups heading="Featured products" products={featuredProducts} seeMore />
       <Groups heading="recently viewed" products={recentlyViewed} seeMore />

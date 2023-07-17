@@ -22,7 +22,7 @@ const items = [
 function SliderContent({ bg }) {
   return (
     <div
-      className="h-44 w-full bg-cover bg-center bg-no-repeat rounded"
+      className="h-44 w-full bg-cover bg-center bg-no-repeat rounded md:h-60 lg:h-80"
       style={{
         backgroundImage: `linear-gradient(0deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)), url(${bg})`,
       }}
@@ -40,11 +40,12 @@ function AdSlider() {
     speed: 2000,
     autoplaySpeed: 7000,
     cssEase: "linear",
-    arrows: false,
+    arrows: window.screen.availWidth > 800 ? true : false,
+    pauseOnHover: true,
   };
 
   return (
-    <div className="p-4 w-full">
+    <div className="p-4 w-full md:p-0 md:mb-8">
       <Slider {...settings}>
         {items.map((item, index) => {
           return <SliderContent key={index} bg={item.bg} />;

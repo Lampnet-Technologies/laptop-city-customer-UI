@@ -96,7 +96,7 @@ function FooterLinks({ title, links }) {
 
 function FooterLinkContainer() {
   return (
-    <div className="flex flex-wrap justify-between gap-6">
+    <div className="flex flex-wrap justify-between gap-6 lg:w-1/2 lg:flex-nowrap">
       {linksCollection.map((item, index) => {
         return (
           <FooterLinks key={index} title={item.title} links={item.links} />
@@ -108,7 +108,7 @@ function FooterLinkContainer() {
 
 function Newsletter() {
   return (
-    <div className="flex flex-col gap-4 ">
+    <div className="flex flex-col gap-4 lg:w-2/5">
       <h2>Newsletter</h2>
       <p className="text-sm text-footer-Text font-light">
         Get the Latest oraimo News and Giveaways.
@@ -148,9 +148,15 @@ function FooterContacts() {
 function Footer() {
   return (
     <div className="bg-footer-bg">
-      <div className="container py-10 px-6 flex flex-col gap-20">
+      <div className="py-10 px-6 flex flex-col gap-20 md:px-12 lg:hidden">
         <FooterLinkContainer />
         <Newsletter />
+        <FooterContacts />
+      </div>
+
+      <div className="hidden lg:flex gap-10 justify-between flex-wrap px-24 py-14">
+        <Newsletter />
+        <FooterLinkContainer />
         <FooterContacts />
       </div>
     </div>

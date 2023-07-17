@@ -1,9 +1,11 @@
 const IMAGES = {
   logoMobile: require("./logo-mobile.png"),
+  logoDesktop: require("./logo-desktop.png"),
   homepage: {
     heroBg: require("./homepage/hero-bg.png"),
     heroBgSVG: require("./homepage/hero-bg.svg"),
     heroImage1: require("./homepage/hero-image-1.png"),
+    heroImage: require("./homepage/hero-image.png"),
     heroImage1SVG: require("./homepage/hero-image-1.svg"),
     catergoryNewBg: require("./homepage/category-new-bg.jpg"),
     categroryUsedBg: require("./homepage/category-used-bg.jpg"),

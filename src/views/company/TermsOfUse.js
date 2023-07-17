@@ -2,15 +2,17 @@ import React from "react";
 
 function TermsOfUse() {
   return (
-    <div className="space-y-6">
-      <h1 className="text-[28px] font-semibold">
+    <div className="space-y-6 lg:space-y-7">
+      <h1 className="text-[28px] font-semibold md:text-[32px] lg:text-[40px]">
         Terms and Conditions of Limited Warranty
       </h1>
 
       <section className="space-y-4">
-        <h3 className="text-2xl text-gray-700">Warranty Period</h3>
+        <h3 className="text-2xl text-gray-700 lg:text-[28px]">
+          Warranty Period
+        </h3>
         <div className="px-4">
-          <ol className="font-normal list-decimal space-y-2">
+          <ol className="font-normal list-decimal space-y-2 lg:text-lg lg:leading-[30px]">
             <li>
               Purchases of brand-new items from Laptop City are covered by the
               standard manufacturer's warranty and conditions, which can be
@@ -49,9 +51,11 @@ function TermsOfUse() {
       </section>
 
       <section className="space-y-4">
-        <h3 className="text-2xl text-gray-700">Returns and Refunds</h3>
+        <h3 className="text-2xl text-gray-700 lg:text-[28px]">
+          Returns and Refunds
+        </h3>
 
-        <div className="space-y-3 font-normal">
+        <div className="space-y-3 font-normal lg:text-lg lg:leading-[30px]">
           <p>
             Returns of products by buyers will be handled by us, and we reserve
             the right to accept returns if they comply with the laws of the

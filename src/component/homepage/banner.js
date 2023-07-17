@@ -29,8 +29,8 @@ const items = [
 
 function BannerContent({ name, img }) {
   return (
-    <div className="flex  items-center gap-8">
-      <p>{name}</p>
+    <div className="flex items-center gap-8">
+      <p className="lg:text-lg">{name}</p>
       <div className="flex justify-center items-center w-5 h-5">
         <img className="max-w-full max-h-5 " src={img} alt="" />
       </div>
@@ -42,11 +42,11 @@ function Banner() {
   const settings = {
     dots: false,
     infinite: true,
-    slidesToShow: 1,
+    slidesToShow: window.screen.availWidth > 800 ? 3 : 1,
     slidesToScroll: 1,
     autoplay: true,
     speed: 2500,
-    autoplaySpeed: 2500,
+    autoplaySpeed: 0,
     cssEase: "linear",
     arrows: false,
   };
