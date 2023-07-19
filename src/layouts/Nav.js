@@ -27,12 +27,22 @@ function CustomLink({ to, children, ...props }) {
   );
 }
 function Nav() {
-  const [loggedIn, setLoggedIn] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [clicked, setClicked] = useState(false);
+
+  const handleShowNav = () => {
+    setClicked(true);
+  };
+
+  const handleCloseNav = () => {
+    setClicked(false);
+  };
+
   return (
-    <div>
-      <nav className="w-11/12 mx-auto flex justify-between items-center gap-4 md:hidden">
+    <>
+      <nav className="z-50 sticky top-0 bg-white py-4 px-6 flex justify-between items-center gap-4 md:hidden">
         <div className="flex justify-center items-center w-20 h-8">
-          <Link to="/">
+          <Link to="/" onClick={handleCloseNav}>
             <img
               src={IMAGES.logoMobile}
               alt="logo"
@@ -41,39 +51,102 @@ function Nav() {
           </Link>
         </div>
 
-        <ul className="flex items-center justify-between gap-4 list-none">
-          <CustomLink to="/">Home</CustomLink>
-          <CustomLink to="/blog">Blog</CustomLink>
+        {loggedIn ? (
+          <div>
+            <ul
+              id="mobileNav"
+              className={clicked ? "#mobileNav activeMenu" : "#mobileNav"}
+              // className="flex items-center justify-between gap-4 list-none"
+            >
+              <button className="mb-4 self-end mr-5" onClick={handleCloseNav}>
+                <i className="bx bx-x bx-md"></i>
+              </button>
 
-          <div className="h-6 w-px border border-black"></div>
+              <NavLink
+                to="/profile"
+                className="hover:text-green active:text-green focus:text-green"
+                style={activeStyles}
+              >
+                <i className="bx bxs-user-circle bx-md"></i>
+              </NavLink>
 
-          <NavLink
-            to="/profile"
-            className="hover:text-green active:text-green focus:text-green"
-            style={activeStyles}
-          >
-            <i className="bx bxs-user-circle bx-md"></i>
-            {/* <div className="flex justify-center items-center w-6 h-6">
-              <img
-                src={IMAGES.icons.account}
-                alt="logo"
-                className="max-w-full w-full"
-              />
-            </div> */}
-          </NavLink>
+              <CustomLink onClick={handleCloseNav} to="/">
+                Home
+              </CustomLink>
+              <CustomLink onClick={handleCloseNav} to="/categories">
+                categories
+              </CustomLink>
+              <CustomLink onClick={handleCloseNav} to="/my-order">
+                track orders
+              </CustomLink>
+              <CustomLink onClick={handleCloseNav} to="/coupons/active">
+                coupons
+              </CustomLink>
 
-          <div className="flex justify-center items-center w-6 h-6">
-            <img
-              src={IMAGES.icons.hamburgerMenu}
-              alt="logo"
-              className="max-w-full w-full"
-            />
+              <CustomLink onClick={handleCloseNav} to="/blog">
+                Blog
+              </CustomLink>
+              <CustomLink onClick={handleCloseNav} to="/about">
+                about
+              </CustomLink>
+            </ul>
           </div>
-        </ul>
+        ) : (
+          <div>
+            <ul
+              id="mobileNav"
+              className={clicked ? "#mobileNav activeMenu" : "#mobileNav"}
+              // className="flex items-center justify-between gap-4 list-none"
+            >
+              <button className="mb-4 self-end mr-5" onClick={handleCloseNav}>
+                <i className="bx bx-x bx-md"></i>
+              </button>
+
+              <CustomLink onClick={handleCloseNav} to="/">
+                Home
+              </CustomLink>
+              <CustomLink onClick={handleCloseNav} to="/categories">
+                categories
+              </CustomLink>
+              <CustomLink onClick={handleCloseNav} to="/my-order">
+                track orders
+              </CustomLink>
+              <CustomLink onClick={handleCloseNav} to="/blog">
+                Blog
+              </CustomLink>
+              <CustomLink onClick={handleCloseNav} to="/about">
+                about
+              </CustomLink>
+
+              <div className="mt-4 flex flex-col items-start gap-8 whitespace-nowrap">
+                <button onClick={handleCloseNav}>
+                  <NavLink to="/login" style={activeStyles}>
+                    log-in
+                  </NavLink>
+                </button>
+
+                <LaptopCityButton onClick={handleCloseNav}>
+                  <Link to="signup">Sign up</Link>
+                </LaptopCityButton>
+              </div>
+            </ul>
+          </div>
+        )}
+
+        <div className="flex justify-center items-center w-6 h-5">
+          <img
+            src={IMAGES.icons.hamburger2}
+            alt="logo"
+            className="max-w-full max-h-full"
+            onClick={handleShowNav}
+          />
+        </div>
       </nav>
 
+      {clicked ? <div className="overlay" /> : null}
+
       {loggedIn ? (
-        <nav className="hidden md:block text-sm lg:text-base px-12 lg:px-24">
+        <nav className="hidden md:block text-sm lg:text-base py-4 px-12 lg:px-24">
           <div className="w-full flex justify-between items-center gap-6">
             <div className="flex items-center w-32 h-11">
               <Link to="/">
@@ -109,7 +182,7 @@ function Nav() {
           </div>
         </nav>
       ) : (
-        <nav className="hidden md:block text-sm lg:text-base px-12 lg:px-24">
+        <nav className="hidden md:block text-sm lg:text-base py-4 px-12 lg:px-24">
           <div className="w-full flex justify-between items-center gap-6">
             <div className="flex items-center w-32 h-11">
               <Link to="/">
@@ -143,8 +216,52 @@ function Nav() {
           </div>
         </nav>
       )}
-    </div>
+    </>
   );
 }
 
 export default Nav;
+
+{
+  /* <nav className="w-11/12 mx-auto flex justify-between items-center gap-4 md:hidden">
+        <div className="flex justify-center items-center w-20 h-8">
+          <Link to="/">
+            <img
+              src={IMAGES.logoMobile}
+              alt="logo"
+              className="max-w-full w-full"
+            />
+          </Link>
+        </div>
+
+        <ul className="flex items-center justify-between gap-4 list-none">
+          <CustomLink to="/">Home</CustomLink>
+          <CustomLink to="/blog">Blog</CustomLink>
+
+          <div className="h-6 w-px border border-black"></div>
+
+          <NavLink
+            to="/profile"
+            className="hover:text-green active:text-green focus:text-green"
+            style={activeStyles}
+          >
+            <i className="bx bxs-user-circle bx-md"></i>
+            {/* <div className="flex justify-center items-center w-6 h-6">
+              <img
+                src={IMAGES.icons.account}
+                alt="logo"
+                className="max-w-full w-full"
+              />
+            </div> ******
+          </NavLink>
+
+          <div className="flex justify-center items-center w-6 h-6">
+            <img
+              src={IMAGES.icons.hamburgerMenu}
+              alt="logo"
+              className="max-w-full w-full"
+            />
+          </div>
+        </ul>
+      </nav> */
+}

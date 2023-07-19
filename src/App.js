@@ -36,7 +36,7 @@ import { Cart } from "./pages/cart";
 function App() {
   return (
     <Router>
-      <div className="pt-4 w-full">
+      <div className="w-full">
         <ScrollToTop />
         <Nav />
 

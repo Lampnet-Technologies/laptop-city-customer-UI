@@ -18,6 +18,7 @@ const IMAGES = {
     freeShipping: require("./icons/free-shipping.png"),
     hamburgerMenu: require("./icons/hambugerMenu.png"),
     hamburgerMenuSVG: require("./icons/hamburger.svg"),
+    hamburger2: require("./icons/hamburger2.png"),
     quality: require("./icons/quality.png"),
     warranty: require("./icons/warranty.png"),
     cartSmall: require("./icons/cart-sm.png"),

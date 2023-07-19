@@ -291,7 +291,7 @@ function ProductDetails() {
 
       <div className="mt-8 md:mt-12 px-4 md:px-12 lg:px-24">
         <Groups
-          heading="featured products"
+          heading="best selling products"
           products={featuredProducts}
           seeMore
         />
