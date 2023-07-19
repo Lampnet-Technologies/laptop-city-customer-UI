@@ -31,6 +31,7 @@ import {
 import Company from "./pages/about";
 import { About, PrivacyPolicy, TermsOfUse } from "./views/company";
 import PageNotFound from "./pages/404";
+import { Cart } from "./pages/cart";
 
 function App() {
   return (
@@ -54,6 +55,7 @@ function App() {
                 <Route path="/personal-info" element={<PersonalInfo />} />
                 <Route path="/contact-info" element={<ContactInfo />} />
               </Route>
+              <Route path="/shopping-cart/:id" element={<Cart />} />
               <Route element={<Coupons />}>
                 <Route path="/coupons/:id" element={<RenderedCoupons />} />
               </Route>

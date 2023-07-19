@@ -28,8 +28,11 @@ function PersonalInfo() {
   };
 
   return (
-    <form onClick={handleSubmit} className="px-4 py-8">
-      <div className="flex flex-col gap-3 mb-4">
+    <form
+      onClick={handleSubmit}
+      className="px-4 py-8 md:px-10 lg:px-[75px] md:py-4"
+    >
+      <div className="flex flex-col gap-3 mb-4 lg:gap-4 lg:mb-5">
         <label className="text-sm font-medium" htmlFor="firstName">
           First Name
         </label>
@@ -39,11 +42,11 @@ function PersonalInfo() {
           id="firstName"
           value={values.firstName}
           onChange={handleChange("firstName")}
-          className="w-full h-11 rounded bg-pagination p-3 outline-0 font-light text-sm"
+          className="w-full h-11 lg:h-14 lg:px-6 rounded bg-pagination p-3 outline-0 font-light text-sm"
         />
       </div>
 
-      <div className="flex flex-col gap-3 mb-4">
+      <div className="flex flex-col gap-3 mb-4 lg:gap-4 lg:mb-5">
         <label className="text-sm font-medium" htmlFor="middleName">
           Middle Name
         </label>
@@ -53,11 +56,11 @@ function PersonalInfo() {
           id="middleName"
           value={values.middleName}
           onChange={handleChange("middleName")}
-          className="w-full h-11 rounded bg-pagination p-3 outline-0 font-light text-sm"
+          className="w-full h-11 lg:h-14 lg:px-6 rounded bg-pagination p-3 outline-0 font-light text-sm"
         />
       </div>
 
-      <div className="flex flex-col gap-3 mb-4">
+      <div className="flex flex-col gap-3 mb-4 lg:gap-4 lg:mb-5">
         <label className="text-sm font-medium" htmlFor="lastName">
           Last Name
         </label>
@@ -67,11 +70,11 @@ function PersonalInfo() {
           id="lastName"
           value={values.lastName}
           onChange={handleChange("lastName")}
-          className="w-full h-11 rounded bg-pagination p-3 outline-0 font-light text-sm"
+          className="w-full h-11 lg:h-14 lg:px-6 rounded bg-pagination p-3 outline-0 font-light text-sm"
         />
       </div>
 
-      <div className="flex flex-col gap-3 mb-4">
+      <div className="flex flex-col gap-3 mb-4 lg:gap-4 lg:mb-5">
         <label className="text-sm font-medium" htmlFor="username">
           Username
         </label>
@@ -81,11 +84,11 @@ function PersonalInfo() {
           id="username"
           value={values.username}
           onChange={handleChange("username")}
-          className="w-full h-11 rounded bg-pagination p-3 outline-0 font-light text-sm"
+          className="w-full h-11 lg:h-14 lg:px-6 rounded bg-pagination p-3 outline-0 font-light text-sm"
         />
       </div>
 
-      <div className="flex flex-col gap-3 mb-4">
+      <div className="flex flex-col gap-3 mb-4 lg:gap-4 lg:mb-5">
         <label className="text-sm font-medium" htmlFor="email">
           Email address
         </label>
@@ -95,11 +98,11 @@ function PersonalInfo() {
           id="email"
           value={values.email}
           onChange={handleChange("email")}
-          className="w-full h-11 rounded bg-pagination p-3 outline-0 font-light text-sm"
+          className="w-full h-11 lg:h-14 lg:px-6 rounded bg-pagination p-3 outline-0 font-light text-sm"
         />
       </div>
 
-      <div className="flex flex-col gap-3 mb-4">
+      <div className="flex flex-col gap-3 mb-4 lg:gap-4 lg:mb-5">
         <label className="text-sm font-medium" htmlFor="password">
           Password
         </label>
@@ -110,7 +113,7 @@ function PersonalInfo() {
             type={showPassword ? "text" : "password"}
             value={values.password}
             onChange={handleChange("password")}
-            className="w-full h-11 rounded bg-pagination p-3 pr-12 outline-0 font-light text-sm"
+            className="w-full h-11 lg:h-14 lg:px-6 rounded bg-pagination p-3 pr-12 outline-0 font-light text-sm"
           />
           <button
             type="button"

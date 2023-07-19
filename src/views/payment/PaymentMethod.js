@@ -35,8 +35,13 @@ function PaymentMethod({ goTo, back }) {
   };
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit}>
-      <h4 className="font-medium text-lg text-dark-blue ">Payment Method</h4>
+    <form
+      className="space-y-4 md:space-y-4 lg:space-y-6"
+      onSubmit={handleSubmit}
+    >
+      <h4 className="font-medium text-lg text-dark-blue md:text-xl lg:text-2xl">
+        Payment Method
+      </h4>
 
       <div className="flex item-center gap-3">
         <input
@@ -53,7 +58,7 @@ function PaymentMethod({ goTo, back }) {
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="cardNumber" className="font-normal text-sm">
+        <label htmlFor="cardNumber" className="font-normal text-sm lg:text-lg">
           Card Number
         </label>
         <input
@@ -67,9 +72,9 @@ function PaymentMethod({ goTo, back }) {
         />
       </div>
 
-      <div className="flex justify-between gap-6 ">
+      <div className="flex justify-between gap-6 md:gap-11 lg:gap-20">
         <div className="flex flex-col gap-1 w-full">
-          <label htmlFor="expiry" className="font-normal text-sm">
+          <label htmlFor="expiry" className="font-normal text-sm lg:text-lg">
             Expiry
           </label>
           <input
@@ -84,7 +89,7 @@ function PaymentMethod({ goTo, back }) {
         </div>
 
         <div className="flex flex-col gap-1 w-full">
-          <label htmlFor="cvv" className="font-normal text-sm">
+          <label htmlFor="cvv" className="font-normal text-sm lg:text-lg">
             CVV
           </label>
           <input
@@ -99,18 +104,21 @@ function PaymentMethod({ goTo, back }) {
         </div>
       </div>
 
-      <p className="text-sm font-normal" style={{ marginTop: "2rem" }}>
+      <p
+        className="text-sm font-normal lg:text-lg"
+        style={{ marginTop: "2rem" }}
+      >
         By Clicking *<span className="font-medium">Confirm Payment</span>* I
         agree to company terms of services
       </p>
 
       <div
-        className="flex justify-between gap-6"
+        className="flex justify-between gap-6 lg:gap-8 md:justify-around lg:justify-end"
         style={{ marginBlock: "2.5rem 1rem" }}
       >
         <button
           type="button"
-          className="inline-block w-full bg-transparent border border-solid border-green p-2 rounded outline-0 font-semibold text-black text-sm"
+          className="inline-block w-full md:w-48 bg-transparent border border-solid border-green p-2 rounded outline-0 font-semibold text-black text-sm"
           // onClick={() => navigate(-1)}
           onClick={back}
         >
@@ -120,7 +128,7 @@ function PaymentMethod({ goTo, back }) {
 
         <button
           type="button"
-          className="inline-block w-full bg-green p-2 rounded outline-0 font-semibold text-white text-sm"
+          className="inline-block w-full md:w-48 bg-green p-2 rounded outline-0 font-semibold text-white text-sm"
           // onClick={() => navigate("/payment/review-order")}
           onClick={() => goTo("order-review")}
         >

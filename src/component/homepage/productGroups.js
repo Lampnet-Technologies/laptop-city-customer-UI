@@ -107,8 +107,10 @@ function ProductContainer({ product }) {
         </div>
       </div>
       <div className="flex flex-col gap-4 justify-between h-20 px-2 pb-4 lg:h-28 lg:pt-2">
-        <p className="text-xs font-medium capitalize">{product.name}</p>
-        <p className="text-base font-bold text-green">
+        <p className="text-xs font-medium capitalize md:text-sm lg:text-base whitespace-break-spaces">
+          {product.name}
+        </p>
+        <p className="text-base font-bold text-green md:text-lg lg:text-xl">
           <NairaSymbol />
           {product.price}
         </p>
@@ -121,7 +123,9 @@ export function Groups({ heading, products, seeMore }) {
   return (
     <div>
       {heading && (
-        <h1 className="text-xl font-semibold capitalize">{heading}</h1>
+        <h1 className="text-xl font-semibold capitalize lg:text-2xl">
+          {heading}
+        </h1>
       )}
 
       <div className="mt-8 flex flex-wrap justify-between gap-x-2 gap-y-4 md:justify-start md:gap-x-6 lg:block lg:space-x-12 lg:whitespace-nowrap lg:overflow-x-auto">
@@ -154,7 +158,11 @@ function ProductGroups() {
   return (
     <div className="my-10 px-4 flex flex-col justify-between gap-10 md:px-12 lg:px-24">
       <Groups heading="New Arrivals" products={newArrivals} seeMore />
-      <Groups heading="Featured products" products={featuredProducts} seeMore />
+      <Groups
+        heading="best selling products"
+        products={featuredProducts}
+        seeMore
+      />
       <Groups heading="recently viewed" products={recentlyViewed} seeMore />
     </div>
   );

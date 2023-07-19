@@ -121,7 +121,7 @@ function Newsletter() {
         <input
           type="email"
           placeholder="Email address"
-          className="h-10 rounded p-2 text-xs outline-none w-full"
+          className="h-10 rounded p-2 text-xs outline-none w-full lg:h-12 lg:text-sm"
         />
         <LaptopCityButton>subscribe</LaptopCityButton>
       </form>

@@ -13,10 +13,12 @@ function OrderReview() {
 
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
-      <div className="space-y-2 border border-solid border-gray-300 p-3 rounded-2xl">
-        <h4 className="font-medium text-lg text-gray-700 ">Order Review</h4>
+      <div className="space-y-2 border border-solid border-gray-300 p-3 rounded-2xl lg:px-6 lg:py-4">
+        <h4 className="font-medium text-lg text-gray-700 lg:text-xl">
+          Order Review
+        </h4>
 
-        <div className="flex justify-between items-center gap-2 text-sm font-normal">
+        <div className="flex justify-between items-center gap-2 text-sm font-normal lg:text-base">
           <p>1 item in Cart</p>
           <p>
             <NairaSymbol />
@@ -25,18 +27,22 @@ function OrderReview() {
         </div>
       </div>
 
-      <div className="space-y-2 border border-solid border-gray-300 p-3 rounded-2xl">
+      <div className="space-y-2 border border-solid border-gray-300 p-3 rounded-2xl lg:px-6 lg:py-4">
         <div className="flex justify-between items-center">
-          <h4 className="font-medium text-lg text-gray-700 ">Coupons</h4>
+          <h4 className="font-medium text-lg text-gray-700 lg:text-xl">
+            Coupons
+          </h4>
 
           <i className="bx bx-plus-circle text-gray-700"></i>
         </div>
       </div>
 
-      <div className="space-y-2 border border-solid border-gray-300 p-3 rounded-2xl">
-        <h4 className="font-medium text-lg text-gray-700 ">Order Review</h4>
+      <div className="space-y-2 border border-solid border-gray-300 p-3 rounded-2xl lg:px-6 lg:py-4">
+        <h4 className="font-medium text-lg text-gray-700 lg:text-xl">
+          Order Review
+        </h4>
 
-        <table className="w-full text-sm font-normal">
+        <table className="w-full text-sm font-normal lg:text-base">
           <tbody>
             <tr>
               <td>Subtotal</td>

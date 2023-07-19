@@ -22,7 +22,7 @@ function Hero() {
             id="searchGadget"
             type="text"
             placeholder="Search for gadgets..."
-            className="inline-block h-10 rounded p-2 text-xs outline-none w-full border-solid border border-gray-300 lg:w-80"
+            className="inline-block h-10 rounded p-2 text-xs outline-none w-full border-solid border border-gray-300 lg:w-80 lg:h-12"
           />
           <LaptopCityButton>search</LaptopCityButton>
         </form>

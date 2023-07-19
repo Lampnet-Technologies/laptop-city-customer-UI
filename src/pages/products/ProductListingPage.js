@@ -86,6 +86,34 @@ const relatedProducts = [
   },
 ];
 
+const featuredProducts = [
+  {
+    name: "razer-ornata-v3-base",
+    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1686146167/razer-ornata-v3-base_l7g65h.png",
+    category: "used",
+    price: "350,000",
+  },
+  {
+    name: "Iphone 14 pro max",
+    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1683740253/avgro2nmfefnd998cuuc.png",
+    category: "new",
+    price: "350,000",
+  },
+
+  {
+    name: "Alienware-X15-R1-Gaming-Laptop",
+    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Dell_Alienware_X15_R1_Gaming_Laptop_vliv4z.png",
+    category: "used",
+    price: "350,000",
+  },
+  {
+    name: "Macbook 13",
+    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Macbook_3_bwnzmy.png",
+    category: "used",
+    price: "350,000",
+  },
+];
+
 const filters = [
   {
     title: "category",
@@ -262,8 +290,13 @@ function ProductsListing() {
         </div>
       </div>
 
-      <div className="mt-16 mb-10 px-2 md:mx-12 lg:mx-24">
-        <Groups heading="related products" products={relatedProducts} seeMore />
+      <div className="mt-16 mb-10 px-2 space-y-8 md:mx-12 lg:mx-24 ">
+        <Groups
+          heading="best selling products"
+          products={featuredProducts}
+          seeMore
+        />
+        <Groups heading="recently viewed" products={relatedProducts} seeMore />
       </div>
     </div>
   );

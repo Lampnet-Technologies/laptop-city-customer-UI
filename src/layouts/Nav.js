@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import IMAGES from "../assets";
 import LaptopCityButton from "../component/button";
@@ -27,6 +27,7 @@ function CustomLink({ to, children, ...props }) {
   );
 }
 function Nav() {
+  const [loggedIn, setLoggedIn] = useState(true);
   return (
     <div>
       <nav className="w-11/12 mx-auto flex justify-between items-center gap-4 md:hidden">
@@ -71,39 +72,77 @@ function Nav() {
         </ul>
       </nav>
 
-      <nav className="hidden md:block text-sm lg:text-base px-12 lg:px-24">
-        <div className="w-full flex justify-between items-center gap-6">
-          <div className="flex items-center w-32 h-11">
-            <Link to="/">
-              <img
-                src={IMAGES.logoDesktop}
-                alt="logo"
-                className="max-w-full w-full"
-              />
-            </Link>
-          </div>
+      {loggedIn ? (
+        <nav className="hidden md:block text-sm lg:text-base px-12 lg:px-24">
+          <div className="w-full flex justify-between items-center gap-6">
+            <div className="flex items-center w-32 h-11">
+              <Link to="/">
+                <img
+                  src={IMAGES.logoDesktop}
+                  alt="logo"
+                  className="max-w-full w-full"
+                />
+              </Link>
+            </div>
 
-          <ul className="flex items-center justify-between gap-4 lg:gap-8 list-none whitespace-nowrap">
-            <CustomLink to="/">Home</CustomLink>
-            <CustomLink to="/categories">categories</CustomLink>
-            <CustomLink to="/my-order">track orders</CustomLink>
-            <CustomLink to="/blog">Blog</CustomLink>
-            <CustomLink to="/about">about</CustomLink>
-          </ul>
+            <ul className="flex items-center justify-between gap-4 lg:gap-8 list-none whitespace-nowrap">
+              <CustomLink to="/">Home</CustomLink>
+              <CustomLink to="/categories">categories</CustomLink>
+              <CustomLink to="/coupons/active">coupons</CustomLink>
+              <CustomLink to="/my-order">track orders</CustomLink>
+            </ul>
 
-          <div className="flex justify-end items-center gap-6 whitespace-nowrap">
-            <button>
-              <NavLink to="/login" style={activeStyles}>
-                log-in
+            <ul className="flex items-center justify-between gap-4 lg:gap-8 list-none whitespace-nowrap">
+              <CustomLink to="/blog">Blog</CustomLink>
+              <CustomLink to="/about">about</CustomLink>
+
+              <div className="h-6 w-px border border-black"></div>
+
+              <NavLink
+                to="/personal-info"
+                className="hover:text-green active:text-green focus:text-green"
+                style={activeStyles}
+              >
+                <i className="bx bxs-user-circle bx-md"></i>
               </NavLink>
-            </button>
-
-            <LaptopCityButton>
-              <Link to="signup">Sign up</Link>
-            </LaptopCityButton>
+            </ul>
           </div>
-        </div>
-      </nav>
+        </nav>
+      ) : (
+        <nav className="hidden md:block text-sm lg:text-base px-12 lg:px-24">
+          <div className="w-full flex justify-between items-center gap-6">
+            <div className="flex items-center w-32 h-11">
+              <Link to="/">
+                <img
+                  src={IMAGES.logoDesktop}
+                  alt="logo"
+                  className="max-w-full w-full"
+                />
+              </Link>
+            </div>
+
+            <ul className="flex items-center justify-between gap-4 lg:gap-8 list-none whitespace-nowrap">
+              <CustomLink to="/">Home</CustomLink>
+              <CustomLink to="/categories">categories</CustomLink>
+              <CustomLink to="/my-order">track orders</CustomLink>
+              <CustomLink to="/blog">Blog</CustomLink>
+              <CustomLink to="/about">about</CustomLink>
+            </ul>
+
+            <div className="flex justify-end items-center gap-6 whitespace-nowrap">
+              <button>
+                <NavLink to="/login" style={activeStyles}>
+                  log-in
+                </NavLink>
+              </button>
+
+              <LaptopCityButton>
+                <Link to="signup">Sign up</Link>
+              </LaptopCityButton>
+            </div>
+          </div>
+        </nav>
+      )}
     </div>
   );
 }

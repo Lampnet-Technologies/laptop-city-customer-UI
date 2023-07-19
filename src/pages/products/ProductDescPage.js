@@ -114,21 +114,23 @@ const recentlyViewed = [
 
 function ImagesPreviews() {
   return (
-    <div className="p-4 flex flex-col gap-6">
-      <div className="h-60 object-contain flex justify-center items-center">
-        <img
-          src={images[0].image}
-          alt="image-1"
-          className="max-w-full max-h-full"
-        />
+    <div className="p-4 flex flex-col gap-6 lg:flex-row-reverse lg:justify-around lg:items-center">
+      <div className="flex justify-center items-center">
+        <div className="h-60 w-full object-contain flex justify-center items-center md:w-80 lg:h-80 lg:w-[400px]">
+          <img
+            src={images[0].image}
+            alt="image-1"
+            className="max-w-full max-h-full"
+          />
+        </div>
       </div>
 
-      <div className="bg-pagination rounded p-2 flex justify-between items-center gap-4">
+      <div className="bg-pagination rounded p-2 flex justify-between items-center gap-4 md:justify-around lg:flex-col lg:w-52 lg:h-[400px]">
         {images.map((image, index) => {
           return (
             <div
               key={index}
-              className="h-24 rounded py-4 flex justify-center items-center"
+              className="h-24 w-28 rounded py-4 flex justify-center items-center lg:w-32 lg:h-28"
             >
               <img
                 src={image.image}
@@ -159,13 +161,13 @@ function AboutProduct() {
   return (
     <div className="p-4 flex flex-col gap-6">
       <div className="flex flex-col gap-6">
-        <h2 className="text-2xl font-semibold">
+        <h2 className="text-2xl font-semibold lg:text-3xl">
           HP Pavilion Laptop 14-dv0189nia (2X4V1EA)
         </h2>
         <div className="text-sm flex flex-col gap-4 font-light">
           <p>Product id : #56789</p>
           <p>Brand : HP</p>
-          <div className="flex justify-between items-center gap-4">
+          <div className="flex justify-between items-center gap-4 md:justify-start md:gap-10">
             <p>Quantity</p>
             <div className="text-base flex items-center divide-x-2 w-20 border border-solid border-gray-700 rounded">
               <button className="w-full " onClick={decreaseQuantity}>
@@ -181,17 +183,17 @@ function AboutProduct() {
             </div>
           </div>
         </div>
-        <h2 className="text-2xl font-semibold">
+        <h2 className="text-2xl font-semibold lg:text-3xl">
           <NairaSymbol />
           350,000
         </h2>
-        <div className="flex items-center justify-between gap-8">
-          <button className="w-full border-2 border-solid border-secondary-button text-secondary-button font-medium text-sm rounded flex justify-center items-center gap-3 py-2 px-4">
+        <div className="flex items-center justify-between gap-8 md:justify-start">
+          <button className="w-full border-2 border-solid border-secondary-button text-secondary-button font-medium text-sm rounded flex justify-center items-center gap-3 py-2 px-4 md:w-fit">
             <img src={IMAGES.icons.cartGreen} alt="cart" className="w-3" />
             add to cart
           </button>
           <button
-            className="w-full font-medium text-white text-sm rounded bg-green py-2 px-4 hover:bg-dark-green"
+            className="w-full font-medium text-white text-sm rounded border-2 border-solid border-green bg-green py-2 px-4 hover:bg-dark-green md:w-fit"
             onClick={() => navigate("/payment")}
           >
             Buy now
@@ -199,7 +201,7 @@ function AboutProduct() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-6 mt-8 text-sm font-light">
+      {/* <div className="flex flex-col gap-6 mt-8 text-sm font-light">
         <div className="w-2/4 h-14 bg-filter-green font-medium rounded flex justify-center items-center">
           Description
         </div>
@@ -222,6 +224,37 @@ function AboutProduct() {
             </div>
           )}
         </div>
+      </div> */}
+    </div>
+  );
+}
+
+function Description() {
+  const [showMore, setShowMore] = useState(false);
+
+  return (
+    <div className="flex flex-col gap-6 my-4 text-sm font-light px-4 md:px-0">
+      <div className="w-2/4 h-14 bg-filter-green font-medium rounded flex justify-center items-center">
+        Description
+      </div>
+      <div className="whitespace-break-spaces">
+        {showMore ? example : `${example.substring(0, 800)}`}
+
+        {example.length >= 800 && (
+          <div>
+            <button
+              className="capitalize text-secondary-button font-semibold text-base flex justify-center items-center gap-2 py-2 px-0"
+              onClick={() => setShowMore(!showMore)}
+            >
+              {showMore ? "Show less" : "Show more"}
+              <img
+                src={IMAGES.icons.showMore}
+                alt="arrow-down"
+                className="w-3"
+              />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -230,26 +263,42 @@ function AboutProduct() {
 function ProductDetails() {
   return (
     <div className="mt-20">
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 md:px-10 lg:hidden">
         <ImagesPreviews />
 
-        <div className="w-4/5 border-2 border-pagination rounded self-center my-3" />
+        <div className="w-4/5 border border-pagination rounded self-center my-3" />
 
         <AboutProduct />
 
-        <Banner />
+        <Description />
+      </div>
 
-        <div className="mt-8 px-4 md:px-12 lg:px-24">
-          <Groups
-            heading="featured products"
-            products={featuredProducts}
-            seeMore
-          />
+      <div className="hidden lg:flex justify-between items-start gap-4 px-20 mb-8">
+        <div className="flex flex-col gap-4 w-full">
+          <ImagesPreviews />
+
+          <div className="w-4/5 border border-pagination rounded self-center my-3" />
+
+          <AboutProduct />
         </div>
 
-        <div className="mt-8 px-4 md:px-12 lg:px-24">
-          <Groups heading="recently viewed" products={recentlyViewed} seeMore />
+        <div className="w-full">
+          <Description />
         </div>
+      </div>
+
+      <Banner />
+
+      <div className="mt-8 md:mt-12 px-4 md:px-12 lg:px-24">
+        <Groups
+          heading="featured products"
+          products={featuredProducts}
+          seeMore
+        />
+      </div>
+
+      <div className="mt-8 px-4 md:px-12 lg:px-24">
+        <Groups heading="recently viewed" products={recentlyViewed} seeMore />
       </div>
     </div>
   );
@@ -264,16 +313,19 @@ function ProductDesc() {
           backgroundImage: `radial-gradient(circle, #009F7F, #63BB8280, #63BB8280, #63BB8280)`,
         }}
       >
-        <div className="h-full flex items-center gap-5 px-4">
+        <div className="h-full flex items-center gap-5 px-4 relative md:px-12 lg:px-24">
           <button
-            className="rounded-full outline-none bg-transparent flex items-center gap-2 text-lg font-medium"
+            className="rounded-full outline-none bg-transparent flex items-center text-lg font-medium"
             onClick={() => navigate(-1)}
           >
-            <img src={IMAGES.icons.arrowBackward} alt="back" />
+            {/* <img src={IMAGES.icons.arrowBackward} alt="back" /> */}
+            <i className="bx bx-chevron-left bx-md"></i>
             Back
           </button>
 
-          <h2 className="capitalize text-3xl font-bold">phones</h2>
+          <h2 className="capitalize text-3xl font-bold absolute top-1/3 left-1/3 md:left-[45%]">
+            phones
+          </h2>
         </div>
       </div>
 

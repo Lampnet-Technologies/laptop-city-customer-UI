@@ -66,10 +66,15 @@ function ShippingAddress({ goTo }) {
   };
 
   return (
-    <form className="space-y-2" onSubmit={handleSubmit}>
-      <h4 className="font-medium text-lg text-dark-blue ">Shipping Address</h4>
+    <form
+      className="space-y-2 md:space-y-4 lg:space-y-6"
+      onSubmit={handleSubmit}
+    >
+      <h4 className="font-medium text-lg text-dark-blue md:text-xl lg:text-2xl">
+        Shipping Address
+      </h4>
 
-      <div className="flex justify-between gap-6 ">
+      <div className="flex justify-between gap-6 md:gap-11 lg:gap-20">
         <input
           placeholder="First Name"
           name="firstName"
@@ -115,7 +120,7 @@ function ShippingAddress({ goTo }) {
         />
       </div>
 
-      <div className="flex justify-between gap-6 ">
+      <div className="flex justify-between gap-6  md:gap-11 lg:gap-20">
         <select
           placeholder="State"
           name="state"
@@ -159,7 +164,7 @@ function ShippingAddress({ goTo }) {
         </select>
       </div>
 
-      <div className="flex justify-between gap-6 ">
+      <div className="flex justify-between gap-6  md:gap-11 lg:gap-20">
         <input
           placeholder="Zip/Postal Code"
           name="postal"

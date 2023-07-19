@@ -29,7 +29,7 @@ function Login() {
     <div className="my-10 md:my-16 lg:my-20">
       <Banner />
 
-      <div className="my-8 p-4 lg:my-20 md:w-4/5 lg:w-9/12 md:mx-auto">
+      <div className="my-8 p-4 lg:my-20 md:w-4/5 lg:w-3/5 md:mx-auto">
         <h1 className="text-3xl text-center font-bold mb-8 md:text-4xl lg:text-[45px] lg:mb-12">
           <span className="text-green">Log</span>in
         </h1>
@@ -38,7 +38,7 @@ function Login() {
           onSubmit={handleSubmit}
           className="border border-green border-solid rounded-md px-4 py-14 md:px-40 md:py-24"
         >
-          <div className="flex flex-col gap-3 mb-4 md:gap-8 md:mb-8">
+          <div className="flex flex-col gap-3 mb-4 md:gap-5 md:mb-8">
             <label className="text-sm font-medium md:text-lg" htmlFor="email">
               Email address *
             </label>
@@ -54,7 +54,7 @@ function Login() {
             />
           </div>
 
-          <div className="flex flex-col gap-3 mb-4 md:gap-8 md:mb-8">
+          <div className="flex flex-col gap-3 mb-4 md:gap-5 md:mb-8">
             <label
               className="text-sm font-medium md:text-lg"
               htmlFor="password"

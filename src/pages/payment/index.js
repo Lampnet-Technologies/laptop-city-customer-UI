@@ -48,18 +48,18 @@ function Payment() {
   }, [componentToRender]);
 
   return (
-    <div className="my-20 p-6">
-      <h3 className="text-2xl font-bold text-dark-blue text-center mb-6">
+    <div className="my-20 p-6 space-y-10 md:w-3/4 lg:w-3/5 md:mx-auto md:space-y-14">
+      <h3 className="text-2xl font-bold text-dark-blue text-center mb-6 lg:text-[32px] lg:mb-8">
         {heading}
       </h3>
 
-      <div className="flex gap-3 items-center w-4/5 mx-auto mb-5">
+      <div className="flex gap-3 items-center w-4/5 mx-auto mb-5 lg:mb-10">
         Progress
         <div className="w-full h-4 bg-green rounded"></div>
       </div>
 
       <div
-        className="w-full px-4 py-6 rounded-3xl"
+        className="w-full px-4 py-6 rounded-3xl md:p-8 lg:p-10"
         style={{ boxShadow: "0px 3px 6px 0px rgba(18, 29, 60, 0.15)" }}
       >
         {/* <Outlet /> */}

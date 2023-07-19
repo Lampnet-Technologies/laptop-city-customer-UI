@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import IMAGES from "../../assets";
 import { ProductTypesModal } from "../../views/popup_modals";
+import { useNavigate } from "react-router-dom";
 
 function Categories() {
-  const [showModal, setShowModal] = useState(false);
+  // const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
+
   return (
     <div className="my-16">
-      <h1 className="text-xl font-semibold px-4 md:px-12 lg:px-24">
+      <h1 className="text-xl font-semibold px-4 md:px-12 lg:px-24 lg:text-2xl">
         Categories
       </h1>
 
@@ -17,9 +20,10 @@ function Categories() {
             style={{
               backgroundImage: `linear-gradient(0deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)), url(${IMAGES.homepage.catergoryNewBg})`,
             }}
-            onClick={() => setShowModal(true)}
+            // onClick={() => setShowModal(true)}
+            onClick={() => navigate("/products")}
           >
-            <h2 className="text-base text-white font-semibold capitalize md:text-xl lg:text-[42px] lg:font-bold">
+            <h2 className="text-base text-white font-semibold capitalize md:text-xl lg:text-4xl lg:font-bold">
               new products
             </h2>
           </div>
@@ -29,19 +33,20 @@ function Categories() {
             style={{
               backgroundImage: `linear-gradient(0deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)), url(${IMAGES.homepage.categroryUsedBg})`,
             }}
-            onClick={() => setShowModal(true)}
+            // onClick={() => setShowModal(true)}
+            onClick={() => navigate("/products")}
           >
-            <h2 className="text-base text-white font-semibold capitalize md:text-xl lg:text-[42px] lg:font-bold">
+            <h2 className="text-base text-white font-semibold capitalize md:text-xl lg:text-4xl lg:font-bold">
               used products
             </h2>
           </div>
         </div>
       </div>
 
-      <ProductTypesModal
+      {/* <ProductTypesModal
         isVisible={showModal}
         onClose={() => setShowModal(false)}
-      />
+      /> */}
     </div>
   );
 }

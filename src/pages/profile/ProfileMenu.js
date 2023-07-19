@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 // import { Banner } from "../../component/homepage";
 
 const links = [
@@ -9,41 +9,51 @@ const links = [
     to: "/personal-info",
   },
   {
-    icon: "bx bx-cart-add bx-sm",
+    icon: "bx bx-shopping-bag bx-sm",
     name: "My orders",
     to: "",
   },
   {
-    icon: "bx bx-user bx-sm",
-    name: "account management",
-    to: "",
+    icon: "bx bx-cart-add bx-sm",
+    name: "shopping cart",
+    to: "/shopping-cart/:id",
   },
   {
     icon: "bx bx-gift bx-sm",
     name: "coupons",
-    to: "/coupons/:id",
+    to: "/coupons/active",
   },
 ];
 
+const activeStyles = ({ isActive }) => {
+  if (isActive) {
+    return {
+      color: "#009F7F",
+      fontWeight: 600,
+      marginLeft: "40px",
+    };
+  }
+};
+
 function ProfileMenu() {
   return (
-    <div className="h-screen">
-      <div className="h-96 bg-filter-green">
+    <div className="h-screen lg:h-auto">
+      <div className="h-96 bg-filter-green lg:h-[560px] lg:w-72 lg:rounded">
         <div className="p-4 space-y-2">
           {links.map((link, index) => {
             return (
-              <Link
+              <NavLink
                 key={index}
                 to={link.to}
-                className="inline-block w-full hover:text-green hover:font-semibold hover:ml-10 active:text-green active:font-semibold active:ml-10"
-                style={{ transition: "margin-left 1s" }}
+                className="inline-block w-full transition-{margin-left} duration-1000 hover:text-green hover:font-semibold hover:ml-10 active:text-green active:font-semibold active:ml-10"
+                style={activeStyles}
               >
                 <div className="p-4 rounded-md bg-white font-medium flex items-center gap-4 capitalize ">
                   <i className={link.icon}></i>
 
                   {link.name}
                 </div>
-              </Link>
+              </NavLink>
             );
           })}
         </div>

@@ -36,8 +36,13 @@ function ShippingMethod({ goTo, back }) {
   };
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit}>
-      <h4 className="font-medium text-lg text-dark-blue ">Shipping Method</h4>
+    <form
+      className="space-y-4 md:space-y-4 lg:space-y-6"
+      onSubmit={handleSubmit}
+    >
+      <h4 className="font-medium text-lg text-dark-blue md:text-xl lg:text-2xl">
+        Shipping Method
+      </h4>
 
       {deliveryMethods.map((method, index) => {
         return (
@@ -55,16 +60,16 @@ function ShippingMethod({ goTo, back }) {
             </div>
 
             <label htmlFor={method.radioValue}>
-              <div>
-                <p className="font-normal">
+              <div className="lg:space-y-2">
+                <p className="font-normal lg:text-lg">
                   <span className="font-medium">
                     <NairaSymbol />
                     {method.price}
                   </span>{" "}
                   {method.method}{" "}
                 </p>
-                <p className="font-normal text-sm">{method.tag}</p>
-                <p className="font-normal text-sm">
+                <p className="font-normal text-sm lg:text-base">{method.tag}</p>
+                <p className="font-normal text-sm lg:text-base">
                   (Within {method.time} Hours)
                 </p>
               </div>
@@ -74,12 +79,12 @@ function ShippingMethod({ goTo, back }) {
       })}
 
       <div
-        className="flex justify-between gap-6"
+        className="flex justify-between gap-6 lg:gap-8 md:justify-around lg:justify-end"
         style={{ marginBlock: "2.5rem 1rem" }}
       >
         <button
           type="button"
-          className="inline-block w-full bg-transparent border border-solid border-green p-2 rounded outline-0 font-semibold text-black text-sm"
+          className="inline-block w-full md:w-48 bg-transparent border border-solid border-green p-2 rounded outline-0 font-semibold text-black text-sm"
           // onClick={() => navigate(-1)}
           onClick={back}
         >
@@ -89,7 +94,7 @@ function ShippingMethod({ goTo, back }) {
 
         <button
           type="submit"
-          className="inline-block w-full bg-green p-2 rounded outline-0 font-semibold text-white text-sm"
+          className="inline-block w-full md:w-48 bg-green p-2 rounded outline-0 font-semibold text-white text-sm"
           // onClick={() => navigate("/payment/payment-method")}
         >
           {" "}
