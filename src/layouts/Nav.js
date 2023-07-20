@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 import IMAGES from "../assets";
 import LaptopCityButton from "../component/button";
@@ -38,6 +38,13 @@ function Nav() {
     setClicked(false);
   };
 
+  useEffect(() => {
+    if (clicked) {
+      let body = document.getElementsByClassName("overlay");
+      body[0].addEventListener("click", handleCloseNav);
+    }
+  }, [clicked]);
+
   return (
     <>
       <nav className="z-50 sticky top-0 bg-white py-4 px-6 flex justify-between items-center gap-4 md:hidden">
@@ -76,10 +83,10 @@ function Nav() {
               <CustomLink onClick={handleCloseNav} to="/categories">
                 categories
               </CustomLink>
-              <CustomLink onClick={handleCloseNav} to="/my-order">
+              <CustomLink onClick={handleCloseNav} to="/track-order/:id">
                 track orders
               </CustomLink>
-              <CustomLink onClick={handleCloseNav} to="/coupons/active">
+              <CustomLink onClick={handleCloseNav} to="/coupons">
                 coupons
               </CustomLink>
 
@@ -108,7 +115,7 @@ function Nav() {
               <CustomLink onClick={handleCloseNav} to="/categories">
                 categories
               </CustomLink>
-              <CustomLink onClick={handleCloseNav} to="/my-order">
+              <CustomLink onClick={handleCloseNav} to="/track-order/:id">
                 track orders
               </CustomLink>
               <CustomLink onClick={handleCloseNav} to="/blog">
@@ -161,8 +168,8 @@ function Nav() {
             <ul className="flex items-center justify-between gap-4 lg:gap-8 list-none whitespace-nowrap">
               <CustomLink to="/">Home</CustomLink>
               <CustomLink to="/categories">categories</CustomLink>
-              <CustomLink to="/coupons/active">coupons</CustomLink>
-              <CustomLink to="/my-order">track orders</CustomLink>
+              <CustomLink to="/coupons">coupons</CustomLink>
+              <CustomLink to="/track-order/:id">track orders</CustomLink>
             </ul>
 
             <ul className="flex items-center justify-between gap-4 lg:gap-8 list-none whitespace-nowrap">
@@ -197,7 +204,7 @@ function Nav() {
             <ul className="flex items-center justify-between gap-4 lg:gap-8 list-none whitespace-nowrap">
               <CustomLink to="/">Home</CustomLink>
               <CustomLink to="/categories">categories</CustomLink>
-              <CustomLink to="/my-order">track orders</CustomLink>
+              <CustomLink to="/track-order/:id">track orders</CustomLink>
               <CustomLink to="/blog">Blog</CustomLink>
               <CustomLink to="/about">about</CustomLink>
             </ul>

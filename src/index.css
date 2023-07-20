@@ -31,9 +31,11 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgb(250, 250, 250, 0.7);
-  filter: blur(40%);
+  background: rgb(250, 250, 250, 0.13);
+  /* filter: blur(40%); */
+  backdrop-filter: blur(1.3px);
   z-index: 1;
+  transition: all 0.3s ease-in-out;
 }
 
 #mobileNav {
@@ -52,7 +54,7 @@
   box-shadow: 0 40px 60px rgba(0, 0, 0, 0.1);
   /* backdrop-filter: blur(40%); */
   padding: 20px 0 0 10%;
-  transition: 0.3s ease-in-out;
+  transition: 0.5s ease-in-out;
 }
 
 #mobileNav.activeMenu {

@@ -21,7 +21,7 @@ const links = [
   {
     icon: "bx bx-gift bx-sm",
     name: "coupons",
-    to: "/coupons/active",
+    to: "/coupons",
   },
 ];
 

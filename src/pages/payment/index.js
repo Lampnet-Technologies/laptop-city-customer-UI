@@ -7,9 +7,129 @@ import {
   OrderReview,
 } from "../../views/payment";
 
+import PropTypes from "prop-types";
+import { styled } from "@mui/material/styles";
+import Stack from "@mui/material/Stack";
+import Stepper from "@mui/material/Stepper";
+import Step from "@mui/material/Step";
+import StepLabel from "@mui/material/StepLabel";
+import Check from "@mui/icons-material/Check";
+import StepConnector, {
+  stepConnectorClasses,
+} from "@mui/material/StepConnector";
+import { useEffect } from "react";
+
+const QontoConnector = styled(StepConnector)(({ theme }) => ({
+  [`&.${stepConnectorClasses.alternativeLabel}`]: {
+    top: 10,
+    left: "calc(-50% + 16px)",
+    right: "calc(50% + 16px)",
+  },
+  [`&.${stepConnectorClasses.active}`]: {
+    [`& .${stepConnectorClasses.line}`]: {
+      borderColor: "#009F7F",
+    },
+  },
+  [`&.${stepConnectorClasses.completed}`]: {
+    [`& .${stepConnectorClasses.line}`]: {
+      borderColor: "#009F7F",
+    },
+  },
+  [`& .${stepConnectorClasses.line}`]: {
+    borderColor:
+      theme.palette.mode === "dark" ? theme.palette.grey[800] : "#eaeaf0",
+    borderTopWidth: 3,
+    borderRadius: 1,
+  },
+}));
+
+const QontoStepIconRoot = styled("div")(({ theme, ownerState }) => ({
+  color: theme.palette.mode === "dark" ? theme.palette.grey[700] : "#eaeaf0",
+  display: "flex",
+  height: 22,
+  alignItems: "center",
+  ...(ownerState.active && {
+    color: "#009F7F",
+  }),
+  "& .QontoStepIcon-completedIcon": {
+    color: "#009F7F",
+    zIndex: 1,
+    fontSize: 18,
+    transition: "all 0.6s ease-in-out",
+  },
+  "& .QontoStepIcon-circle": {
+    width: 8,
+    height: 8,
+    borderRadius: "50%",
+    backgroundColor: "currentColor",
+    transition: "all 0.6s ease-in-out",
+  },
+}));
+
+function QontoStepIcon(props) {
+  const { active, completed, className } = props;
+
+  return (
+    <QontoStepIconRoot ownerState={{ active }} className={className}>
+      {completed ? (
+        <Check className="QontoStepIcon-completedIcon" />
+      ) : (
+        <div className="QontoStepIcon-circle" />
+      )}
+    </QontoStepIconRoot>
+  );
+}
+
+QontoStepIcon.propTypes = {
+  /**
+   * Whether this step is active.
+   * @default false
+   */
+  active: PropTypes.bool,
+  className: PropTypes.string,
+  /**
+   * Mark the step as completed. Is passed to child components.
+   * @default false
+   */
+  completed: PropTypes.bool,
+};
+
+const steps = ["Welcome", "Shipping method", "Payment", "Order"];
+
+function CustomizedSteppers({ active }) {
+  return (
+    <Stack sx={{ width: "100%" }} spacing={4}>
+      <Stepper
+        alternativeLabel
+        activeStep={active}
+        connector={<QontoConnector />}
+      >
+        {steps.map((label, index) => (
+          <Step key={label}>
+            <StepLabel StepIconComponent={QontoStepIcon}>
+              <p
+                className="font-normal text-[10px]"
+                style={{
+                  fontFamily: "Montserrat",
+                  color: `${active >= index ? "#009F7F" : "#D7D8DA"}`,
+                  fontWeight: `${active >= index ? 500 : 400}`,
+                }}
+              >
+                {label}
+              </p>
+              {/* {label} */}
+            </StepLabel>
+          </Step>
+        ))}
+      </Stepper>
+    </Stack>
+  );
+}
+
 function Payment() {
   const [componentToRender, setComponentToRender] =
     useState("shipping-address");
+  const [activeStep, setActiveStep] = useState(0);
 
   const nextPage = (text) => {
     setComponentToRender(text);
@@ -22,6 +142,18 @@ function Payment() {
       return setComponentToRender("shipping-address");
     }
   };
+
+  useEffect(() => {
+    if (componentToRender === "shipping-address") {
+      setActiveStep(0);
+    } else if (componentToRender === "shipping-method") {
+      setActiveStep(1);
+    } else if (componentToRender === "payment-method") {
+      setActiveStep(2);
+    } else {
+      setActiveStep(3);
+    }
+  }, [componentToRender]);
 
   const conditions = useMemo(() => {
     if (componentToRender === "shipping-address") {
@@ -53,10 +185,12 @@ function Payment() {
         {heading}
       </h3>
 
-      <div className="flex gap-3 items-center w-4/5 mx-auto mb-5 lg:mb-10">
+      {/* <div className="flex gap-3 items-center w-4/5 mx-auto mb-5 lg:mb-10">
         Progress
         <div className="w-full h-4 bg-green rounded"></div>
-      </div>
+      </div> */}
+
+      <CustomizedSteppers active={activeStep} />
 
       <div
         className="w-full px-4 py-6 rounded-3xl md:p-8 lg:p-10"

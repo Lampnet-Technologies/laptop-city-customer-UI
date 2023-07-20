@@ -27,6 +27,7 @@ import {
   PaymentMethod,
   ShippingAddress,
   ShippingMethod,
+  TrackOrder,
 } from "./views/payment";
 import Company from "./pages/about";
 import { About, PrivacyPolicy, TermsOfUse } from "./views/company";
@@ -57,11 +58,13 @@ function App() {
               </Route>
               <Route path="/shopping-cart/:id" element={<Cart />} />
               <Route element={<Coupons />}>
-                <Route path="/coupons/:id" element={<RenderedCoupons />} />
+                {/* <Route element={<RenderedCoupons />} /> */}
+                <Route path="/coupons" element={<RenderedCoupons />} />
               </Route>
             </Route>
             <Route path="/payment" element={<Payment />} />
             <Route path="/payment/successful" element={<OrderSuccessful />} />
+            <Route path="/track-order/:id" element={<TrackOrder />} />
             {/* <Route element={<Payment />}>
               <Route
                 path="/payment/shipping-address"

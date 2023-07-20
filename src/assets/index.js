@@ -30,6 +30,7 @@ const IMAGES = {
     search: require("./icons/search.png"),
     checkSuccessful: require("./icons/Check-icon.png"),
     blogStar: require("./icons/blog-star.png"),
+    deliveryTruck: require("./icons/delivery-truck.png"),
   },
   productTypes: {
     accessories: require("./product-types/accessories.jpg"),
