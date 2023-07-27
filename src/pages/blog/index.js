@@ -33,7 +33,7 @@ function Blog() {
 
   return (
     <>
-      <div className="my-16 p-4 2xl:max-w-7xl 2xl:mx-auto">
+      <div className="my-16 p-4 2xl:max-w-7xl 2xl:mx-auto space-y-10 md:space-y-12 lg:space-y-16">
         <div className="flex flex-col gap-4 items-center text-center">
           <p className="text-dark-blue flex justify-center items-center gap-1 lg:text-xl">
             Blog <img src={IMAGES.icons.blogStar} alt="icon" />{" "}
@@ -48,7 +48,7 @@ function Blog() {
           </p>
         </div>
 
-        <div className="my-8 p-1 rounded-md border border-solid border-green flex justify-between items-center gap-0.5 flex-wrap md:justify-center md:gap-2 md:w-fit md:mx-auto">
+        <div className="p-1 rounded-md border border-solid border-green flex justify-between items-center gap-0.5 flex-wrap md:justify-center md:gap-2 md:w-fit md:mx-auto">
           <button
             type="button"
             className="p-2 text-sm lg:text-base font-normal bg-transparent outline-0 rounded transition-colors duration-300 hover:bg-blue-300 hover:text-white hover:font-semibold active:bg-dark-blue active:text-white active:font-semibold focus:bg-dark-blue focus:text-white focus:font-semibold"
@@ -78,21 +78,21 @@ function Blog() {
         {isLoading ? (
           <Loading />
         ) : (
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
             {posts.map((post) => (
               <article
                 key={post.slug.current}
-                className="border border-solid border-green rounded-md flex flex-col"
+                className="border border-solid border-green rounded-md flex flex-col w-[90%] mx-auto md:w-full md:mx-0"
               >
-                <div>
+                <div className="h-52 md:h-60">
                   <img
                     src={post.mainImage.asset.url}
                     alt={post.title}
-                    className="max-w-full w-full rounded-t-md"
+                    className="max-w-full max-h-full w-full rounded-t-md"
                   />
                 </div>
                 <div className="p-4 flex flex-col justify-between items-start flex-1">
-                  <h3 className="text-2xl md:text-3xl text-blog-title font-semibold mb-4">
+                  <h3 className="text-xl md:text-2xl text-blog-title font-semibold mb-4">
                     {post.title}
                   </h3>
                   <button className="outline-0">

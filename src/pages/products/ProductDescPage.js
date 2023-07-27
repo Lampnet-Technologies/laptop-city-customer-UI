@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import IMAGES from "../../assets";
 import LaptopCityButton from "../../component/button";
@@ -112,34 +112,136 @@ const recentlyViewed = [
   },
 ];
 
-function ImagesPreviews() {
+function ImagesPreviews({ files }) {
+  const [pictures, setPictures] = useState();
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    setPictures(files);
+    // console.log(pictures);
+  }, []);
+
+  const arrowNext = (arr) => {
+    if (arr.length - 1 !== currentIndex) {
+      setCurrentIndex((prev) => prev + 1);
+    } else {
+      // setCurrentIndex(0);
+      return null;
+    }
+  };
+
+  const arrowPrev = (arr) => {
+    if (currentIndex !== 0) {
+      setCurrentIndex((prev) => prev - 1);
+    } else {
+      // setCurrentIndex(arr.length - 1);
+      return null;
+    }
+  };
+
   return (
-    <div className="p-4 flex flex-col gap-6 lg:flex-row-reverse lg:justify-around lg:items-center">
-      <div className="flex justify-center items-center">
-        <div className="h-60 w-full object-contain flex justify-center items-center md:w-80 lg:h-80 lg:w-[400px]">
-          <img
-            src={images[0].image}
-            alt="image-1"
-            className="max-w-full max-h-full"
-          />
+    <div>
+      <div className="p-4 flex flex-col gap-6 relative lg:flex-row-reverse lg:justify-around lg:items-center">
+        <div className="lg:hidden">
+          <i
+            onClick={() => arrowPrev(images)}
+            className="bx bx-chevron-left bx-lg text-gray-400 font-normal cursor-pointer absolute top-1/4 left-2"
+            style={{ color: `${currentIndex !== 0 ? "#009F7F" : "#9ca3af"}` }}
+          ></i>
+          <i
+            onClick={() => arrowNext(images)}
+            className="bx bx-chevron-right bx-lg text-green font-normal cursor-pointer absolute top-1/4 right-2"
+            style={{
+              color: `${
+                pictures &&
+                (currentIndex === pictures.length - 1 ? "#9ca3af" : "#009F7F")
+              }`,
+            }}
+          ></i>
+        </div>
+        <div className="flex justify-center items-center">
+          <div className="h-60 w-full object-contain flex justify-center items-center md:w-80 lg:h-80 lg:w-[400px]">
+            {pictures && (
+              <img
+                src={pictures[currentIndex].image}
+                alt="image-1"
+                className="max-w-full max-h-full"
+              />
+            )}
+            {/* <img
+              src={images[0].image}
+              alt="image-1"
+              className="max-w-full max-h-full"
+            /> */}
+          </div>
+        </div>
+
+        <div className="bg-pagination rounded p-2 flex justify-between items-center gap-4 md:justify-around lg:flex-col lg:w-40 lg:h-[400px]">
+          {pictures &&
+            pictures.map((image, index) => {
+              return (
+                <div
+                  key={index}
+                  className="h-24 w-28 rounded py-4 flex justify-center items-center lg:w-32 lg:h-28"
+                  style={{
+                    border: `${
+                      currentIndex === index ? "1px solid #009F7F" : "none"
+                    }`,
+                    // transition: "0.5s ease",
+                  }}
+                  onClick={() => setCurrentIndex(index)}
+                >
+                  <img
+                    src={image.image}
+                    alt={`image-${index + 1}`}
+                    className="max-w-full max-h-full"
+                  />
+                </div>
+              );
+            })}
+
+          {/* {images.map((image, index) => {
+            return (
+              <div
+                key={index}
+                className="h-24 w-28 rounded py-4 flex justify-center items-center lg:w-32 lg:h-28"
+                style={{
+                  border: `${
+                    currentIndex === index ? "1.5px solid #009F7F" : "none"
+                  }`,
+                  // transition: "0.5s ease",
+                }}
+                onClick={() => setCurrentIndex(index)}
+              >
+                <img
+                  src={image.image}
+                  alt={`image-${index + 1}`}
+                  className="max-w-full max-h-full"
+                />
+              </div>
+            );
+          })} */}
         </div>
       </div>
 
-      <div className="bg-pagination rounded p-2 flex justify-between items-center gap-4 md:justify-around lg:flex-col lg:w-52 lg:h-[400px]">
-        {images.map((image, index) => {
-          return (
-            <div
-              key={index}
-              className="h-24 w-28 rounded py-4 flex justify-center items-center lg:w-32 lg:h-28"
-            >
-              <img
-                src={image.image}
-                alt={`image-${index + 1}`}
-                className="max-w-full max-h-full"
-              />
-            </div>
-          );
-        })}
+      <div className="hidden lg:flex justify-center items-center gap-6 mt-10">
+        <i
+          onClick={() => arrowPrev(images)}
+          className="bx bx-chevron-left bx-lg text-gray-400 font-normal cursor-pointer"
+          style={{ color: `${currentIndex !== 0 ? "#009F7F" : "#9ca3af"}` }}
+        ></i>
+        <div>
+          {currentIndex + 1} / {images.length}
+        </div>
+        <i
+          onClick={() => arrowNext(images)}
+          className="bx bx-chevron-right bx-lg text-green font-normal cursor-pointer"
+          style={{
+            color: `${
+              currentIndex === images.length - 1 ? "#9ca3af" : "#009F7F"
+            }`,
+          }}
+        ></i>
       </div>
     </div>
   );
@@ -264,7 +366,7 @@ function ProductDetails() {
   return (
     <div className="mt-20">
       <div className="flex flex-col gap-4 md:px-10 lg:hidden">
-        <ImagesPreviews />
+        <ImagesPreviews files={images} />
 
         <div className="w-4/5 border border-pagination rounded self-center my-3" />
 
@@ -275,7 +377,7 @@ function ProductDetails() {
 
       <div className="hidden lg:flex justify-between items-start gap-4 px-20 mb-8">
         <div className="flex flex-col gap-4 w-full">
-          <ImagesPreviews />
+          <ImagesPreviews files={images} />
 
           <div className="w-4/5 border border-pagination rounded self-center my-3" />
 

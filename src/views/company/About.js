@@ -4,12 +4,12 @@ import IMAGES from "../../assets";
 function About() {
   return (
     <div>
-      <h1 className="text-[45px] font-bold text-dark-blue mb-16 lg:w-4/5 lg:text-[60px]">
-        We believe in providing the highest quality products. Best laptop
-        accessories store online
-      </h1>
+      <section className="space-y-6 mb-20 md:space-y-8 lg:space-y-14">
+        <h1 className="text-[45px] font-bold text-dark-blue mb-8 lg:w-4/5 lg:text-[60px]">
+          We believe in providing the highest quality products. Best laptop
+          accessories store online
+        </h1>
 
-      <section className="space-y-6 mb-16 md:space-y-8 lg:space-y-14">
         <div className="flex items-center gap-x-8 gap-y-6 flex-wrap text-lg text-dark-blue">
           <div className="flex items-center gap-2">
             <div className="w-7 h-0.5 bg-green" />
@@ -26,7 +26,9 @@ function About() {
             <p className="capitalize">quality assurance</p>
           </div>
         </div>
+      </section>
 
+      <section className="space-y-6 mb-16 md:space-y-8 lg:space-y-14">
         <div className="h-[600px] w-full object-contain lg:h-[750px]">
           <img
             src={IMAGES.about.about}

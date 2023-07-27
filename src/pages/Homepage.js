@@ -29,7 +29,7 @@ function Hero() {
       </div>
 
       <div
-        className="w-full h-96 bg-contain bg-center bg-no-repeat flex justify-center items-center md:bg-cover lg:h-[600px]"
+        className="w-full h-96 bg-contain bg-top bg-no-repeat flex justify-center items-center md:bg-cover lg:h-[600px]"
         style={{
           backgroundImage: `url(${IMAGES.homepage.heroBg})`,
         }}
@@ -45,7 +45,7 @@ function Hero() {
 }
 function Homepage() {
   return (
-    <div className=" my-10 md:my-16 lg:my-28">
+    <div className=" my-10 md:my-16 ">
       <Hero />
       <Banner />
       <Categories />

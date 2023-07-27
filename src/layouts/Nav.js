@@ -18,7 +18,7 @@ function CustomLink({ to, children, ...props }) {
       <NavLink
         to={to}
         {...props}
-        className="no-underline capitalize text-inherit hover:text-green hover:font-semibold active:font-semibold active:text-green focus:text-green focus:font-semibold"
+        className="no-underline capitalize text-inherit transition-all ease-in-out duration-300 hover:tracking-wide hover:text-green hover:font-semibold active:font-semibold active:text-green focus:text-green focus:font-semibold"
         style={activeStyles}
       >
         {children}

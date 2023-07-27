@@ -14,9 +14,9 @@ function Categories() {
       </h1>
 
       <div className="bg-gray-200 mt-8">
-        <div className="py-8 px-4 flex flex-col gap-4 md:p-[50px] lg:p-[100px] md:gap-8 lg:gap-14 container mx-auto">
+        <div className="py-8 px-4 flex flex-col lg:flex-row gap-4 md:p-[50px] lg:p-[100px] md:gap-8 lg:gap-14 container mx-auto">
           <div
-            className="h-44 rounded bg-cover bg-center bg-no-repeat flex justify-center items-end p-4 md:h-56 md:p-10 lg:h-[340px] lg:p-20"
+            className="w-full h-44 rounded bg-cover bg-center bg-no-repeat flex justify-center items-end p-4 md:h-56 md:p-10 lg:h-[340px] relative hover:pb-32 transition-all ease-in duration-300 cursor-pointer"
             style={{
               backgroundImage: `linear-gradient(0deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)), url(${IMAGES.homepage.catergoryNewBg})`,
             }}
@@ -29,7 +29,7 @@ function Categories() {
           </div>
 
           <div
-            className="h-44 rounded bg-cover bg-center bg-no-repeat flex justify-center items-end p-4 md:h-56 md:p-10 lg:h-[340px] lg:p-20"
+            className="w-full h-44 rounded bg-cover bg-center bg-no-repeat flex justify-center items-end p-4 md:h-56 md:p-10 lg:h-[340px] relative hover:pb-32 transition-all ease-in duration-300 cursor-pointer"
             style={{
               backgroundImage: `linear-gradient(0deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)), url(${IMAGES.homepage.categroryUsedBg})`,
             }}
