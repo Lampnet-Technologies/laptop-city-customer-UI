@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import IMAGES from "../assets";
 import LaptopCityButton from "../component/button";
 
@@ -18,7 +18,7 @@ function CustomLink({ to, children, ...props }) {
       <NavLink
         to={to}
         {...props}
-        className="no-underline capitalize text-inherit transition-all ease-in-out duration-300 hover:tracking-wide hover:text-green hover:font-semibold active:font-semibold active:text-green focus:text-green focus:font-semibold"
+        className="no-underline capitalize text-inherit transition-all ease-in-out duration-500 hover:tracking-wide hover:text-green hover:font-semibold active:font-semibold active:text-green focus:text-green focus:font-semibold"
         style={activeStyles}
       >
         {children}
@@ -27,7 +27,7 @@ function CustomLink({ to, children, ...props }) {
   );
 }
 function Nav() {
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(true);
   const [clicked, setClicked] = useState(false);
 
   const handleShowNav = () => {
@@ -47,8 +47,8 @@ function Nav() {
 
   return (
     <>
-      <nav className="z-50 sticky top-0 bg-white py-4 px-6 flex justify-between items-center gap-4 md:hidden">
-        <div className="flex justify-center items-center w-20 h-8">
+      <nav className="z-50 sticky top-0 bg-[#fbfbfb] py-4 px-6 flex justify-between items-center gap-4 md:hidden">
+        <div className="flex justify-center items-center w-36 h-11">
           <Link to="/" onClick={handleCloseNav}>
             <img
               src={IMAGES.logoMobile}
@@ -127,7 +127,11 @@ function Nav() {
 
               <div className="mt-4 flex flex-col items-start gap-8 whitespace-nowrap">
                 <button onClick={handleCloseNav}>
-                  <NavLink to="/login" style={activeStyles}>
+                  <NavLink
+                    to="/login"
+                    className="font-bold capitalize transition-all ease-in duration-500 hover:text-green active:text-green focus:text-green"
+                    style={activeStyles}
+                  >
                     log-in
                   </NavLink>
                 </button>
@@ -155,7 +159,7 @@ function Nav() {
       {loggedIn ? (
         <nav className="hidden md:block text-sm lg:text-base py-4 px-12 lg:px-24">
           <div className="w-full flex justify-between items-center gap-6">
-            <div className="flex items-center w-32 h-11">
+            <div className="flex items-center w-36 h-11">
               <Link to="/">
                 <img
                   src={IMAGES.logoDesktop}
@@ -191,7 +195,7 @@ function Nav() {
       ) : (
         <nav className="hidden md:block text-sm lg:text-base py-4 px-12 lg:px-24">
           <div className="w-full flex justify-between items-center gap-6">
-            <div className="flex items-center w-32 h-11">
+            <div className="flex items-center w-36 h-11">
               <Link to="/">
                 <img
                   src={IMAGES.logoDesktop}
@@ -211,7 +215,11 @@ function Nav() {
 
             <div className="flex justify-end items-center gap-6 whitespace-nowrap">
               <button>
-                <NavLink to="/login" style={activeStyles}>
+                <NavLink
+                  to="/login"
+                  className="font-bold capitalize transition-all ease-in duration-500 hover:text-green active:text-green focus:text-green"
+                  style={activeStyles}
+                >
                   log-in
                 </NavLink>
               </button>

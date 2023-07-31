@@ -16,14 +16,17 @@ function Hero() {
         </p>
         <form
           onSubmit={(e) => e.preventDefault()}
-          className="flex justify-between gap-2 mt-4 md:w-fit"
+          className="flex justify-between gap-6 mt-4 md:w-fit"
         >
-          <input
-            id="searchGadget"
-            type="text"
-            placeholder="Search for gadgets..."
-            className="inline-block h-10 rounded p-2 text-xs outline-none w-full border-solid border border-gray-300 lg:w-80 lg:h-12"
-          />
+          <div className="h-10 rounded p-3 lg:px-4 lg:h-auto lg:w-80 flex w-full justify-between items-center gap-8 border-solid border border-gray-300">
+            <i className="bx bx-search bx-sm text-[#94A3B1]"></i>
+            <input
+              id="searchGadget"
+              type="text"
+              placeholder="Search for gadgets..."
+              className="inline-block h-full text-xs md:text-sm lg:text-base lg:font-semibold outline-none w-full"
+            />
+          </div>
           <LaptopCityButton>search</LaptopCityButton>
         </form>
       </div>
@@ -45,11 +48,21 @@ function Hero() {
 }
 function Homepage() {
   return (
-    <div className=" my-10 md:my-16 ">
+    <div className="my-14 md:my-16 ">
       <Hero />
       <Banner />
       <Categories />
       <ProductGroups />
+
+      {/* <div className="bg-yellow-200 p-6 space-x-6 whitespace-nowrap overflow-scroll">
+        <div className="w-52 h-52 bg-red-300 inline-block"></div>
+        <div className="w-52 h-52 bg-red-300 inline-block"></div>
+        <div className="w-52 h-52 bg-red-300 inline-block"></div>
+        <div className="w-52 h-52 bg-red-300 inline-block"></div>
+        <div className="w-52 h-52 bg-red-300 inline-block"></div>
+        <div className="w-52 h-52 bg-red-300 inline-block"></div>
+        <div className="w-52 h-52 bg-red-300 inline-block"></div>
+      </div> */}
     </div>
   );
 }

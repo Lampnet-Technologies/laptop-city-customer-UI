@@ -275,7 +275,7 @@ function AboutProduct() {
               <button className="w-full " onClick={decreaseQuantity}>
                 -
               </button>
-              <p className="w-full text-center">{quantity}</p>
+              <p className="w-full text-center text-green">{quantity}</p>
               <button className="w-full " onClick={increaseQuantity}>
                 +
               </button>

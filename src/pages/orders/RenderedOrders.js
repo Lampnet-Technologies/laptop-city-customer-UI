@@ -1,18 +1,29 @@
-import React, { useState } from "react";
+import React from "react";
 import NairaSymbol from "../../component/nairaSymbol";
 
-function RenderedCart({ items }) {
-  const [quantity, setQuantity] = useState(1);
+const statusObj = {
+  canceled: "#FF1700",
+  shipped: "#56CA00",
+  pending: "#9E2ED2",
+  delivered: "#00A6CA",
+};
+
+function StatusColor({ status }) {
+  return (
+    <span
+      className="p-2 text-xs rounded"
+      style={{
+        color: `${status ? statusObj[status] : "inherit"}`,
+        border: `1px solid ${status ? statusObj[status] : "black"}`,
+      }}
+    >
+      {status}
+    </span>
+  );
+}
+
+function RenderedOrders({ orders }) {
   let num = 1;
-
-  const increaseQuantity = () => {
-    quantity < 10 && setQuantity((prev) => prev + 1);
-  };
-
-  const decreaseQuantity = () => {
-    quantity > 1 && setQuantity((prev) => prev - 1);
-  };
-
   return (
     <div className="overflow-x-auto mt-12 mb-24">
       <table className="w-full whitespace-nowrap border-collapse">
@@ -38,28 +49,27 @@ function RenderedCart({ items }) {
             </th>
             <th
               style={{ fontVariant: "all-small-caps" }}
-              className="text-base leading-[21px] p-5 "
+              className="text-base leading-[21px] p-5 text-center"
             >
-              quantity
+              order date
             </th>
             <th
               style={{ fontVariant: "all-small-caps" }}
               className="text-base leading-[21px] p-5 text-right"
             >
-              price/unit
+              total amount
             </th>
             <th
               style={{ fontVariant: "all-small-caps" }}
-              className="text-base leading-[21px] p-5 text-right"
+              className="text-base leading-[21px] p-5 text-center"
             >
-              subtotal
+              shipping status
             </th>
           </tr>
         </thead>
-
-        {items && (
+        {orders && (
           <tbody>
-            {items.map((item, index) => {
+            {orders.map((order, index) => {
               return (
                 <tr style={{ borderBlock: "0.5px solid #7f98ae" }} key={index}>
                   <td className="text-sm font-normal leading-6 capitalize p-5 text-center">
@@ -68,37 +78,25 @@ function RenderedCart({ items }) {
                   <td className="text-sm font-normal leading-6 capitalize p-5 text-center">
                     <div className="min-w-[84px] h-[63px] max-w-[109px] lg:h-[82px] flex justify-center items-center">
                       <img
-                        src={item.img}
-                        alt={item.name}
+                        src={order.img}
+                        alt={order.name}
                         className="max-w-full max-h-[80%]"
                       />
                     </div>
                   </td>
                   <td className="text-sm font-normal leading-6 capitalize p-5 ">
-                    {item.name}
+                    {order.name}
                   </td>
                   <td className="text-sm font-normal leading-6 capitalize p-5 ">
-                    <div className="text-base flex items-center divide-x-2 w-20 border border-solid border-gray-700 rounded">
-                      <button className="w-full " onClick={decreaseQuantity}>
-                        -
-                      </button>
-                      <p className="w-full text-center text-green">
-                        {quantity}
-                      </p>
-                      <button className="w-full " onClick={increaseQuantity}>
-                        +
-                      </button>
-                    </div>
+                    {order.date}
                   </td>
                   <td className="text-sm leading-6 capitalize p-5 text-right font-medium">
                     <NairaSymbol />
-                    {item.price}
+                    {order.price}
                   </td>
-                  <td className="text-sm leading-6 capitalize p-5 text-right font-medium">
-                    <NairaSymbol />
-                    {item.price * quantity}
+                  <td className="text-sm font-normal leading-6 capitalize p-5 text-center">
+                    <StatusColor status={order.shippingStatus} />
                   </td>
-                  {/* <td colSpan={5} className="h-72 bg-red" /> */}
                 </tr>
               );
             })}
@@ -109,4 +107,4 @@ function RenderedCart({ items }) {
   );
 }
 
-export default RenderedCart;
+export default RenderedOrders;

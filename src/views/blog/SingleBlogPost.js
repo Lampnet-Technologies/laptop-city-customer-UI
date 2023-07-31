@@ -15,13 +15,15 @@ function SingleBlogPost() {
         `*[slug.current == "${slug}"] {
         title,
         body,
+        publishedAt,
         mainImage {
           asset -> {
             _id,
             url
           },
-          alt
-        }
+          alt,
+        },
+        "name": author -> name,
       }`
       )
       .then((data) => {

@@ -10,7 +10,7 @@ function About() {
           accessories store online
         </h1>
 
-        <div className="flex items-center gap-x-8 gap-y-6 flex-wrap text-lg text-dark-blue">
+        <div className="flex items-center gap-x-8 gap-y-6 lg:gap-x-14 flex-wrap text-lg text-dark-blue">
           <div className="flex items-center gap-2">
             <div className="w-7 h-0.5 bg-green" />
             <p className="capitalize">Transparency</p>
@@ -29,7 +29,7 @@ function About() {
       </section>
 
       <section className="space-y-6 mb-16 md:space-y-8 lg:space-y-14">
-        <div className="h-[600px] w-full object-contain lg:h-[750px]">
+        <div className="h-[600px] w-full object-contain lg:h-[650px]">
           <img
             src={IMAGES.about.about}
             alt="about us"
@@ -37,7 +37,7 @@ function About() {
           />
         </div>
 
-        <p className="font-normal lg:leading-[30px]">
+        <p className="font-normal lg:leading-[30px] lg:w-3/4 lg:ml-auto">
           Laptop City is brand in the IT sector that deals in sales of laptop.
           The brand is a indigenous one that opt to give maximum satisfaction to
           her clients and as well keep updated with newly emerging laptop.

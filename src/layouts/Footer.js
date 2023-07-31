@@ -108,7 +108,7 @@ function FooterLinkContainer() {
 
 function Newsletter() {
   return (
-    <div className="flex flex-col gap-4 lg:w-2/5">
+    <div className="flex flex-col gap-4 lg:w-[35%]">
       <h2>Newsletter</h2>
       <p className="text-sm text-footer-Text font-light">
         Get the Latest oraimo News and Giveaways.
@@ -116,14 +116,20 @@ function Newsletter() {
 
       <form
         onSubmit={(e) => e.preventDefault()}
-        className="flex justify-between gap-2 mt-4"
+        className="flex justify-between gap-4 md:gap-6 mt-4"
       >
-        <input
-          type="email"
-          placeholder="Email address"
-          className="h-10 rounded p-2 text-xs outline-none w-full lg:h-12 lg:text-sm"
-        />
-        <LaptopCityButton>subscribe</LaptopCityButton>
+        <div className="bg-white h-10 rounded p-3 lg:h-12 flex w-full justify-between items-center gap-8">
+          <i className="bx bx-envelope bx-sm text-[#6D7D8B]"></i>
+          <input
+            type="email"
+            placeholder="Email address"
+            className="text-xs outline-none h-full w-full md:text-sm lg:text-base"
+          />
+        </div>
+        {/* <LaptopCityButton>subscribe</LaptopCityButton> */}
+        <button className="capitalize font-medium text-white text-sm lg:text-base md:font-semibold md:px-6 lg:py-3 lg:px-[14px] rounded bg-green py-2 px-4 hover:bg-dark-green">
+          subscribe
+        </button>
       </form>
     </div>
   );

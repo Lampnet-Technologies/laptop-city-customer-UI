@@ -14,11 +14,11 @@ function Profile() {
           <i className="bx bxs-user-circle text-green lg:text-3xl"></i>
         </h1>
 
-        <div className="lg:hidden">
+        <div className="md:hidden">
           <Outlet />
         </div>
 
-        <div className="hidden lg:flex items-start pl-6 pr-24">
+        <div className="hidden md:flex md:justify-between lg:justify-start md:gap-12 lg:gap-0 items-start pl-6 lg:pr-24">
           <ProfileMenu />
 
           <Outlet />

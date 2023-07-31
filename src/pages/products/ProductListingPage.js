@@ -7,112 +7,113 @@ import SearchBox from "../../component/searchBox";
 import Pagination from "../../component/pagination";
 import IMAGES from "../../assets";
 import NairaSymbol from "../../component/nairaSymbol";
+import Loading from "../../component/loading";
 
-const newArrivals = [
-  {
-    name: "Macbook 13",
-    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Macbook_3_bwnzmy.png",
-    category: "used",
-    price: "350,000",
-  },
-  {
-    name: "Iphone 14 pro max",
-    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1683740253/avgro2nmfefnd998cuuc.png",
-    category: "new",
-    price: "350,000",
-  },
-  {
-    name: "razer-ornata-v3-base",
-    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1686146167/razer-ornata-v3-base_l7g65h.png",
-    category: "used",
-    price: "350,000",
-  },
-  {
-    name: "Alienware-X15-R1-Gaming-Laptop",
-    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Dell_Alienware_X15_R1_Gaming_Laptop_vliv4z.png",
-    category: "used",
-    price: "350,000",
-  },
-  {
-    name: "Macbook 13",
-    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Macbook_3_bwnzmy.png",
-    category: "used",
-    price: "350,000",
-  },
-  {
-    name: "Iphone 14 pro max",
-    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1683740253/avgro2nmfefnd998cuuc.png",
-    category: "new",
-    price: "350,000",
-  },
-  {
-    name: "razer-ornata-v3-base",
-    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1686146167/razer-ornata-v3-base_l7g65h.png",
-    category: "used",
-    price: "350,000",
-  },
-  {
-    name: "Alienware-X15-R1-Gaming-Laptop",
-    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Dell_Alienware_X15_R1_Gaming_Laptop_vliv4z.png",
-    category: "used",
-    price: "350,000",
-  },
-];
+// const newArrivals = [
+//   {
+//     name: "Macbook 13",
+//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Macbook_3_bwnzmy.png",
+//     category: "used",
+//     price: "350,000",
+//   },
+//   {
+//     name: "Iphone 14 pro max",
+//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1683740253/avgro2nmfefnd998cuuc.png",
+//     category: "new",
+//     price: "350,000",
+//   },
+//   {
+//     name: "razer-ornata-v3-base",
+//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1686146167/razer-ornata-v3-base_l7g65h.png",
+//     category: "used",
+//     price: "350,000",
+//   },
+//   {
+//     name: "Alienware-X15-R1-Gaming-Laptop",
+//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Dell_Alienware_X15_R1_Gaming_Laptop_vliv4z.png",
+//     category: "used",
+//     price: "350,000",
+//   },
+//   {
+//     name: "Macbook 13",
+//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Macbook_3_bwnzmy.png",
+//     category: "used",
+//     price: "350,000",
+//   },
+//   {
+//     name: "Iphone 14 pro max",
+//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1683740253/avgro2nmfefnd998cuuc.png",
+//     category: "new",
+//     price: "350,000",
+//   },
+//   {
+//     name: "razer-ornata-v3-base",
+//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1686146167/razer-ornata-v3-base_l7g65h.png",
+//     category: "used",
+//     price: "350,000",
+//   },
+//   {
+//     name: "Alienware-X15-R1-Gaming-Laptop",
+//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Dell_Alienware_X15_R1_Gaming_Laptop_vliv4z.png",
+//     category: "used",
+//     price: "350,000",
+//   },
+// ];
 
-const relatedProducts = [
-  {
-    name: "Macbook 13",
-    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Macbook_3_bwnzmy.png",
-    category: "used",
-    price: "350,000",
-  },
-  {
-    name: "razer-ornata-v3-base",
-    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1686146167/razer-ornata-v3-base_l7g65h.png",
-    category: "used",
-    price: "350,000",
-  },
-  {
-    name: "Iphone 14 pro max",
-    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1683740253/avgro2nmfefnd998cuuc.png",
-    category: "new",
-    price: "350,000",
-  },
-  {
-    name: "Alienware-X15-R1-Gaming-Laptop",
-    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Dell_Alienware_X15_R1_Gaming_Laptop_vliv4z.png",
-    category: "used",
-    price: "350,000",
-  },
-];
+// const relatedProducts = [
+//   {
+//     name: "Macbook 13",
+//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Macbook_3_bwnzmy.png",
+//     category: "used",
+//     price: "350,000",
+//   },
+//   {
+//     name: "razer-ornata-v3-base",
+//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1686146167/razer-ornata-v3-base_l7g65h.png",
+//     category: "used",
+//     price: "350,000",
+//   },
+//   {
+//     name: "Iphone 14 pro max",
+//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1683740253/avgro2nmfefnd998cuuc.png",
+//     category: "new",
+//     price: "350,000",
+//   },
+//   {
+//     name: "Alienware-X15-R1-Gaming-Laptop",
+//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Dell_Alienware_X15_R1_Gaming_Laptop_vliv4z.png",
+//     category: "used",
+//     price: "350,000",
+//   },
+// ];
 
-const featuredProducts = [
-  {
-    name: "razer-ornata-v3-base",
-    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1686146167/razer-ornata-v3-base_l7g65h.png",
-    category: "used",
-    price: "350,000",
-  },
-  {
-    name: "Iphone 14 pro max",
-    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1683740253/avgro2nmfefnd998cuuc.png",
-    category: "new",
-    price: "350,000",
-  },
+// const featuredProducts = [
+//   {
+//     name: "razer-ornata-v3-base",
+//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1686146167/razer-ornata-v3-base_l7g65h.png",
+//     category: "used",
+//     price: "350,000",
+//   },
+//   {
+//     name: "Iphone 14 pro max",
+//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1683740253/avgro2nmfefnd998cuuc.png",
+//     category: "new",
+//     price: "350,000",
+//   },
 
-  {
-    name: "Alienware-X15-R1-Gaming-Laptop",
-    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Dell_Alienware_X15_R1_Gaming_Laptop_vliv4z.png",
-    category: "used",
-    price: "350,000",
-  },
-  {
-    name: "Macbook 13",
-    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Macbook_3_bwnzmy.png",
-    category: "used",
-    price: "350,000",
-  },
-];
+//   {
+//     name: "Alienware-X15-R1-Gaming-Laptop",
+//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Dell_Alienware_X15_R1_Gaming_Laptop_vliv4z.png",
+//     category: "used",
+//     price: "350,000",
+//   },
+//   {
+//     name: "Macbook 13",
+//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Macbook_3_bwnzmy.png",
+//     category: "used",
+//     price: "350,000",
+//   },
+// ];
 
 const filters = [
   {
@@ -138,20 +139,30 @@ function ProductContainer({ product }) {
       onClick={() => navigate("/product-desc")}
     >
       <div className="h-32 rounded bg-gray-200 flex justify-center items-center relative lg:h-44">
-        <div className="w-4/5 h-4/5 flex justify-center items-center">
-          <img
-            src={product.img || ""}
-            alt={product.name || ""}
-            className="max-w-full max-h-full"
-          />
-        </div>
+        {product.images && (
+          <div className="w-4/5 h-4/5 flex justify-center items-center">
+            {product.images.length >= 1 ? (
+              <img
+                src={product.images[0].image}
+                alt={product.name || ""}
+                className="max-w-full max-h-full"
+              />
+            ) : (
+              <img
+                src={IMAGES.icons.cartGreen}
+                alt={""}
+                className="max-w-full max-h-full w-[50px]"
+              />
+            )}
+          </div>
+        )}
         <div
           className="bg-green text-white font-medium capitalize w-9 h-4 rounded-sm flex justify-center items-center absolute top-4 right-2 z-10"
           style={{
             fontSize: "10px",
           }}
         >
-          {product.category}
+          {product.category == "BRAND NEW" ? "new" : "used"}
         </div>
         <div className="flex justify-center items-center w-3 h-4 absolute bottom-3 right-2 z-10">
           <img
@@ -162,7 +173,9 @@ function ProductContainer({ product }) {
         </div>
       </div>
       <div className="flex flex-col gap-4 justify-between h-20 px-2 pb-4 lg:h-24 lg:pt-2">
-        <p className="text-xs font-medium capitalize">{product.name}</p>
+        <p className="text-xs md:text-sm font-medium capitalize">
+          {product.name}
+        </p>
         <p className="text-base font-bold text-green">
           <NairaSymbol />
           {product.price}
@@ -180,9 +193,10 @@ function Groups({ heading, products, seeMore }) {
       )}
 
       <div className="mt-8 flex flex-wrap justify-around gap-x-2 gap-y-4 md:justify-start md:gap-8 lg:gap-10">
-        {products.map((product, index) => {
-          return <ProductContainer key={index} product={product} />;
-        })}
+        {products &&
+          products.map((product, index) => {
+            return <ProductContainer key={index} product={product} />;
+          })}
       </div>
 
       {seeMore && (
@@ -257,6 +271,58 @@ function FilterGroup({ item }) {
 
 function ProductsListing() {
   const [showFilters, setShowFilters] = useState(false);
+  const [products, setProducts] = useState(null);
+  const [bestSelling, setBestSelling] = useState(null);
+  const [recentlyViewed, setRecentlyViewed] = useState(null);
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(
+      "https://apps-1.lampnets.com/ecommb-staging/products/pagination/active?pageNo=0&pageSize=12&sortBy=createdOn&sortDir=desc"
+    )
+      .then((res) => {
+        return res.json();
+      })
+      .then((result) => {
+        // console.log(result.content);
+        setProducts(result.content);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error();
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch(
+      "https://apps-1.lampnets.com/ecommb-staging/products/best-selling?pageNo=0&pageSize=5"
+    )
+      .then((res) => {
+        return res.json();
+      })
+      .then((result) => {
+        setBestSelling(result.content);
+      })
+      .catch((error) => {
+        console.error();
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch(
+      "https://apps-1.lampnets.com/ecommb-staging/products/reviewed?pageNo=0&pageSize=5&sortBy=createdOn&sortDir=desc"
+    )
+      .then((res) => {
+        return res.json();
+      })
+      .then((result) => {
+        setRecentlyViewed(result.content);
+      })
+      .catch((error) => {
+        console.error();
+      });
+  }, []);
 
   const handleOpen = () => {
     setShowFilters((prev) => !prev);
@@ -313,21 +379,23 @@ function ProductsListing() {
             )}
           </div>
 
-          <div className="my-5 px-2 flex flex-col justify-between gap-10 md:px-6 lg:px-0">
-            <Groups products={newArrivals} />
+          {isLoading && <Loading />}
 
-            <Pagination />
+          <div className="my-5 px-2 flex flex-col justify-between gap-10 md:px-6 lg:px-0">
+            <Groups products={products} />
           </div>
         </div>
       </div>
 
+      <Pagination />
+
       <div className="mt-16 mb-10 px-2 space-y-8 md:mx-12 lg:mx-24 ">
         <Groups
           heading="best selling products"
-          products={featuredProducts}
+          products={bestSelling}
           seeMore
         />
-        <Groups heading="recently viewed" products={relatedProducts} seeMore />
+        <Groups heading="recently viewed" products={recentlyViewed} seeMore />
       </div>
     </div>
   );

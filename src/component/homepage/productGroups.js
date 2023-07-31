@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import IMAGES from "../../assets";
@@ -31,7 +31,7 @@ const newArrivals = [
   },
 ];
 
-const featuredProducts = [
+const bestSelling = [
   {
     name: "razer-ornata-v3-base",
     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1686146167/razer-ornata-v3-base_l7g65h.png",
@@ -83,6 +83,15 @@ function ProductContainer({ product }) {
       onClick={() => navigate("/product-desc")}
     >
       <div className="h-32 rounded bg-gray-200 flex justify-center items-center relative lg:h-48">
+        {/* {product.images && (
+          <div className="w-4/5 h-4/5 flex justify-center items-center">
+            <img
+              src={product.images.length >= 1 ? product.images[0].image : ""}
+              alt={product.name || ""}
+              className="max-w-full max-h-full"
+            />
+          </div>
+        )} */}
         <div className="w-4/5 h-4/5 flex justify-center items-center">
           <img
             src={product.img || ""}
@@ -96,6 +105,7 @@ function ProductContainer({ product }) {
             fontSize: "10px",
           }}
         >
+          {/* {product.category == "BRAND NEW" ? "new" : "used"} */}
           {product.category}
         </div>
         <div className="flex justify-center items-center w-3 h-4 absolute bottom-3 right-2 z-40">
@@ -121,48 +131,95 @@ function ProductContainer({ product }) {
 
 export function Groups({ heading, products, seeMore }) {
   return (
-    <div>
+    <div className="w-fit">
       {heading && (
         <h1 className="text-xl font-semibold capitalize lg:text-2xl">
           {heading}
         </h1>
       )}
 
-      <div className="mt-8 flex flex-wrap justify-between gap-x-2 gap-y-4 md:justify-start md:gap-x-6 lg:block lg:space-x-12 lg:whitespace-nowrap lg:overflow-x-auto">
-        {products.map((product, index) => {
-          return <ProductContainer key={index} product={product} />;
-        })}
-
-        {seeMore && (
-          <div
-            style={{
-              flexBasis: "100%",
-              flexShrink: 0,
-            }}
-            className="flex justify-end items-center text-sm font-medium"
-          >
-            <Link
-              to="/products"
-              className="flex justify-between items-center hover:text-green hover:font-bold"
-            >
-              See more <i className="bx bx-chevron-right bx-sm ml-0"></i>
-            </Link>
-          </div>
-        )}
+      <div className="mt-8 flex flex-wrap justify-between gap-x-2 gap-y-6 md:justify-start md:gap-x-6 lg:block lg:space-x-12 lg:whitespace-nowrap lg:overflow-x-auto">
+        {products &&
+          products.map((product, index) => {
+            return <ProductContainer key={index} product={product} />;
+          })}
       </div>
+
+      {seeMore && (
+        <div
+          style={{
+            flexBasis: "100%",
+            flexShrink: 0,
+          }}
+          className="mt-10 flex justify-end items-center text-sm font-medium"
+        >
+          <Link
+            to="/products"
+            className="flex justify-between items-center hover:text-green hover:font-bold"
+          >
+            See more <i className="bx bx-chevron-right bx-sm ml-0"></i>
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
 
 function ProductGroups() {
+  // const [newArrivals, setNewArrivals] = useState(null);
+  // const [bestSelling, setBestSelling] = useState(null);
+  // const [recentlyViewed, setRecentlyViewed] = useState(null);
+
+  // useEffect(() => {
+  //   fetch(
+  //     "https://apps-1.lampnets.com/ecommb-staging/products/pagination/active?pageNo=0&pageSize=4&sortBy=createdOn&sortDir=desc"
+  //   )
+  //     .then((res) => {
+  //       return res.json();
+  //     })
+  //     .then((result) => {
+  //       // console.log(result.content);
+  //       setNewArrivals(result.content);
+  //     })
+  //     .catch((error) => {
+  //       console.error();
+  //     });
+  // }, []);
+
+  // useEffect(() => {
+  //   fetch(
+  //     "https://apps-1.lampnets.com/ecommb-staging/products/best-selling?pageNo=0&pageSize=4"
+  //   )
+  //     .then((res) => {
+  //       return res.json();
+  //     })
+  //     .then((result) => {
+  //       setBestSelling(result.content);
+  //     })
+  //     .catch((error) => {
+  //       console.error();
+  //     });
+  // }, []);
+
+  // useEffect(() => {
+  //   fetch(
+  //     "https://apps-1.lampnets.com/ecommb-staging/products/reviewed?pageNo=0&pageSize=4&sortBy=createdOn&sortDir=desc"
+  //   )
+  //     .then((res) => {
+  //       return res.json();
+  //     })
+  //     .then((result) => {
+  //       setRecentlyViewed(result.content);
+  //     })
+  //     .catch((error) => {
+  //       console.error();
+  //     });
+  // }, []);
+
   return (
-    <div className="my-10 px-4 flex flex-col justify-between gap-10 md:px-12 lg:px-24">
+    <div className="my-10 px-4 flex flex-col justify-between gap-10 md:gap-12 md:px-12 lg:px-24">
       <Groups heading="New Arrivals" products={newArrivals} seeMore />
-      <Groups
-        heading="best selling products"
-        products={featuredProducts}
-        seeMore
-      />
+      <Groups heading="best selling products" products={bestSelling} seeMore />
       <Groups heading="recently viewed" products={recentlyViewed} seeMore />
     </div>
   );
