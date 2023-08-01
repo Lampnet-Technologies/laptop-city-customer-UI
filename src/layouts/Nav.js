@@ -123,12 +123,12 @@ function Nav() {
     setClicked(false);
   };
 
-  useEffect(() => {
-    if (clicked) {
-      let body = document.getElementsByClassName("overlay");
-      body[0].addEventListener("click", handleCloseNav);
-    }
-  }, [clicked]);
+  // useEffect(() => {
+  //   if (clicked) {
+  //     let body = document.getElementsByClassName("overlay");
+  //     body[0].addEventListener("click", handleCloseNav);
+  //   }
+  // }, [clicked]);
 
   return (
     <>
@@ -253,7 +253,7 @@ function Nav() {
         </div>
       </nav>
 
-      {clicked ? <div className="overlay" /> : null}
+      {/* {clicked ? <div className="overlay" /> : null} */}
 
       {loggedIn ? (
         <nav className="hidden z-50 sticky top-0 bg-[#fbfbfb] md:block text-sm lg:text-base py-4 px-12 lg:px-24">
