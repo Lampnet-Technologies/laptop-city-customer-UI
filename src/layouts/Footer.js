@@ -69,7 +69,7 @@ function FooterLink({ to, children, ...props }) {
     <li>
       <Link
         to={to}
-        className="no-underline text-sm text-footer-Text font-light hover:text-green hover:font-medium"
+        className="no-underline text-sm lg:text-base text-footer-Text font-normal hover:text-green hover:font-medium"
       >
         {children}
       </Link>
@@ -80,7 +80,7 @@ function FooterLink({ to, children, ...props }) {
 function FooterLinks({ title, links }) {
   return (
     <div>
-      <h2 className="mb-6">{title}</h2>
+      <h2 className="mb-6 lg:text-xl">{title}</h2>
       <ul className="flex flex-col items-start gap-4 list-none">
         {links.map((link, index) => {
           return (
@@ -109,25 +109,25 @@ function FooterLinkContainer() {
 function Newsletter() {
   return (
     <div className="flex flex-col gap-4 lg:w-[35%]">
-      <h2>Newsletter</h2>
-      <p className="text-sm text-footer-Text font-light">
+      <h2 className="lg:text-xl">Newsletter</h2>
+      <p className="text-sm lg:text-base text-footer-Text font-normal">
         Get the Latest oraimo News and Giveaways.
       </p>
 
       <form
         onSubmit={(e) => e.preventDefault()}
-        className="flex justify-between gap-4 md:gap-6 mt-4"
+        className="flex justify-between gap-4 md:gap-5 mt-4"
       >
-        <div className="bg-white h-10 rounded p-3 lg:h-12 flex w-full justify-between items-center gap-8">
+        <div className="bg-white h-10 rounded p-3 lg:h-auto flex w-full justify-between items-center gap-8">
           <i className="bx bx-envelope bx-sm text-[#6D7D8B]"></i>
           <input
             type="email"
             placeholder="Email address"
-            className="text-xs outline-none h-full w-full md:text-sm lg:text-base"
+            className="placeholder:text-[#BBC8D4] text-xs outline-none h-full w-full md:text-sm lg:text-base"
           />
         </div>
-        {/* <LaptopCityButton>subscribe</LaptopCityButton> */}
-        <button className="capitalize font-medium text-white text-sm lg:text-base md:font-semibold md:px-6 lg:py-3 lg:px-[14px] rounded bg-green py-2 px-4 hover:bg-dark-green">
+
+        <button className="capitalize font-medium text-white text-sm lg:text-base md:font-semibold md:px-6 lg:py-4 lg:px-[26px] rounded bg-green py-2 px-4 hover:bg-dark-green">
           subscribe
         </button>
       </form>
@@ -138,13 +138,13 @@ function Newsletter() {
 function FooterContacts() {
   return (
     <div className="flex flex-col gap-6">
-      <p className="text-sm text-footer-Text font-light">
+      <p className="text-sm lg:text-base text-footer-Text font-normal">
         SERVICE HOURS: Monday-Friday 9AM to 8PM
       </p>
-      <p className="text-sm text-footer-Text font-light">
+      <p className="text-sm lg:text-base text-footer-Text font-normal">
         Whatsapp: +234 901 627 9193 +234 818 642 3337
       </p>
-      <p className="text-sm text-footer-Text font-light">
+      <p className="text-sm lg:text-base text-footer-Text font-normal">
         Customer Service: +234 818 135 3103（First Choice） +234 809 604 0753
       </p>
     </div>

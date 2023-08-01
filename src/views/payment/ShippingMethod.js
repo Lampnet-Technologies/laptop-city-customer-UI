@@ -6,17 +6,17 @@ const deliveryMethods = [
   {
     radioValue: "company",
     method: "GIG",
-    price: 1400,
+    price: 2499.99,
     tag: "GIG Express with Tracking",
-    time: "24",
+    time: "24 hours",
   },
 
   {
     radioValue: "regular",
-    method: "Danfo",
-    price: 600,
-    tag: "Danfo Premium with Tracking",
-    time: "24",
+    method: "Kwik",
+    price: 1099.99,
+    tag: "Kwik Premium with Tracking",
+    time: "1-2 days",
   },
 ];
 
@@ -69,8 +69,8 @@ function ShippingMethod({ goTo, back }) {
                   {method.method}{" "}
                 </p>
                 <p className="font-normal text-sm lg:text-base">{method.tag}</p>
-                <p className="font-normal text-sm lg:text-base">
-                  (Within {method.time} Hours)
+                <p className="font-normal text-sm lg:text-base capitalize">
+                  (Within {method.time})
                 </p>
               </div>
             </label>

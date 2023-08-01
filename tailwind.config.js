@@ -25,7 +25,7 @@ module.exports = {
         "filter-green": "#63BB8280",
         footer: {
           bg: "#009F7F66",
-          Text: "#00000066",
+          Text: "#00000059",
         },
         "dark-blue": "#121D3C",
         "dark-green": "#047d65",

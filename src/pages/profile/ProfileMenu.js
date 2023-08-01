@@ -38,7 +38,7 @@ const activeStyles = ({ isActive }) => {
 function ProfileMenu() {
   return (
     <div className="h-screen lg:h-auto">
-      <div className="h-96 bg-filter-green lg:h-[560px] md:w-[30vw] lg:w-72 lg:rounded">
+      <div className="h-96 bg-filter-green lg:h-[560px] md:w-[25vw] lg:w-72 lg:rounded">
         <div className="p-4 space-y-2">
           {links.map((link, index) => {
             return (

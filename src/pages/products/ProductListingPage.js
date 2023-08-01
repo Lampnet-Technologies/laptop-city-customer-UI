@@ -8,6 +8,7 @@ import Pagination from "../../component/pagination";
 import IMAGES from "../../assets";
 import NairaSymbol from "../../component/nairaSymbol";
 import Loading from "../../component/loading";
+import LaptopCityButton from "../../component/button";
 
 // const newArrivals = [
 //   {
@@ -117,11 +118,11 @@ import Loading from "../../component/loading";
 
 const filters = [
   {
-    title: "category",
+    title: "categorries",
     filter: ["brand new", "uk used"],
   },
   {
-    title: "product type",
+    title: "product",
     filter: ["phone", "laptop", "desktop", "sound", "accessories", "lifestyle"],
   },
   {
@@ -135,10 +136,10 @@ function ProductContainer({ product }) {
 
   return (
     <div
-      className="w-44 h-56 rounded flex flex-col justify-between cursor-pointer border-gray-200 border-tiny border-solid lg:w-60 lg:h-[300px] lg:inline-block lg:space-y-3"
+      className="w-44 h-56 rounded flex flex-col justify-between cursor-pointer border-[#DADADA] border-tiny border-solid lg:w-60 lg:h-[300px] lg:inline-block lg:space-y-3"
       onClick={() => navigate("/product-desc")}
     >
-      <div className="h-32 rounded bg-gray-200 flex justify-center items-center relative lg:h-44">
+      <div className="h-32 rounded bg-[#D9D9D9] flex justify-center items-center relative lg:h-44">
         {product.images && (
           <div className="w-4/5 h-4/5 flex justify-center items-center">
             {product.images.length >= 1 ? (
@@ -187,12 +188,14 @@ function ProductContainer({ product }) {
 
 function Groups({ heading, products, seeMore }) {
   return (
-    <div>
+    <div className="max-w-full w-fit overflow-x-auto">
       {heading && (
-        <h1 className="text-xl font-semibold capitalize">{heading}</h1>
+        <h1 className="text-xl font-semibold capitalize lg:text-2xl">
+          {heading}
+        </h1>
       )}
 
-      <div className="mt-8 flex flex-wrap justify-around gap-x-2 gap-y-4 md:justify-start md:gap-8 lg:gap-10">
+      <div className="mt-8 lg:mt-14 flex flex-wrap justify-around gap-x-2 gap-y-4 md:justify-start md:gap-8 lg:gap-10">
         {products &&
           products.map((product, index) => {
             return <ProductContainer key={index} product={product} />;
@@ -244,7 +247,7 @@ function FilterGroup({ item }) {
             return (
               <div
                 key={index}
-                className="bg-white p-3 flex items-center gap-4 rounded-md"
+                className="bg-white p-3 flex items-center gap-5 rounded-md"
               >
                 <input
                   type="checkbox"
@@ -253,7 +256,7 @@ function FilterGroup({ item }) {
                   value={name}
                   checked={checkedState[index]}
                   onChange={() => handleChange(index, name)}
-                  className="accent-green cursor-pointer caret-green"
+                  className="accent-green cursor-pointer caret-green lg:w-5 lg:h-5"
                 />
                 <label
                   htmlFor={`${name}-filter`}
@@ -338,7 +341,7 @@ function ProductsListing() {
 
       <Banner />
 
-      <div className="flex items-start justify-between lg:px-8 lg:mt-6">
+      <div className="flex items-start justify-between lg:px-8 lg:mt-6 mb-8">
         <div className="hidden lg:block w-80 mr-20 bg-filter-green rounded">
           <div className="pt-4 pb-8 px-2 flex flex-col gap-10">
             {filters.map((item, index) => {
@@ -349,6 +352,10 @@ function ProductsListing() {
               <button className="flex items-center text-sm">
                 View all <i className="bx bx-chevron-right bx-sm"></i>
               </button>
+            </div>
+
+            <div className="text-center lg:mt-4 lg:mb-2">
+              <LaptopCityButton>search</LaptopCityButton>
             </div>
           </div>
         </div>

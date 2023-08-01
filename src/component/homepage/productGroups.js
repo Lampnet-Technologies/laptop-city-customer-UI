@@ -79,10 +79,10 @@ function ProductContainer({ product }) {
 
   return (
     <div
-      className="w-44 h-56 rounded flex flex-col justify-between cursor-pointer border-gray-200 border-tiny border-solid lg:w-60 lg:h-80 lg:inline-block lg:space-y-3"
+      className="w-44 h-56 rounded-md flex flex-col justify-between cursor-pointer border-[#DADADA] border-tiny border-solid lg:w-60 lg:h-80 lg:inline-block lg:space-y-3"
       onClick={() => navigate("/product-desc")}
     >
-      <div className="h-32 rounded bg-gray-200 flex justify-center items-center relative lg:h-48">
+      <div className="h-32 rounded bg-[#D9D9D9] flex justify-center items-center relative lg:h-48">
         {/* {product.images && (
           <div className="w-4/5 h-4/5 flex justify-center items-center">
             <img
@@ -131,14 +131,14 @@ function ProductContainer({ product }) {
 
 export function Groups({ heading, products, seeMore }) {
   return (
-    <div className="w-fit">
+    <div className="max-w-full w-fit overflow-x-auto ">
       {heading && (
         <h1 className="text-xl font-semibold capitalize lg:text-2xl">
           {heading}
         </h1>
       )}
 
-      <div className="mt-8 flex flex-wrap justify-between gap-x-2 gap-y-6 md:justify-start md:gap-x-6 lg:block lg:space-x-12 lg:whitespace-nowrap lg:overflow-x-auto">
+      <div className="mt-8 lg:mt-14 flex flex-wrap justify-between gap-x-2 gap-y-6 md:justify-start md:gap-x-6 lg:block lg:space-x-12 lg:whitespace-nowrap lg:overflow-x-auto">
         {products &&
           products.map((product, index) => {
             return <ProductContainer key={index} product={product} />;

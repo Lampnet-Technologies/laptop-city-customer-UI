@@ -29,7 +29,7 @@ const items = [
 
 function BannerContent({ name, img }) {
   return (
-    <div className="flex items-center gap-8">
+    <div className="w-full justify-center flex items-center gap-4">
       <p className="lg:text-lg">{name}</p>
       <div className="flex justify-center items-center w-5 h-5">
         <img className="max-w-full max-h-5 " src={img} alt="" />
@@ -52,7 +52,7 @@ function Banner() {
   };
 
   return (
-    <div className="bg-gray-300 font-medium text-banner-text p-4 w-full">
+    <div className="bg-[#DAE3EA] font-medium text-banner-text p-4 w-full">
       <Slider {...settings}>
         {items.map((item, index) => {
           return <BannerContent key={index} name={item.name} img={item.img} />;

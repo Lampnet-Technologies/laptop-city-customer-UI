@@ -4,17 +4,17 @@ import LaptopCityButton from "./button";
 
 function SearchBox({ show }) {
   return (
-    <div className="h-20 max-w-3xl bg-filter-green p-5 flex justify-center items-center gap-4 rounded-md md:py-4 md:px-14">
+    <div className="h-20 md:h-auto max-w-3xl bg-filter-green p-5 flex justify-center items-center gap-4 rounded-md md:py-8 md:px-14 lg:px-20">
       <button className="outline-0 p-0 lg:hidden" onClick={show}>
         <i className="bx bxs-grid bx-md"></i>
       </button>
 
-      <div className="bg-white w-full h-full p-2 lg:px-4 rounded flex justify-between items-center gap-2">
+      <div className="bg-white w-full h-full p-2 lg:py-4 lg:px-4 rounded flex justify-between items-center gap-2">
         {/* <img src={IMAGES.icons.search} alt="search icon" /> */}
-        <i className="bx bx-search bx-sm text-gray-400"></i>
+        <i className="bx bx-search bx-sm text-[#BBC8D4]"></i>
         <input
-          placeholder="search"
-          className="rounded px-2 py-1 text-sm outline-none w-full "
+          placeholder="search for gadget..."
+          className="placeholder:text-[#BBC8D4] rounded h-full px-2 py-1 text-sm outline-none w-full "
         />
         <button
           type="button"

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import IMAGES from "../assets";
 import LaptopCityButton from "../component/button";
@@ -12,17 +12,102 @@ const activeStyles = ({ isActive }) => {
   }
 };
 
-function CustomLink({ to, children, ...props }) {
+const subMenu = [
+  {
+    title: "new products",
+  },
+  {
+    title: "used products",
+  },
+];
+
+function NavDropdown({ submenus, dropdown, closeDropdown, closeNav }) {
   return (
-    <li className="flex justify-center items-center py-4 h-auto ">
-      <NavLink
-        to={to}
-        {...props}
-        className="no-underline capitalize text-inherit transition-all ease-in-out duration-500 hover:tracking-wide hover:text-green hover:font-semibold active:font-semibold active:text-green focus:text-green focus:font-semibold"
-        style={activeStyles}
-      >
-        {children}
-      </NavLink>
+    <ul
+      className={`${
+        dropdown ? "block" : "hidden"
+      } transition-all ease-in duration-500 z-20 absolute top-14 left-0 lg:left-[-20%] bg-white border-[0.5px] border-green rounded-md py-2 md:py-4 md:space-y-2`}
+    >
+      {submenus.map((submenu, index) => (
+        <li
+          key={index}
+          className="menu-items text-center transition-all ease-in duration-200 hover:bg-[#63BB82] hover:text-white text-sm p-2 md:px-6 capitalize"
+          onClick={() => {
+            closeDropdown();
+            closeNav();
+          }}
+        >
+          <Link to="/products">{submenu.title}</Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function CustomLink({ to, children, ...props }) {
+  const [dropdown, setDropdown] = useState(false);
+  let ref = useRef();
+
+  useEffect(() => {
+    const handler = (event) => {
+      if (dropdown && ref.current && !ref.current.contains(event.target)) {
+        setDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    document.addEventListener("touchstart", handler);
+    return () => {
+      // Cleanup the event listener
+      document.removeEventListener("mousedown", handler);
+      document.removeEventListener("touchstart", handler);
+    };
+  }, [dropdown]);
+
+  const onMouseEnter = () => {
+    window.innerWidth > 960 && setDropdown(true);
+  };
+
+  const onMouseLeave = () => {
+    window.innerWidth > 960 && setDropdown(false);
+  };
+
+  const closeDropdown = () => {
+    setDropdown(false);
+  };
+
+  return (
+    <li
+      className="py-4 h-auto relative"
+      ref={ref}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      {props.subMenu ? (
+        <>
+          <button
+            className="no-underline flex items-center gap-1 capitalize text-inherit transition-all ease-in-out duration-500 hover:tracking-wide hover:text-green hover:font-semibold active:font-semibold active:text-green focus:text-green focus:font-semibold"
+            aria-expanded={dropdown ? "true" : "false"}
+            onClick={() => setDropdown((prev) => !prev)}
+          >
+            {children}
+          </button>
+          <NavDropdown
+            submenus={props.subMenu}
+            dropdown={dropdown}
+            closeDropdown={closeDropdown}
+            closeNav={props.onClick}
+          />
+        </>
+      ) : (
+        <NavLink
+          to={to}
+          {...props}
+          className="no-underline flex items-center gap-1 capitalize text-inherit transition-all ease-in-out duration-500 hover:tracking-wide hover:text-green hover:font-semibold active:font-semibold active:text-green focus:text-green focus:font-semibold"
+          style={activeStyles}
+        >
+          {children}
+        </NavLink>
+      )}
     </li>
   );
 }
@@ -48,7 +133,7 @@ function Nav() {
   return (
     <>
       <nav className="z-50 sticky top-0 bg-[#fbfbfb] py-4 px-6 flex justify-between items-center gap-4 md:hidden">
-        <div className="flex justify-center items-center w-36 h-11">
+        <div className="flex justify-center items-center w-32 h-11">
           <Link to="/" onClick={handleCloseNav}>
             <img
               src={IMAGES.logoMobile}
@@ -65,9 +150,9 @@ function Nav() {
               className={clicked ? "#mobileNav activeMenu" : "#mobileNav"}
               // className="flex items-center justify-between gap-4 list-none"
             >
-              <button className="mb-4 self-end mr-5" onClick={handleCloseNav}>
+              {/* <button className="mb-4 self-end mr-5" onClick={handleCloseNav}>
                 <i className="bx bx-x bx-md"></i>
-              </button>
+              </button> */}
 
               <NavLink
                 to="/profile"
@@ -80,8 +165,12 @@ function Nav() {
               <CustomLink onClick={handleCloseNav} to="/">
                 Home
               </CustomLink>
-              <CustomLink onClick={handleCloseNav} to="/categories">
-                categories
+              <CustomLink
+                onClick={handleCloseNav}
+                to="/categories"
+                subMenu={subMenu}
+              >
+                categories <i className="bx bx-chevron-down bx-sm"></i>
               </CustomLink>
               <CustomLink onClick={handleCloseNav} to="/track-order/:id">
                 track orders
@@ -105,15 +194,19 @@ function Nav() {
               className={clicked ? "#mobileNav activeMenu" : "#mobileNav"}
               // className="flex items-center justify-between gap-4 list-none"
             >
-              <button className="mb-4 self-end mr-5" onClick={handleCloseNav}>
+              {/* <button className="mb-4 self-end mr-5" onClick={handleCloseNav}>
                 <i className="bx bx-x bx-md"></i>
-              </button>
+              </button> */}
 
               <CustomLink onClick={handleCloseNav} to="/">
                 Home
               </CustomLink>
-              <CustomLink onClick={handleCloseNav} to="/categories">
-                categories
+              <CustomLink
+                onClick={handleCloseNav}
+                to="/categories"
+                subMenu={subMenu}
+              >
+                categories <i className="bx bx-chevron-down bx-sm"></i>
               </CustomLink>
               <CustomLink onClick={handleCloseNav} to="/track-order/:id">
                 track orders
@@ -144,20 +237,26 @@ function Nav() {
           </div>
         )}
 
-        <div className="flex justify-center items-center w-6 h-5">
-          <img
-            src={IMAGES.icons.hamburger2}
-            alt="logo"
-            className="max-w-full max-h-full"
-            onClick={handleShowNav}
-          />
+        <div className="flex justify-center items-center w-6 h-5 z-50">
+          {!clicked ? (
+            <img
+              src={IMAGES.icons.hamburger2}
+              alt="logo"
+              className="max-w-full max-h-full"
+              onClick={handleShowNav}
+            />
+          ) : (
+            <button onClick={handleCloseNav}>
+              <i className="bx bx-x bx-md"></i>
+            </button>
+          )}
         </div>
       </nav>
 
       {clicked ? <div className="overlay" /> : null}
 
       {loggedIn ? (
-        <nav className="hidden md:block text-sm lg:text-base py-4 px-12 lg:px-24">
+        <nav className="hidden z-50 sticky top-0 bg-[#fbfbfb] md:block text-sm lg:text-base py-4 px-12 lg:px-24">
           <div className="w-full flex justify-between items-center gap-6">
             <div className="flex items-center w-36 h-11">
               <Link to="/">
@@ -171,7 +270,9 @@ function Nav() {
 
             <ul className="flex items-center justify-between gap-4 lg:gap-8 list-none whitespace-nowrap">
               <CustomLink to="/">Home</CustomLink>
-              <CustomLink to="/categories">categories</CustomLink>
+              <CustomLink to="/categories" subMenu={subMenu}>
+                categories <i className="bx bx-chevron-down bx-sm"></i>
+              </CustomLink>
               <CustomLink to="/coupons">coupons</CustomLink>
               <CustomLink to="/track-order/:id">track orders</CustomLink>
             </ul>
@@ -193,7 +294,7 @@ function Nav() {
           </div>
         </nav>
       ) : (
-        <nav className="hidden md:block text-sm lg:text-base py-4 px-12 lg:px-24">
+        <nav className="hidden z-50 sticky top-0 bg-[#fbfbfb] md:block text-sm lg:text-base py-4 px-12 lg:px-24">
           <div className="w-full flex justify-between items-center gap-6">
             <div className="flex items-center w-36 h-11">
               <Link to="/">
@@ -207,7 +308,9 @@ function Nav() {
 
             <ul className="flex items-center justify-between gap-4 lg:gap-8 list-none whitespace-nowrap">
               <CustomLink to="/">Home</CustomLink>
-              <CustomLink to="/categories">categories</CustomLink>
+              <CustomLink to="/categories" subMenu={subMenu}>
+                categories <i className="bx bx-chevron-down bx-sm"></i>
+              </CustomLink>
               <CustomLink to="/track-order/:id">track orders</CustomLink>
               <CustomLink to="/blog">Blog</CustomLink>
               <CustomLink to="/about">about</CustomLink>
@@ -224,9 +327,9 @@ function Nav() {
                 </NavLink>
               </button>
 
-              <LaptopCityButton>
+              <button className="capitalize font-medium text-white text-sm lg:text-base md:font-semibold md:px-6 lg:py-4 lg:px-[26px] rounded bg-green py-2 px-4 hover:bg-dark-green">
                 <Link to="signup">Sign up</Link>
-              </LaptopCityButton>
+              </button>
             </div>
           </div>
         </nav>
@@ -236,47 +339,3 @@ function Nav() {
 }
 
 export default Nav;
-
-{
-  /* <nav className="w-11/12 mx-auto flex justify-between items-center gap-4 md:hidden">
-        <div className="flex justify-center items-center w-20 h-8">
-          <Link to="/">
-            <img
-              src={IMAGES.logoMobile}
-              alt="logo"
-              className="max-w-full w-full"
-            />
-          </Link>
-        </div>
-
-        <ul className="flex items-center justify-between gap-4 list-none">
-          <CustomLink to="/">Home</CustomLink>
-          <CustomLink to="/blog">Blog</CustomLink>
-
-          <div className="h-6 w-px border border-black"></div>
-
-          <NavLink
-            to="/profile"
-            className="hover:text-green active:text-green focus:text-green"
-            style={activeStyles}
-          >
-            <i className="bx bxs-user-circle bx-md"></i>
-            {/* <div className="flex justify-center items-center w-6 h-6">
-              <img
-                src={IMAGES.icons.account}
-                alt="logo"
-                className="max-w-full w-full"
-              />
-            </div> ******
-          </NavLink>
-
-          <div className="flex justify-center items-center w-6 h-6">
-            <img
-              src={IMAGES.icons.hamburgerMenu}
-              alt="logo"
-              className="max-w-full w-full"
-            />
-          </div>
-        </ul>
-      </nav> */
-}

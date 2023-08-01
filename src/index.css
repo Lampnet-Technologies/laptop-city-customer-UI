@@ -22,7 +22,8 @@
   html {
     font-family: Montserrat, system-ui, sans-serif;
     font-weight: 500;
-    background-color: #fbfbfb;
+    background-color: #fbfbfb !important;
+    color: #111;
   }
 }
 
@@ -46,15 +47,15 @@
   align-items: flex-start;
 
   position: fixed;
-  top: 63px;
-  right: -70%;
-  width: 70%;
+  top: 0;
+  right: -60%;
+  width: 60%;
   height: 100vh;
 
-  background-color: #fbfbfb;
+  background-color: #ecf3f9;
   box-shadow: 0 40px 60px rgba(0, 0, 0, 0.1);
   /* backdrop-filter: blur(40%); */
-  padding: 20px 0 0 10%;
+  padding: 30% 0 0 10%;
   transition: 0.4s ease-in-out;
 }
 
