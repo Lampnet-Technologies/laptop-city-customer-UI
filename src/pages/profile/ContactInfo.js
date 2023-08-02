@@ -63,7 +63,7 @@ function ContactInfo() {
   return (
     <form
       onClick={handleSubmit}
-      className="px-4 py-8 md:px-10 lg:px-[75px] md:py-4"
+      className="px-4 py-8 md:px-10 lg:px-[120px] md:py-4"
     >
       <div className="flex flex-col gap-3 mb-6 lg:gap-4 lg:mb-5">
         <label className="text-sm font-medium" htmlFor="shippingAddress">
@@ -75,7 +75,7 @@ function ContactInfo() {
           id="shippingAddress"
           value={values.shippingAddress}
           onChange={handleChange("shippingAddress")}
-          className="w-full rounded bg-pagination p-3 outline-0 font-light text-sm resize-none"
+          className="w-full rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-lg resize-none"
         ></textarea>
       </div>
 
@@ -89,7 +89,7 @@ function ContactInfo() {
             id="state"
             value={values.state}
             onChange={handleChange("state")}
-            className="w-full h-11 lg:h-14 lg:w-64 rounded bg-pagination p-3 outline-0 font-light text-sm"
+            className="w-full h-11 lg:h-14 lg:w-64 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-lg"
           >
             <option value="">None</option>
             {states.length > 0 &&
@@ -113,7 +113,7 @@ function ContactInfo() {
             id="city"
             value={values.city}
             onChange={handleChange("city")}
-            className="w-full h-11 lg:h-14 lg:w-64 rounded bg-pagination p-3 outline-0 font-light text-sm"
+            className="w-full h-11 lg:h-14 lg:w-64 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-lg"
           >
             <option value="">None</option>
             {cities.length > 0 &&
@@ -138,14 +138,14 @@ function ContactInfo() {
           id="phoneNumber"
           value={values.phoneNumber}
           onChange={handleChange("phoneNumber")}
-          className="w-full h-11 lg:h-14 lg:w-64 rounded bg-pagination p-3 outline-0 font-light text-sm"
+          className="w-full h-11 lg:h-14 lg:w-64 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-lg"
         />
       </div>
 
       <div className="text-center my-8">
         <button
           type="button"
-          className="bg-transparent outline-0 font-semibold text-green tracking-tight"
+          className="bg-transparent outline-0 font-semibold text-green tracking-tight underline lg:text-lg"
         >
           {" "}
           Save changes

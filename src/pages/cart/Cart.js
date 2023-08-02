@@ -43,7 +43,7 @@ function Cart() {
 
   return (
     <div className="border border-solid border-green rounded w-full lg:ml-24">
-      <div className="border-b border-b-solid border-b-gray-400 p-4 md:p-8 text-center text-lg font-semibold capitalize md:text-xl lg:text-2xl">
+      <div className="border-b border-b-solid border-b-gray-400 p-4 md:p-8 text-center text-lg font-semibold capitalize md:text-xl lg:text-[27px]">
         shopping Cart
       </div>
 

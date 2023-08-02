@@ -91,7 +91,7 @@ function Blog() {
               <div className="w-full h-2/5 md:h-full md:w-[90%] lg:w-[80%] p-3 md:p-10 lg:p-14 flex flex-col justify-between gap-3">
                 <div className="space-y-2 md:space-y-3 lg:space-y-2 overflow-y-hidden">
                   <div className="flex items-center gap-4 mb-2 lg:mb-3">
-                    <span className="bg-black text-white py-1 px-2 text-sm text-sm rounded-sm">
+                    <span className="bg-black text-white py-1 px-2 text-sm rounded-sm">
                       category
                     </span>
                     <span className="font-light text-xs lg:text-sm">

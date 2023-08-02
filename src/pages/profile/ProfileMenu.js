@@ -39,7 +39,7 @@ function ProfileMenu() {
   return (
     <div className="h-screen lg:h-auto">
       <div className="h-[560px] pt-4 pb-16 bg-filter-green md:w-[25vw] lg:w-72 lg:rounded flex flex-col gap-4 justify-between">
-        <div className="p-4 space-y-4 lg:space-y-2 lg:py-6">
+        <div className="p-4 space-y-4 lg:space-y-3 lg:py-6">
           {links.map((link, index) => {
             return (
               <NavLink
@@ -48,7 +48,7 @@ function ProfileMenu() {
                 className="inline-block w-full transition-{margin-left} duration-1000 hover:text-green hover:font-semibold hover:ml-10 active:text-green active:font-semibold active:ml-10"
                 style={activeStyles}
               >
-                <div className="p-4 rounded-md bg-white font-medium flex items-center gap-4 capitalize ">
+                <div className="p-4 rounded-md bg-white md:text-sm lg:text-base whitespace-nowrap font-medium flex items-center gap-4 capitalize ">
                   <i className={link.icon}></i>
 
                   {link.name}
