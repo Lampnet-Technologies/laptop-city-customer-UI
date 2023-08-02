@@ -14,14 +14,13 @@ function TrackOrder() {
   };
 
   return (
-    <div className="my-20 p-6 md:w-3/4 lg:w-2/3 md:mx-auto">
+    <div className="my-10 md:my-20 p-6 md:w-3/4 lg:w-2/3 md:mx-auto">
       <div
         className="w-full px-3 py-6 rounded-3xl md:p-8 lg:p-10"
         style={{ boxShadow: "0px 3px 6px 0px rgba(18, 29, 60, 0.15)" }}
       >
-        <div className="flex justify-between items-center gap-4 border-b border-b-solid border-b-pagination pt-4 pb-6">
+        {/* <div className="flex justify-between items-center gap-4 border-b border-b-solid border-b-pagination pt-4 pb-6">
           <div className="space-y-2 lg:space-y-4">
-            {/* Breadcrumb */}{" "}
             <p className="text-[10px] text-gray-400 font-normal flex items-center gap-2 lg:text-xs">
               Orders <i className="bx bx-chevron-right"></i> ID: 453655643222
             </p>
@@ -48,8 +47,12 @@ function TrackOrder() {
               </div>
             </div>
           </div>
+        </div> */}
 
-          {/* <LaptopCityButton>track order</LaptopCityButton> */}
+        <div className="h-[300px] max-w-[80%] mx-auto flex justify-center items-center">
+          <h1 className="uppercase leading-[100px] text-6xl md:text-7xl md:leading-[130px] lg:text-[90px] font-semibold text-center">
+            coming <span className="text-green">soon</span>
+          </h1>
         </div>
       </div>
     </div>
