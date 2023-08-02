@@ -38,8 +38,8 @@ const activeStyles = ({ isActive }) => {
 function ProfileMenu() {
   return (
     <div className="h-screen lg:h-auto">
-      <div className="h-96 bg-filter-green lg:h-[560px] md:w-[25vw] lg:w-72 lg:rounded">
-        <div className="p-4 space-y-2">
+      <div className="h-[560px] pt-4 pb-16 bg-filter-green md:w-[25vw] lg:w-72 lg:rounded flex flex-col gap-4 justify-between">
+        <div className="p-4 space-y-4 lg:space-y-2 lg:py-6">
           {links.map((link, index) => {
             return (
               <NavLink
@@ -58,13 +58,15 @@ function ProfileMenu() {
           })}
         </div>
 
-        <button
-          type="button"
-          className="my-6 mx-auto bg-transparent text-green border-2 border-solid border-green rounded p-2 outline-0 flex justify-center items-center gap-2 font-semibold"
-        >
-          <i className="bx bx-power-off bx-sm"></i>
-          Log out
-        </button>
+        <div className="bg-white py-5 text-center rounded-[10px] flex justify-center items-center">
+          <button
+            type="button"
+            className="text-secondary-button border-2 border-solid border-secondary-button rounded outline-0 flex justify-center items-center gap-2 font-semibold py-4 px-[20px]"
+          >
+            <i className="bx bx-power-off bx-sm"></i>
+            Log out
+          </button>
+        </div>
       </div>
     </div>
   );

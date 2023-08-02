@@ -26,12 +26,12 @@ function NavDropdown({ submenus, dropdown, closeDropdown, closeNav }) {
     <ul
       className={`${
         dropdown ? "block" : "hidden"
-      } transition-all ease-in duration-500 z-20 absolute top-14 left-0 lg:left-[-20%] bg-white border-[0.5px] border-green rounded-md py-2 md:py-4 md:space-y-2`}
+      } navDropdown transition-all ease-in duration-500 z-20 absolute top-14 left-0 md:left-[-20%] lg:left-[-15%] bg-white border-[0.5px] border-green rounded-md py-2 md:py-4 md:space-y-2`}
     >
       {submenus.map((submenu, index) => (
         <li
           key={index}
-          className="menu-items text-center transition-all ease-in duration-200 hover:bg-[#63BB82] hover:text-white text-sm p-2 md:px-6 capitalize"
+          className="whitespace-nowrap text-center transition-all ease-in duration-200 hover:bg-[#63BB82] hover:text-white focus:bg-[#63BB82] focus:text-white text-sm p-2 px-4 md:px-6 capitalize"
           onClick={() => {
             closeDropdown();
             closeNav();
@@ -123,12 +123,12 @@ function Nav() {
     setClicked(false);
   };
 
-  // useEffect(() => {
-  //   if (clicked) {
-  //     let body = document.getElementsByClassName("overlay");
-  //     body[0].addEventListener("click", handleCloseNav);
-  //   }
-  // }, [clicked]);
+  useEffect(() => {
+    if (clicked) {
+      let body = document.getElementsByClassName("overlay");
+      body[0].addEventListener("click", handleCloseNav);
+    }
+  }, [clicked]);
 
   return (
     <>
@@ -158,6 +158,7 @@ function Nav() {
                 to="/profile"
                 className="hover:text-green active:text-green focus:text-green"
                 style={activeStyles}
+                onClick={handleCloseNav}
               >
                 <i className="bx bxs-user-circle bx-md"></i>
               </NavLink>
@@ -253,7 +254,7 @@ function Nav() {
         </div>
       </nav>
 
-      {/* {clicked ? <div className="overlay" /> : null} */}
+      {clicked ? <div className="overlay" /> : null}
 
       {loggedIn ? (
         <nav className="hidden z-50 sticky top-0 bg-[#fbfbfb] md:block text-sm lg:text-base py-4 px-12 lg:px-24">

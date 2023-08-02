@@ -6,7 +6,7 @@ function SearchBox({ show }) {
   return (
     <div className="h-20 md:h-auto max-w-3xl bg-filter-green p-5 flex justify-center items-center gap-4 rounded-md md:py-8 md:px-14 lg:px-20">
       <button className="outline-0 p-0 lg:hidden" onClick={show}>
-        <i className="bx bxs-grid bx-md"></i>
+        <i className="bx bxs-grid text-3xl"></i>
       </button>
 
       <div className="bg-white w-full h-full p-2 lg:py-4 lg:px-4 rounded flex justify-between items-center gap-2">

@@ -37,13 +37,13 @@ function SignUp() {
       <Banner />
 
       <div className="my-8 p-4 lg:my-20 md:w-4/5 lg:w-3/5 md:mx-auto">
-        <h1 className="text-3xl text-center font-bold mb-8 md:text-4xl lg:text-[45px] lg:mb-12">
+        <h1 className="text-3xl text-center font-bold mb-8 md:text-4xl lg:text-[45px] lg:mb-20">
           <span className="text-green">Sign</span> up
         </h1>
 
         <form
           onSubmit={handleSubmit}
-          className="border border-green border-solid rounded-md px-4 py-14 md:px-40 md:py-24 lg:pb-60"
+          className="border border-green border-solid rounded-md px-4 py-14 md:px-36 md:py-24 lg:pb-60"
         >
           <div className="flex flex-col gap-3 mb-4 md:gap-5 md:mb-8">
             <label
@@ -60,7 +60,7 @@ function SignUp() {
               id="firstName"
               value={values.firstName}
               onChange={handleChange("firstName")}
-              className="w-full h-11 md:h-14 md:rounded rounded-sm bg-pagination p-3 outline-0 font-light text-sm"
+              className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 outline-0 font-light text-sm"
             />
           </div>
 
@@ -78,7 +78,7 @@ function SignUp() {
               id="lastName"
               value={values.lastName}
               onChange={handleChange("lastName")}
-              className="w-full h-11 md:h-14 md:rounded rounded-sm bg-pagination p-3 outline-0 font-light text-sm"
+              className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 outline-0 font-light text-sm"
             />
           </div>
 
@@ -93,7 +93,7 @@ function SignUp() {
               id="email"
               value={values.email}
               onChange={handleChange("email")}
-              className="w-full h-11 md:h-14 md:rounded rounded-sm bg-pagination p-3 outline-0 font-light text-sm"
+              className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 outline-0 font-light text-sm"
             />
           </div>
 
@@ -112,17 +112,17 @@ function SignUp() {
                 type={showPassword ? "text" : "password"}
                 value={values.password}
                 onChange={handleChange("password")}
-                className="w-full h-11 md:h-14 md:rounded rounded-sm bg-pagination p-3 pr-12 outline-0 font-light text-sm"
+                className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 pr-12 outline-0 font-light text-sm"
               />
               <button
                 type="button"
                 onClick={handleShowPassword}
-                className="outline-0 text-green absolute top-1/4 right-2 cursor-pointer"
+                className="outline-0 text-green absolute top-1/4 right-[3%] cursor-pointer"
               >
                 {showPassword ? (
-                  <i className="bx bx-hide bx-sm"></i>
+                  <i className="bx bx-hide bx-sm text-[#6D7D8B]"></i>
                 ) : (
-                  <i className="bx bx-show bx-sm"></i>
+                  <i className="bx bx-show bx-sm text-[#6D7D8B]"></i>
                 )}
               </button>
             </div>
@@ -143,24 +143,29 @@ function SignUp() {
                 type={showPassword ? "text" : "password"}
                 value={values.confirmPassword}
                 onChange={handleChange("confirmPassword")}
-                className="w-full h-11 md:h-14 md:rounded rounded-sm bg-pagination p-3 pr-12 outline-0 font-light text-sm"
+                className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 pr-12 outline-0 font-light text-sm"
               />
               <button
                 type="button"
                 onClick={handleShowPassword}
-                className="outline-0 text-green absolute top-1/4 right-2 cursor-pointer"
+                className="outline-0 text-green absolute top-1/4 right-[3%] cursor-pointer"
               >
                 {showPassword ? (
-                  <i className="bx bx-hide bx-sm"></i>
+                  <i className="bx bx-hide bx-sm text-[#6D7D8B]"></i>
                 ) : (
-                  <i className="bx bx-show bx-sm"></i>
+                  <i className="bx bx-show bx-sm text-[#6D7D8B]"></i>
                 )}
               </button>
             </div>
           </div>
 
           <div className="mt-14 flex flex-col items-center gap-10 text-sm font-normal md:text-base md:gap-12 lg:gap-16">
-            <LaptopCityButton onClick={handleSubmit}>Sign up</LaptopCityButton>
+            <button
+              className="capitalize font-medium text-white text-sm lg:text-base md:font-semibold md:px-6 lg:py-4 lg:px-[86px] rounded bg-green py-[11px] px-3 hover:bg-dark-green"
+              onClick={handleSubmit}
+            >
+              Sign up
+            </button>
 
             <p className="font-light">
               Already have an account?{" "}
@@ -169,15 +174,21 @@ function SignUp() {
               </Link>{" "}
             </p>
 
-            <p className="self-start font-light">
+            <p className="self-start font-normal lg:leading-10">
               By clicking <span className="md:font-medium">“Sign up”</span>{" "}
               above, you acknowledge that you have read and understood, and
               agree to Laptop city’s{" "}
-              <Link to="/terms-&-conditions" className="text-green font-medium">
+              <Link
+                to="/terms-&-conditions"
+                className="text-green underline font-medium"
+              >
                 Terms & Conditions
               </Link>{" "}
               and{" "}
-              <Link to="/privacy-policy" className="text-green font-medium">
+              <Link
+                to="/privacy-policy"
+                className="text-green underline font-medium"
+              >
                 Privacy Policy
               </Link>
               .

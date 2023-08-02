@@ -51,28 +51,28 @@ function Blog() {
           </p>
         </div>
 
-        <div className="p-1 rounded-md border border-solid border-green flex justify-between items-center gap-0.5 flex-wrap md:justify-center md:gap-2 md:w-fit md:mx-auto">
+        <div className="p-1 rounded-md border border-solid border-green flex justify-between items-center gap-0.5 flex-wrap md:justify-center md:gap-3 w-fit mx-auto">
           <button
             type="button"
-            className="p-2 text-sm lg:text-base font-normal bg-transparent outline-0 rounded transition-colors duration-300 hover:bg-blue-300 hover:text-white hover:font-semibold active:bg-dark-blue active:text-white active:font-semibold focus:bg-dark-blue focus:text-white focus:font-semibold"
+            className="p-2 text-xs md:text-sm lg:text-base font-normal bg-transparent outline-0 rounded transition-colors duration-300 hover:bg-blue-300 hover:text-white hover:font-semibold active:bg-dark-blue active:text-white active:font-semibold focus:bg-dark-blue focus:text-white focus:font-semibold"
           >
             View all
           </button>
           <button
             type="button"
-            className="p-2 text-sm lg:text-base font-normal bg-transparent outline-0 rounded transition-colors duration-300 hover:bg-blue-300 hover:text-white hover:font-semibold active:bg-dark-blue active:text-white active:font-semibold focus:bg-dark-blue focus:text-white focus:font-semibold"
+            className="p-2 text-xs md:text-sm lg:text-base font-normal bg-transparent outline-0 rounded transition-colors duration-300 hover:bg-blue-300 hover:text-white hover:font-semibold active:bg-dark-blue active:text-white active:font-semibold focus:bg-dark-blue focus:text-white focus:font-semibold"
           >
             Laptops
           </button>
           <button
             type="button"
-            className="p-2 text-sm lg:text-base font-normal bg-transparent outline-0 rounded transition-colors duration-300 hover:bg-blue-300 hover:text-white hover:font-semibold active:bg-dark-blue active:text-white active:font-semibold focus:bg-dark-blue focus:text-white focus:font-semibold"
+            className="p-2 text-xs md:text-sm lg:text-base font-normal bg-transparent outline-0 rounded transition-colors duration-300 hover:bg-blue-300 hover:text-white hover:font-semibold active:bg-dark-blue active:text-white active:font-semibold focus:bg-dark-blue focus:text-white focus:font-semibold"
           >
             Desktops
           </button>
           <button
             type="button"
-            className="p-2 text-sm lg:text-base font-normal bg-transparent outline-0 rounded transition-colors duration-300 hover:bg-blue-300 hover:text-white hover:font-semibold active:bg-dark-blue active:text-white active:font-semibold focus:bg-dark-blue focus:text-white focus:font-semibold"
+            className="p-2 text-xs md:text-sm lg:text-base font-normal bg-transparent outline-0 rounded transition-colors duration-300 hover:bg-blue-300 hover:text-white hover:font-semibold active:bg-dark-blue active:text-white active:font-semibold focus:bg-dark-blue focus:text-white focus:font-semibold"
           >
             Accessories
           </button>
@@ -88,10 +88,10 @@ function Blog() {
                   className="max-w-full h-full w-full object-cover rounded-l-md"
                 />
               </div>
-              <div className="w-full h-2/5 md:h-full md:w-[90%] lg:w-[80%] p-4 md:p-10 lg:p-14 flex flex-col justify-between gap-2">
+              <div className="w-full h-2/5 md:h-full md:w-[90%] lg:w-[80%] p-3 md:p-10 lg:p-14 flex flex-col justify-between gap-3">
                 <div className="space-y-2 md:space-y-3 lg:space-y-2 overflow-y-hidden">
                   <div className="flex items-center gap-4 mb-2 lg:mb-3">
-                    <span className="bg-black text-white py-1 px-2 text-xs lg:text-sm rounded-sm">
+                    <span className="bg-black text-white py-1 px-2 text-sm text-sm rounded-sm">
                       category
                     </span>
                     <span className="font-light text-xs lg:text-sm">
@@ -112,7 +112,7 @@ function Blog() {
                   <button className="outline-0">
                     <Link
                       to={`/blog/${posts[0].slug.current}`}
-                      className="p-2 font-normal bg-transparent rounded border border-solid border-green transition-all duration-300 flex justify-center items-center hover:bg-green hover:text-white hover:font-semibold active:bg-green active:text-white active:font-semibold"
+                      className="py-2 px-4 font-normal bg-transparent rounded border border-solid border-green transition-all duration-300 flex justify-center items-center hover:bg-green hover:text-white hover:font-semibold active:bg-green active:text-white active:font-semibold"
                     >
                       Read more <i className="bx bx-chevron-right md:bx-md"></i>
                     </Link>
@@ -129,34 +129,40 @@ function Blog() {
         {isLoading ? (
           <Loading />
         ) : (
-          <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
+          <div className="overflow-x-auto pb-4 flex flex-nowrap gap-3 md:py-0 md:gap-10 md:grid md:grid-cols-2 lg:grid-cols-3">
             {posts.map((post) => (
               <article
                 key={post.slug.current}
-                className="border border-solid border-green rounded-md flex flex-col w-[90%] h-[600px] mx-auto md:w-full md:mx-0"
+                className="min-w-[168px] border border-solid border-green rounded-md flex flex-col h-[600px] mx-auto md:w-full md:mx-0"
               >
-                <div className="h-52 md:h-60">
-                  <img
+                <div
+                  className="h-64 md:h-60 bg-cover bg-center"
+                  style={{
+                    backgroundImage: `url(${post.mainImage.asset.url})`,
+                  }}
+                >
+                  {/* <img
                     src={post.mainImage.asset.url}
                     alt={post.title}
-                    className="max-w-full max-h-full w-full rounded-t-md"
+                    className="max-w-full max-h-full h-full w-full rounded-t-md"
                     loading="lazy"
-                  />
+                  /> */}
                 </div>
-                <figcaption className="my-2 mx-4 font-normal text-[10px] lg:text-xs">
+                {/* <figcaption className="my-2 mx-4 font-normal text-[10px] lg:text-xs">
                   {post.name ? `(${post.name})` : ""}
-                </figcaption>
-                <div className="p-4 flex flex-col justify-between items-start flex-1">
+                </figcaption> */}
+
+                <div className="px-[8px] py-[12px] md:p-4 flex flex-col justify-between items-start flex-1">
                   <div className="space-y-2 md:space-y-3 lg:space-y-2 overflow-y-hidden">
-                    <div className="flex items-center gap-4 mb-2 lg:mb-3">
-                      <span className="bg-black text-white py-1 px-2 text-xs lg:text-sm rounded-sm">
+                    <div className="flex items-center justify-between gap-[2px] md:justify-start md:gap-4 mb-2 text-xs lg:text-sm lg:mb-3">
+                      <span className="bg-black text-white p-1 md:py-1 md:px-2 rounded-sm">
                         category
                       </span>
-                      <span className="font-light text-xs lg:text-sm">
+                      <span className="font-normal">
                         {format(new Date(post.publishedAt), "dd MMMM yyyy")}
                       </span>
                     </div>
-                    <h3 className="text-xl md:text-2xl text-blog-title font-semibold mb-4">
+                    <h3 className="text-lg md:text-2xl text-blog-title font-semibold mb-4">
                       {post.title}
                     </h3>
                     <p className="font-normal text-sm md:text-base">
@@ -166,9 +172,9 @@ function Blog() {
                   <button className="outline-0">
                     <Link
                       to={`/blog/${post.slug.current}`}
-                      className="p-2 font-normal bg-transparent rounded border border-solid border-green transition-all duration-300 flex justify-center items-center hover:bg-green hover:text-white hover:font-semibold active:bg-green active:text-white active:font-semibold"
+                      className="p-2 font-normal text-xs md:text-sm lg:text-base bg-transparent rounded border-2 border-solid border-green transition-all duration-300 flex justify-center items-center hover:bg-green hover:text-white hover:font-semibold active:bg-green active:text-white active:font-semibold"
                     >
-                      Read more <i className="bx bx-chevron-right md:bx-md"></i>
+                      Read more <i className="bx bx-chevron-right "></i>
                     </Link>
                   </button>
                 </div>

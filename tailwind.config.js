@@ -22,7 +22,7 @@ module.exports = {
       colors: {
         "light-green": "#14c7a3",
         green: "#009F7F",
-        "filter-green": "#63BB8280",
+        "filter-green": "#AEDABE",
         footer: {
           bg: "#009F7F66",
           Text: "#00000059",

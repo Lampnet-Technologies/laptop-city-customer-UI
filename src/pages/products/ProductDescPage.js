@@ -141,7 +141,7 @@ function ImagesPreviews({ files }) {
 
   return (
     <div>
-      <div className="p-4 flex flex-col gap-6 relative lg:flex-row-reverse lg:justify-around lg:items-center">
+      <div className="p-4 flex flex-col gap-6 relative lg:gap-3 lg:flex-row-reverse lg:justify-around lg:items-center">
         <div className="lg:hidden">
           <i
             onClick={() => arrowPrev(images)}
@@ -159,13 +159,14 @@ function ImagesPreviews({ files }) {
             }}
           ></i>
         </div>
+
         <div className="flex justify-center items-center">
-          <div className="h-60 w-full object-contain flex justify-center items-center md:w-80 lg:h-80 lg:w-[400px]">
+          <div className="h-60 w-full object-contain flex justify-center items-center md:w-80 lg:h-[360px] lg:w-[480px]">
             {pictures && (
               <img
                 src={pictures[currentIndex].image}
                 alt="image-1"
-                className="max-w-full max-h-full"
+                className="max-w-full max-h-full object-fill"
               />
             )}
             {/* <img
@@ -176,13 +177,13 @@ function ImagesPreviews({ files }) {
           </div>
         </div>
 
-        <div className="bg-pagination rounded p-2 flex justify-between items-center gap-4 md:justify-around lg:flex-col lg:w-40 lg:h-[400px]">
+        <div className="bg-[#ECF3F9] rounded p-2 flex justify-between items-center gap-4 md:rounded-lg md:justify-around md:py-6 lg:py-11 lg:flex-col lg:w-48 lg:h-[500px]">
           {pictures &&
             pictures.map((image, index) => {
               return (
                 <div
                   key={index}
-                  className="h-24 w-28 rounded py-4 flex justify-center items-center lg:w-32 lg:h-28"
+                  className="h-24 w-28 rounded py-4 flex justify-center items-center lg:rounded-md lg:w-32 lg:h-28"
                   style={{
                     border: `${
                       currentIndex === index ? "1px solid #009F7F" : "none"
@@ -224,7 +225,7 @@ function ImagesPreviews({ files }) {
         </div>
       </div>
 
-      <div className="hidden lg:flex justify-center items-center gap-6 mt-10">
+      <div className="hidden lg:flex justify-center items-center gap-6 mt-10 lg:mt-20">
         <i
           onClick={() => arrowPrev(images)}
           className="bx bx-chevron-left bx-lg text-gray-400 font-normal cursor-pointer"
@@ -266,30 +267,32 @@ function AboutProduct() {
         <h2 className="text-2xl font-semibold lg:text-3xl">
           HP Pavilion Laptop 14-dv0189nia (2X4V1EA)
         </h2>
-        <div className="text-sm flex flex-col gap-4 font-light">
-          <p>Product id : #56789</p>
-          <p>Brand : HP</p>
-          <div className="flex justify-between items-center gap-4 md:justify-start md:gap-10">
-            <p>Quantity</p>
-            <div className="text-base flex items-center divide-x-2 w-20 border border-solid border-gray-700 rounded">
-              <button className="w-full " onClick={decreaseQuantity}>
-                -
-              </button>
-              <p className="w-full text-center text-green">{quantity}</p>
-              <button className="w-full " onClick={increaseQuantity}>
-                +
-              </button>
+        <div className="my-5 flex justify-start items-start gap-10 md:gap-20">
+          <div className="text-sm flex flex-col gap-4 lg:gap-8 font-normal lg:text-base">
+            <p>Product id : #56789</p>
+            <p>Brand : HP</p>
+            <div className="flex justify-between items-center gap-4 md:gap-10">
+              <p>Quantity</p>
+              <div className="text-base flex items-center divide-x-2 w-20 border border-solid border-gray-700 rounded">
+                <button className="w-full " onClick={decreaseQuantity}>
+                  -
+                </button>
+                <p className="w-full text-center text-green">{quantity}</p>
+                <button className="w-full " onClick={increaseQuantity}>
+                  +
+                </button>
+              </div>
             </div>
-            <div className="py-1 px-4 rounded border-2 border-solid border-secondary-button text-secondary-button font-semibold">
-              in stock
-            </div>
+          </div>
+          <div className="self-end lg:self-start py-1 px-4 rounded border-2 border-solid border-secondary-button text-secondary-button font-semibold">
+            in stock
           </div>
         </div>
         <h2 className="text-2xl font-semibold lg:text-3xl">
           <NairaSymbol />
           350,000
         </h2>
-        <div className="flex items-center justify-between gap-8 md:justify-start">
+        <div className="my-5 flex items-center justify-between gap-8 md:justify-start">
           <button className="w-full border-2 border-solid border-secondary-button text-secondary-button font-medium text-sm rounded flex justify-center items-center gap-3 py-2 px-4 md:w-fit">
             <img src={IMAGES.icons.cartGreen} alt="cart" className="w-3" />
             add to cart
@@ -335,25 +338,21 @@ function Description() {
   const [showMore, setShowMore] = useState(false);
 
   return (
-    <div className="flex flex-col gap-6 my-4 text-sm font-light px-4 md:px-0">
-      <div className="w-2/4 h-14 bg-filter-green font-medium rounded flex justify-center items-center">
+    <div className="flex flex-col gap-6 my-4 text-sm font-light px-4 md:px-0 text-[#111]">
+      <div className="w-2/4 h-14 bg-filter-green text-lg font-medium rounded-md flex justify-center items-center tracking-tight lg:text-[22px] lg:w-full">
         Description
       </div>
-      <div className="whitespace-break-spaces">
+      <div className="whitespace-break-spaces lg:text-base">
         {showMore ? example : `${example.substring(0, 800)}`}
 
         {example.length >= 800 && (
           <div>
             <button
-              className="capitalize text-secondary-button font-semibold text-base flex justify-center items-center gap-2 py-2 px-0"
+              className="capitalize text-green font-semibold text-base flex justify-center items-center gap-1 py-2 px-0"
               onClick={() => setShowMore(!showMore)}
             >
               {showMore ? "Show less" : "Show more"}
-              <img
-                src={IMAGES.icons.showMore}
-                alt="arrow-down"
-                className="w-3"
-              />
+              <i className="bx bx-chevron-down bx-sm"></i>
             </button>
           </div>
         )}
@@ -376,7 +375,7 @@ function ProductDetails() {
       </div>
 
       <div className="hidden lg:flex justify-between items-start gap-4 px-20 mb-8">
-        <div className="flex flex-col gap-4 w-full">
+        <div className="flex flex-col gap-4 w-[110%]">
           <ImagesPreviews files={images} />
 
           <div className="w-4/5 border border-pagination rounded self-center my-3" />
@@ -384,7 +383,7 @@ function ProductDetails() {
           <AboutProduct />
         </div>
 
-        <div className="w-full">
+        <div className="w-[90%]">
           <Description />
         </div>
       </div>
@@ -417,7 +416,7 @@ function ProductDesc() {
       >
         <div className="h-full flex items-center gap-5 px-4 relative md:px-12 lg:px-24">
           <button
-            className="rounded-full outline-none bg-transparent flex items-center text-lg font-medium"
+            className="rounded-full outline-none bg-transparent flex items-center text-lg lg:text-[22px] font-medium"
             onClick={() => navigate(-1)}
           >
             {/* <img src={IMAGES.icons.arrowBackward} alt="back" /> */}
@@ -425,7 +424,7 @@ function ProductDesc() {
             Back
           </button>
 
-          <h2 className="capitalize text-3xl font-bold absolute top-1/3 left-1/3 md:left-[45%]">
+          <h2 className="capitalize text-3xl lg:text-[45px] font-bold absolute top-1/3 left-1/3 md:left-[45%]">
             phones
           </h2>
         </div>

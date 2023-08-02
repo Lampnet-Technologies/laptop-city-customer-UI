@@ -136,7 +136,7 @@ function ProductContainer({ product }) {
 
   return (
     <div
-      className="w-44 h-56 rounded flex flex-col justify-between cursor-pointer border-[#DADADA] border-tiny border-solid lg:w-60 lg:h-[300px] lg:inline-block lg:space-y-3"
+      className="w-[170px] h-56 rounded flex flex-col justify-between cursor-pointer border-[#DADADA] border-tiny border-solid md:w-52 lg:w-60 lg:h-[300px] lg:inline-block lg:space-y-3"
       onClick={() => navigate("/product-desc")}
     >
       <div className="h-32 rounded bg-[#D9D9D9] flex justify-center items-center relative lg:h-44">
@@ -238,16 +238,16 @@ function FilterGroup({ item }) {
   };
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-6">
       <h4 className="text-lg font-bold capitalize text-center">{item.title}</h4>
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         {item.filter &&
           item.filter.map((name, index) => {
             return (
               <div
                 key={index}
-                className="bg-white p-3 flex items-center gap-5 rounded-md"
+                className="bg-white py-5 px-4 flex items-center gap-5 rounded-md"
               >
                 <input
                   type="checkbox"
@@ -256,7 +256,7 @@ function FilterGroup({ item }) {
                   value={name}
                   checked={checkedState[index]}
                   onChange={() => handleChange(index, name)}
-                  className="accent-green cursor-pointer caret-green lg:w-5 lg:h-5"
+                  className="accent-green cursor-pointer caret-green w-[18px] h-[18px] lg:w-5 lg:h-5"
                 />
                 <label
                   htmlFor={`${name}-filter`}
@@ -343,7 +343,7 @@ function ProductsListing() {
 
       <div className="flex items-start justify-between lg:px-8 lg:mt-6 mb-8">
         <div className="hidden lg:block w-80 mr-20 bg-filter-green rounded">
-          <div className="pt-4 pb-8 px-2 flex flex-col gap-10">
+          <div className="pt-4 pb-8 px-3 flex flex-col gap-10">
             {filters.map((item, index) => {
               return <FilterGroup item={item} key={index} />;
             })}
@@ -361,17 +361,18 @@ function ProductsListing() {
         </div>
 
         <div className="w-full md:pl-4 lg:pl-0">
-          <div className="sticky top-[10%] z-20 bg-filter-green md:relative md:bg-transparent">
+          <div className="sticky top-[12%] z-20 bg-filter-green md:relative md:bg-transparent">
             <SearchBox show={handleOpen} />
 
-            {showFilters && (
-              <div
-                id="mobileFilter"
-                className={
-                  showFilters ? "#mobileFilter active" : "#mobileFilter"
-                }
-              >
-                <div className="pt-4 pb-8 px-2 flex flex-col gap-5">
+            {showFilters ? (
+              <div>
+                <div
+                  id="mobileFilter"
+                  className={
+                    showFilters ? "#mobileFilter active" : "#mobileFilter"
+                  }
+                >
+                  {/* <div className="h-full flex flex-col gap-6"> */}
                   {filters.map((item, index) => {
                     return <FilterGroup item={item} key={index} />;
                   })}
@@ -381,9 +382,14 @@ function ProductsListing() {
                       View all <i className="bx bx-chevron-right bx-sm"></i>
                     </button>
                   </div>
+                  {/* </div> */}
+
+                  <div className="text-center mt-3 mb-5">
+                    <LaptopCityButton>search</LaptopCityButton>
+                  </div>
                 </div>
               </div>
-            )}
+            ) : null}
           </div>
 
           {isLoading && <Loading />}

@@ -7,7 +7,7 @@ function Pagination() {
         <ul className="flex justify-center items-center gap-3">
           <li className="inline-block">
             <button
-              className="py-1 px-3 lg:py-2 lg:px-4 rounded flex justify-center items-center outline-none bg-pagination hover:bg-green hover:text-white hover:font-semibold focus:text-white focus:bg-green focus:font-semibold"
+              className="py-2 px-4 rounded flex justify-center items-center outline-none bg-pagination hover:bg-green hover:text-white hover:font-semibold focus:text-white focus:bg-green focus:font-semibold"
               tabIndex="0"
               type="button"
               aria-label="Go to previous page"
@@ -17,7 +17,7 @@ function Pagination() {
           </li>
           <li className="inline-block">
             <button
-              className="py-1 px-3 lg:py-2 lg:px-4 rounded flex justify-center items-center outline-none bg-pagination hover:bg-green hover:text-white hover:font-semibold focus:text-white focus:bg-green focus:font-semibold"
+              className="py-2 px-4 rounded flex justify-center items-center outline-none bg-pagination hover:bg-green hover:text-white hover:font-semibold focus:text-white focus:bg-green focus:font-semibold"
               tabIndex="0"
               type="button"
               aria-label="Go to page 1"
@@ -27,7 +27,7 @@ function Pagination() {
           </li>
           <li className="inline-block">
             <button
-              className="py-1 px-3 lg:py-2 lg:px-4 rounded flex justify-center items-center outline-none bg-pagination hover:bg-green hover:text-white hover:font-semibold focus:text-white focus:bg-green focus:font-semibold"
+              className="py-2 px-4 rounded flex justify-center items-center outline-none bg-pagination hover:bg-green hover:text-white hover:font-semibold focus:text-white focus:bg-green focus:font-semibold"
               tabIndex="0"
               type="button"
               aria-label="Go to page 2"
@@ -37,7 +37,7 @@ function Pagination() {
           </li>
           <li className="inline-block">
             <button
-              className="py-1 px-3 lg:py-2 lg:px-4 rounded flex justify-center items-center outline-none bg-pagination hover:bg-green hover:text-white hover:font-semibold focus:text-white focus:bg-green focus:font-semibold"
+              className="py-2 px-4 rounded flex justify-center items-center outline-none bg-pagination hover:bg-green hover:text-white hover:font-semibold focus:text-white focus:bg-green focus:font-semibold"
               tabIndex="0"
               type="button"
               aria-label="page 3"
@@ -48,7 +48,7 @@ function Pagination() {
           </li>
           <li className="inline-block">
             <button
-              className="py-1 px-3 lg:py-2 lg:px-4 rounded flex justify-center items-center outline-none bg-pagination hover:bg-green hover:text-white hover:font-semibold focus:text-white focus:bg-green focus:font-semibold"
+              className="py-2 px-4 rounded flex justify-center items-center outline-none bg-pagination hover:bg-green hover:text-white hover:font-semibold focus:text-white focus:bg-green focus:font-semibold"
               tabIndex="-1"
               type="button"
               aria-label="Go to next page"
