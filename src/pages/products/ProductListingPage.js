@@ -361,7 +361,7 @@ function ProductsListing() {
         </div>
 
         <div className="w-full md:pl-4 lg:pl-0">
-          <div className="sticky top-[12%] z-20 bg-filter-green md:relative md:bg-transparent">
+          <div className="sticky top-[10%] z-20 bg-filter-green md:relative md:bg-transparent">
             <SearchBox show={handleOpen} />
 
             {showFilters ? (
