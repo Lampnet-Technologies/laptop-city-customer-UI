@@ -1,11 +1,12 @@
-import React, { useMemo, useState } from "react";
-import { Outlet } from "react-router-dom";
+import React, { useMemo, useState, useEffect, useContext } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   ShippingAddress,
   ShippingMethod,
   PaymentMethod,
   OrderReview,
 } from "../../views/payment";
+import { LoginContext } from "../../App";
 
 import PropTypes from "prop-types";
 import { styled } from "@mui/material/styles";
@@ -17,7 +18,6 @@ import Check from "@mui/icons-material/Check";
 import StepConnector, {
   stepConnectorClasses,
 } from "@mui/material/StepConnector";
-import { useEffect } from "react";
 
 const QontoConnector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -127,9 +127,18 @@ function CustomizedSteppers({ active }) {
 }
 
 function Payment() {
+  const [loggedIn, setLoggedIn] = useContext(LoginContext);
   const [componentToRender, setComponentToRender] =
     useState("shipping-address");
   const [activeStep, setActiveStep] = useState(0);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loggedIn) {
+      navigate("/login");
+    }
+  });
 
   const nextPage = (text) => {
     setComponentToRender(text);
@@ -185,19 +194,12 @@ function Payment() {
         {heading}
       </h3>
 
-      {/* <div className="flex gap-3 items-center w-4/5 mx-auto mb-5 lg:mb-10">
-        Progress
-        <div className="w-full h-4 bg-green rounded"></div>
-      </div> */}
-
       <CustomizedSteppers active={activeStep} />
 
       <div
         className="w-full px-4 py-6 rounded-3xl md:p-8 lg:p-10"
         style={{ boxShadow: "0px 3px 6px 0px rgba(18, 29, 60, 0.15)" }}
       >
-        {/* <Outlet /> */}
-
         {conditions}
       </div>
     </div>

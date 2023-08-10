@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState, useContext } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import IMAGES from "../../assets";
 import LaptopCityButton from "../../component/button";
 import { Banner } from "../../component/homepage";
 import { Groups } from "../../component/homepage/productGroups";
 import NairaSymbol from "../../component/nairaSymbol";
+import { LoginContext } from "../../App";
 
 const images = [
   {
@@ -249,9 +250,12 @@ function ImagesPreviews({ files }) {
 }
 
 function AboutProduct() {
+  const [loggedIn, setLoggedIn] = useContext(LoginContext);
   const [showMore, setShowMore] = useState(false);
   const [quantity, setQuantity] = useState(1);
+
   const navigate = useNavigate();
+  const location = useLocation();
 
   const increaseQuantity = () => {
     quantity < 10 && setQuantity((prev) => prev + 1);
@@ -299,7 +303,17 @@ function AboutProduct() {
           </button>
           <button
             className="w-full font-medium text-white text-sm rounded border-2 border-solid border-green bg-green py-2 px-4 hover:bg-dark-green md:w-fit"
-            onClick={() => navigate("/payment")}
+            onClick={() => {
+              if (loggedIn) {
+                navigate("/payment");
+              } else {
+                navigate("/login", {
+                  state: {
+                    previousUrl: location.pathname,
+                  },
+                });
+              }
+            }}
           >
             Buy now
           </button>

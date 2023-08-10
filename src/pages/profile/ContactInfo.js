@@ -1,9 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import React, { useEffect, useState, useContext } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { UserProfileContext } from "../../App";
+
+const getProfile =
+  "https://apps-1.lampnets.com/ecommb-staging/profiles/my-profile";
+const updateProfile =
+  "https://apps-1.lampnets.com/ecommb-staging/profiles/edit-profile";
+const accessToken = () => localStorage.getItem("token");
 
 function ContactInfo() {
+  const [profile, setProfile] = useContext(UserProfileContext);
   const [values, setValues] = useState({
-    shippingAddress: "",
+    address: "",
     city: "",
     state: "",
     phoneNumber: "",
@@ -13,6 +21,25 @@ function ContactInfo() {
   const [cities, setCities] = useState([]);
 
   const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setValues({
+      ...values,
+      address: profile.address,
+      city: profile.city,
+      state: profile.state,
+      phoneNumber: toNumber(profile.phoneNumber),
+    });
+  }, [profile]);
+
+  const toNumber = (str) => {
+    if (typeof str === "number") {
+      return str;
+    }
+
+    return parseInt(str);
+  };
 
   useEffect(() => {
     fetch("https://countriesnow.space/api/v0.1/countries/states", {
@@ -57,14 +84,25 @@ function ContactInfo() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // console.log(values);
+    fetch(updateProfile, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        Authorization: "Bearer " + accessToken(),
+      },
+      body: JSON.stringify(values),
+    })
+      .then((res) => {
+        alert("Profile Updated Successfully");
+        window.location.reload();
+      })
+      .catch((error) => {
+        alert("Failed to update profile", error.message);
+      });
   };
 
   return (
-    <form
-      onClick={handleSubmit}
-      className="px-4 py-8 md:px-10 lg:px-[120px] md:py-4"
-    >
+    <form className="px-4 py-8 md:px-10 lg:px-[120px] md:py-4">
       <div className="flex flex-col gap-3 mb-6 lg:gap-4 lg:mb-5">
         <label className="text-sm font-medium" htmlFor="shippingAddress">
           Shipping Address
@@ -72,9 +110,8 @@ function ContactInfo() {
         <textarea
           rows={3}
           name="shippingAddress"
-          id="shippingAddress"
-          value={values.shippingAddress}
-          onChange={handleChange("shippingAddress")}
+          value={values.address}
+          onChange={handleChange("address")}
           className="w-full rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-lg resize-none"
         ></textarea>
       </div>
@@ -86,7 +123,6 @@ function ContactInfo() {
           </label>
           <select
             name="state"
-            id="state"
             value={values.state}
             onChange={handleChange("state")}
             className="w-full h-11 lg:h-14 lg:w-64 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-lg"
@@ -110,7 +146,6 @@ function ContactInfo() {
 
           <select
             name="city"
-            id="city"
             value={values.city}
             onChange={handleChange("city")}
             className="w-full h-11 lg:h-14 lg:w-64 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-lg"
@@ -135,7 +170,6 @@ function ContactInfo() {
         <input
           name="phoneNumber"
           type="tel"
-          id="phoneNumber"
           value={values.phoneNumber}
           onChange={handleChange("phoneNumber")}
           className="w-full h-11 lg:h-14 lg:w-64 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-lg"
@@ -146,6 +180,7 @@ function ContactInfo() {
         <button
           type="button"
           className="bg-transparent outline-0 font-semibold text-green tracking-tight underline lg:text-lg"
+          onClick={handleSubmit}
         >
           {" "}
           Save changes

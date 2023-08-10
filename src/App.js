@@ -1,4 +1,4 @@
-import React from "react";
+import React, { createContext, useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -35,39 +35,79 @@ import PageNotFound from "./pages/404";
 import { Cart } from "./pages/cart";
 import { MyOrders } from "./pages/orders";
 
-function App() {
-  return (
-    <Router>
-      <div className="w-full">
-        <ScrollToTop />
-        <Nav />
+export const LoginContext = createContext();
+export const UserProfileContext = createContext();
 
-        <div className="pb-10">
-          <Routes>
-            <Route path="/" element={<Homepage />} />
-            <Route path="/products" element={<ProductsListing />} />
-            <Route path="/product-desc" element={<ProductDesc />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:slug" element={<SingleBlogPost />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route element={<Profile />}>
-              <Route path="/profile" element={<ProfileMenu />} />
-              <Route element={<ProfileInfo />}>
-                <Route path="/personal-info" element={<PersonalInfo />} />
-                <Route path="/contact-info" element={<ContactInfo />} />
-              </Route>
-              <Route path="/my-orders" element={<MyOrders />} />
-              <Route path="/shopping-cart/:id" element={<Cart />} />
-              <Route element={<Coupons />}>
-                {/* <Route element={<RenderedCoupons />} /> */}
-                <Route path="/coupons" element={<RenderedCoupons />} />
-              </Route>
-            </Route>
-            <Route path="/payment" element={<Payment />} />
-            <Route path="/payment/successful" element={<OrderSuccessful />} />
-            <Route path="/track-order/:id" element={<TrackOrder />} />
-            {/* <Route element={<Payment />}>
+function App() {
+  const [loggedIn, setLoggedIn] = useState(localStorage.token ? true : false);
+  const [profile, setProfile] = useState("");
+
+  // useEffect(() => {
+  //   if (localStorage.token) {
+  //     setLoggedIn(true);
+  //   } else {
+  //     setLoggedIn(false);
+  //   }
+  // }, []);
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem("token");
+
+    if (loggedIn) {
+      fetch("https://apps-1.lampnets.com/ecommb-staging/profiles/my-profile", {
+        headers: {
+          Authorization: "Bearer " + accessToken,
+        },
+      })
+        .then((res) => {
+          return res.json();
+        })
+        .then((result) => {
+          setProfile(result);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, [loggedIn]);
+
+  return (
+    <LoginContext.Provider value={[loggedIn, setLoggedIn]}>
+      <UserProfileContext.Provider value={[profile, setProfile]}>
+        <Router>
+          <div className="w-full">
+            <ScrollToTop />
+            <Nav />
+
+            <div className="pb-10">
+              <Routes>
+                <Route path="/" element={<Homepage />} />
+                <Route path="/products" element={<ProductsListing />} />
+                <Route path="/product-desc" element={<ProductDesc />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:slug" element={<SingleBlogPost />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<SignUp />} />
+                <Route element={<Profile />}>
+                  <Route path="/profile" element={<ProfileMenu />} />
+                  <Route element={<ProfileInfo />}>
+                    <Route path="/personal-info" element={<PersonalInfo />} />
+                    <Route path="/contact-info" element={<ContactInfo />} />
+                  </Route>
+                  <Route path="/my-orders" element={<MyOrders />} />
+                  <Route path="/shopping-cart/:id" element={<Cart />} />
+                  <Route element={<Coupons />}>
+                    {/* <Route element={<RenderedCoupons />} /> */}
+                    <Route path="/coupons" element={<RenderedCoupons />} />
+                  </Route>
+                </Route>
+                <Route path="/payment" element={<Payment />} />
+                <Route
+                  path="/payment/successful"
+                  element={<OrderSuccessful />}
+                />
+                <Route path="/track-order/:id" element={<TrackOrder />} />
+                {/* <Route element={<Payment />}>
               <Route
                 path="/payment/shipping-address"
                 element={<ShippingAddress />}
@@ -83,18 +123,20 @@ function App() {
               <Route path="/payment/review-order" element={<OrderReview />} />
               <Route path="/payment/successful" element={<OrderSuccessful />} />
             </Route> */}
-            <Route element={<Company />}>
-              <Route path="/about" element={<About />} />
-              <Route path="/terms-&-conditions" element={<TermsOfUse />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            </Route>
-            <Route path="*" element={<PageNotFound />} />
-          </Routes>
-        </div>
+                <Route element={<Company />}>
+                  <Route path="/about" element={<About />} />
+                  <Route path="/terms-&-conditions" element={<TermsOfUse />} />
+                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                </Route>
+                <Route path="*" element={<PageNotFound />} />
+              </Routes>
+            </div>
 
-        <Footer />
-      </div>
-    </Router>
+            <Footer />
+          </div>
+        </Router>
+      </UserProfileContext.Provider>
+    </LoginContext.Provider>
   );
 }
 

@@ -1,7 +1,15 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { UserProfileContext } from "../../App";
+
+const getProfile =
+  "https://apps-1.lampnets.com/ecommb-staging/profiles/my-profile";
+const updateProfile =
+  "https://apps-1.lampnets.com/ecommb-staging/profiles/edit-profile";
+const accessToken = () => localStorage.getItem("token");
 
 function PersonalInfo() {
+  const [profile, setProfile] = useContext(UserProfileContext);
   const [values, setValues] = useState({
     firstName: "",
     middleName: "",
@@ -12,6 +20,21 @@ function PersonalInfo() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setValues({
+      ...values,
+      firstName: profile.firstName,
+      // middleName: profile.middleName,
+      lastName: profile.lastName,
+      username: profile.username,
+      // phoneNumber: toNumber(profile.phoneNumber),
+      email: profile.email,
+      // password: profile.password,
+    });
+  }, [profile]);
 
   const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value });
@@ -24,14 +47,25 @@ function PersonalInfo() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // console.log(values);
+    fetch(updateProfile, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        Authorization: "Bearer " + accessToken(),
+      },
+      body: JSON.stringify(values),
+    })
+      .then((res) => {
+        alert("Profile Updated Successfully");
+        window.location.reload();
+      })
+      .catch((error) => {
+        alert("Failed to update profile", error.message);
+      });
   };
 
   return (
-    <form
-      onClick={handleSubmit}
-      className="px-4 py-8 md:px-10 lg:px-[120px] md:py-4"
-    >
+    <form className="px-4 py-8 md:px-10 lg:px-[120px] md:py-4">
       <div className="flex flex-col gap-3 mb-4 lg:gap-4 lg:mb-5">
         <label className="text-sm font-medium" htmlFor="firstName">
           First Name
@@ -39,10 +73,9 @@ function PersonalInfo() {
         <input
           name="firstName"
           type="text"
-          id="firstName"
           value={values.firstName}
           onChange={handleChange("firstName")}
-          className="w-full h-11 lg:h-14 px-6 lg:px-11 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-lg"
+          className="capitalize w-full h-11 lg:h-14 px-6 lg:px-11 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-lg"
         />
       </div>
 
@@ -53,10 +86,9 @@ function PersonalInfo() {
         <input
           name="middleName"
           type="text"
-          id="middleName"
-          value={values.middleName}
+          value={values.middleName || ""}
           onChange={handleChange("middleName")}
-          className="w-full h-11 lg:h-14 px-6 lg:px-11 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-lg"
+          className="capitalize w-full h-11 lg:h-14 px-6 lg:px-11 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-lg"
         />
       </div>
 
@@ -67,10 +99,9 @@ function PersonalInfo() {
         <input
           name="lastName"
           type="text"
-          id="lastName"
           value={values.lastName}
           onChange={handleChange("lastName")}
-          className="w-full h-11 lg:h-14 px-6 lg:px-11 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-lg"
+          className="capitalize w-full h-11 lg:h-14 px-6 lg:px-11 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-lg"
         />
       </div>
 
@@ -81,7 +112,6 @@ function PersonalInfo() {
         <input
           name="username"
           type="text"
-          id="username"
           value={values.username}
           onChange={handleChange("username")}
           className="w-full h-11 lg:h-14 px-6 lg:px-11 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-lg"
@@ -95,7 +125,6 @@ function PersonalInfo() {
         <input
           name="email"
           type="email"
-          id="email"
           value={values.email}
           onChange={handleChange("email")}
           className="w-full h-11 lg:h-14 px-6 lg:px-11 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-lg"
@@ -109,9 +138,8 @@ function PersonalInfo() {
         <div className="relative">
           <input
             name="password"
-            id="password"
             type={showPassword ? "text" : "password"}
-            value={values.password}
+            value={values.password || ""}
             onChange={handleChange("password")}
             className="w-full h-11 lg:h-14 px-6 lg:px-11 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-lg"
           />
@@ -139,6 +167,7 @@ function PersonalInfo() {
         <button
           type="button"
           className="bg-transparent outline-0 font-semibold text-green tracking-tight underline lg:text-lg"
+          onClick={handleSubmit}
         >
           {" "}
           Save changes

@@ -1,15 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Banner } from "../../component/homepage";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import LaptopCityButton from "../../component/button";
+import { LoginContext } from "../../App";
+
+const loginAPI = "https://apps-1.lampnets.com/ecommb-staging/login";
 
 function Login() {
+  const [loggedIn, setLoggedIn] = useContext(LoginContext);
   const [values, setValues] = useState({
-    email: "",
+    usernameOrEmail: "",
     password: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
+
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value });
@@ -22,7 +31,34 @@ function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    console.log(values);
+    setLoading(true);
+
+    fetch(loginAPI, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(values),
+    })
+      .then((res) => {
+        if (res.status != 200) {
+          throw Error("res.statusText");
+        }
+        return res.json();
+      })
+      .then((result) => {
+        localStorage.setItem("token", result.accessToken);
+        setLoggedIn(true);
+        navigate(
+          location?.state?.previousUrl
+            ? location.state.previousUrl
+            : "/products"
+        );
+      })
+      .catch((error) => {
+        console.log(error);
+        alert("Wrong credentials input");
+        setLoading(false);
+        setValues({ ...values, usernameOrEmail: "", password: "" });
+      });
   };
 
   return (
@@ -48,8 +84,8 @@ function Login() {
               name="email"
               type="email"
               id="email"
-              value={values.email}
-              onChange={handleChange("email")}
+              value={values.usernameOrEmail}
+              onChange={handleChange("usernameOrEmail")}
               className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 outline-0 font-light text-sm"
             />
           </div>
@@ -96,6 +132,7 @@ function Login() {
 
           <div className="mt-14 flex flex-col items-center gap-10 text-sm font-normal md:text-base md:gap-12 lg:gap-16">
             <button
+              disabled={loading}
               className="capitalize font-medium text-white text-sm lg:text-base md:font-semibold md:px-6 lg:py-4 lg:px-[86px] rounded bg-green py-[11px] px-3 hover:bg-dark-green"
               onClick={handleSubmit}
             >

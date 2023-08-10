@@ -1,6 +1,5 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
-// import { Banner } from "../../component/homepage";
 
 const links = [
   {
@@ -35,10 +34,10 @@ const activeStyles = ({ isActive }) => {
   }
 };
 
-function ProfileMenu() {
+function ProfileMenu({ onLogOut }) {
   return (
     <div className="h-screen lg:h-auto">
-      <div className="h-[560px] pt-4 pb-16 bg-filter-green md:w-[25vw] lg:w-72 lg:rounded flex flex-col gap-4 justify-between">
+      <div className="h-[560px] pt-4 pb-16 bg-filter-green md:w-[25vw] lg:w-72 md:rounded flex flex-col gap-4 justify-between">
         <div className="p-4 space-y-4 lg:space-y-3 lg:py-6">
           {links.map((link, index) => {
             return (
@@ -62,6 +61,7 @@ function ProfileMenu() {
           <button
             type="button"
             className="text-secondary-button border-2 border-solid border-secondary-button rounded outline-0 flex justify-center items-center gap-2 font-semibold py-4 px-[20px]"
+            onClick={() => onLogOut()}
           >
             <i className="bx bx-power-off bx-sm"></i>
             Log out

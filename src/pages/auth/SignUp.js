@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Banner } from "../../component/homepage";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import LaptopCityButton from "../../component/button";
+import { LoginContext } from "../../App";
+
+const signupAPI = "https://apps-1.lampnets.com/ecommb-staging/register";
 
 function SignUp() {
+  const [loggedIn, setLoggedIn] = useContext(LoginContext);
   const [values, setValues] = useState({
     firstName: "",
     lastName: "",
@@ -13,6 +17,13 @@ function SignUp() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    localStorage.removeItem("token");
+    setLoggedIn(false);
+  }, []);
 
   const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value });
@@ -28,7 +39,20 @@ function SignUp() {
     if (values.password !== values.confirmPassword) {
       alert("Confirm your password!!!");
     } else {
-      console.log(values);
+      fetch(signupAPI, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(values),
+      })
+        .then((res) => {
+          alert("Welcome onboard 🎊🎉");
+          navigate("/login");
+        })
+        .catch((error) => {
+          alert("Confirm Credentials", error.message);
+        });
     }
   };
 

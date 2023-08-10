@@ -48,7 +48,7 @@ function ProfileInfo() {
         </div>
       </div>
 
-      <div className="hidden lg:block w-full space-y-14 ml-24">
+      <div className="hidden lg:block max-w-full w-full space-y-14">
         <div className="border border-solid border-green rounded w-full">
           <div className="border-b border-b-solid border-b-gray-400 text-center font-semibold capitalize text-2xl py-6 px-[75px] md:p-8 lg:text-[27px]">
             account details

@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import IMAGES from "../assets";
 import LaptopCityButton from "../component/button";
+import { LoginContext, UserProfileContext } from "../App";
 
 const activeStyles = ({ isActive }) => {
   if (isActive) {
@@ -34,7 +35,9 @@ function NavDropdown({ submenus, dropdown, closeDropdown, closeNav }) {
           className="whitespace-nowrap text-center transition-all ease-in duration-200 hover:bg-[#63BB82] hover:text-white focus:bg-[#63BB82] focus:text-white text-sm p-2 px-4 md:px-6 capitalize"
           onClick={() => {
             closeDropdown();
-            closeNav();
+            if (window.innerWidth < 768) {
+              closeNav();
+            }
           }}
         >
           <Link to="/products">{submenu.title}</Link>
@@ -112,7 +115,8 @@ function CustomLink({ to, children, ...props }) {
   );
 }
 function Nav() {
-  const [loggedIn, setLoggedIn] = useState(true);
+  const [loggedIn, setLoggedIn] = useContext(LoginContext);
+  const [profile, setProfile] = useContext(UserProfileContext);
   const [clicked, setClicked] = useState(false);
 
   const handleShowNav = () => {
@@ -132,7 +136,7 @@ function Nav() {
 
   return (
     <>
-      <nav className="z-50 sticky top-0 bg-[#fbfbfb] py-4 px-6 flex justify-between items-center gap-4 md:hidden">
+      <nav className="z-50 sticky top-0 bg-[#fbfbfb] p-4 flex justify-between items-center gap-4 md:hidden">
         <div className="flex justify-center items-center w-32 h-11">
           <Link to="/" onClick={handleCloseNav}>
             <img
@@ -148,19 +152,22 @@ function Nav() {
             <ul
               id="mobileNav"
               className={clicked ? "#mobileNav activeMenu" : "#mobileNav"}
-              // className="flex items-center justify-between gap-4 list-none"
             >
-              {/* <button className="mb-4 self-end mr-5" onClick={handleCloseNav}>
-                <i className="bx bx-x bx-md"></i>
-              </button> */}
-
               <NavLink
                 to="/profile"
-                className="hover:text-green active:text-green focus:text-green"
+                className="hover:text-green active:text-green focus:text-green mb-4"
                 style={activeStyles}
                 onClick={handleCloseNav}
               >
-                <i className="bx bxs-user-circle bx-md"></i>
+                {profile?.avatar ? (
+                  <img
+                    src={profile.avatar}
+                    alt={profile.username}
+                    className="w-8 h-8 lg:w-10 lg:h-10 rounded-full"
+                  />
+                ) : (
+                  <i className="bx bxs-user-circle bx-md"></i>
+                )}
               </NavLink>
 
               <CustomLink onClick={handleCloseNav} to="/">
@@ -289,7 +296,15 @@ function Nav() {
                 className="hover:text-green active:text-green focus:text-green"
                 style={activeStyles}
               >
-                <i className="bx bxs-user-circle bx-md"></i>
+                {profile?.avatar ? (
+                  <img
+                    src={profile?.avatar}
+                    alt={profile?.username}
+                    className="w-8 h-8 lg:w-10 lg:h-10 rounded-full"
+                  />
+                ) : (
+                  <i className="bx bxs-user-circle bx-md"></i>
+                )}
               </NavLink>
             </ul>
           </div>
