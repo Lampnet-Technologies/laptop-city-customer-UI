@@ -28,12 +28,17 @@ function About() {
         </div>
       </section>
 
-      <section className="space-y-6 mb-16 md:space-y-8 lg:space-y-14">
-        <div className="h-[600px] w-full object-contain lg:h-[650px]">
+      <section className="space-y-6 mb-16 md:space-y-8 lg:space-y-10">
+        <div className="h-[600px] w-full object-contain md:h-auto">
           <img
             src={IMAGES.about.about}
             alt="about us"
-            className="max-w-full w-full max-h-full"
+            className="hidden md:inline-block max-w-full w-full max-h-full"
+          />
+          <img
+            src={IMAGES.about.aboutMobile}
+            alt="about us"
+            className="max-w-full w-full h-full max-h-full md:hidden"
           />
         </div>
 

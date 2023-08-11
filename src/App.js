@@ -75,7 +75,7 @@ function App() {
     <LoginContext.Provider value={[loggedIn, setLoggedIn]}>
       <UserProfileContext.Provider value={[profile, setProfile]}>
         <Router>
-          <div className="w-full">
+          <div className="w-full max-w-[1600px] mx-auto">
             <ScrollToTop />
             <Nav />
 

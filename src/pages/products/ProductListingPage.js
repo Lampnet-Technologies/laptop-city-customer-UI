@@ -136,7 +136,7 @@ function ProductContainer({ product }) {
 
   return (
     <div
-      className="w-[170px] h-56 rounded flex flex-col justify-between cursor-pointer border-[#DADADA] border-tiny border-solid md:w-52 lg:w-60 lg:h-[300px] lg:inline-block lg:space-y-3"
+      className="w-[170px] h-56 rounded flex flex-col justify-between cursor-pointer border-[#DADADA] border-tiny border-solid md:w-52 lg:w-60 lg:h-[300px]"
       onClick={() => navigate("/product-desc")}
     >
       <div className="h-32 rounded bg-[#D9D9D9] flex justify-center items-center relative lg:h-44">
@@ -173,7 +173,7 @@ function ProductContainer({ product }) {
           />
         </div>
       </div>
-      <div className="flex flex-col gap-4 justify-between h-20 px-2 pb-4 lg:h-24 lg:pt-2">
+      <div className="flex flex-col gap-1 justify-between h-20 px-2 pb-3 lg:h-28 lg:pt-2">
         <p className="text-xs md:text-sm font-medium capitalize">
           {product.name}
         </p>
@@ -188,7 +188,7 @@ function ProductContainer({ product }) {
 
 function Groups({ heading, products, seeMore }) {
   return (
-    <div className="max-w-full w-fit overflow-x-auto">
+    <div className="max-w-full w-fit">
       {heading && (
         <h1 className="text-xl font-semibold capitalize lg:text-2xl">
           {heading}
@@ -280,6 +280,14 @@ function ProductsListing() {
 
   const [isLoading, setIsLoading] = useState(true);
 
+  const checkScreenSize = () => {
+    if (window.innerWidth >= 1500) {
+      return 5;
+    } else {
+      return 4;
+    }
+  };
+
   useEffect(() => {
     fetch(
       "https://apps-1.lampnets.com/ecommb-staging/products/pagination/active?pageNo=0&pageSize=12&sortBy=createdOn&sortDir=desc"
@@ -299,7 +307,7 @@ function ProductsListing() {
 
   useEffect(() => {
     fetch(
-      "https://apps-1.lampnets.com/ecommb-staging/products/best-selling?pageNo=0&pageSize=5"
+      `https://apps-1.lampnets.com/ecommb-staging/products/best-selling?pageNo=0&pageSize=${checkScreenSize()}`
     )
       .then((res) => {
         return res.json();
@@ -314,7 +322,7 @@ function ProductsListing() {
 
   useEffect(() => {
     fetch(
-      "https://apps-1.lampnets.com/ecommb-staging/products/reviewed?pageNo=0&pageSize=5&sortBy=createdOn&sortDir=desc"
+      `https://apps-1.lampnets.com/ecommb-staging/products/reviewed?pageNo=0&pageSize=${checkScreenSize()}&sortBy=createdOn&sortDir=desc`
     )
       .then((res) => {
         return res.json();

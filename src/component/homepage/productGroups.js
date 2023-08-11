@@ -79,7 +79,7 @@ function ProductContainer({ product }) {
 
   return (
     <div
-      className="w-44 h-56 rounded-md flex flex-col justify-between cursor-pointer border-[#DADADA] border-tiny border-solid lg:w-60 lg:h-80 lg:inline-block lg:space-y-3"
+      className="w-44 h-56 rounded-md flex flex-col justify-between cursor-pointer border-[#DADADA] border-tiny border-solid lg:w-60 lg:h-80"
       onClick={() => navigate("/product-desc")}
     >
       <div className="h-32 rounded bg-[#D9D9D9] flex justify-center items-center relative lg:h-48">
@@ -124,7 +124,7 @@ function ProductContainer({ product }) {
           />
         </div>
       </div>
-      <div className="flex flex-col gap-4 justify-between h-20 px-2 pb-4 lg:h-28 lg:pt-2">
+      <div className="flex flex-col gap-1 justify-between h-20 px-2 pb-3 lg:h-28 lg:pt-2">
         <p className="text-xs font-medium capitalize md:text-sm lg:text-base whitespace-break-spaces">
           {product.name}
         </p>
@@ -139,14 +139,14 @@ function ProductContainer({ product }) {
 
 export function Groups({ heading, products, seeMore }) {
   return (
-    <div className="max-w-full w-fit overflow-x-auto ">
+    <div className="max-w-full w-fit">
       {heading && (
         <h1 className="text-xl font-semibold capitalize lg:text-2xl">
           {heading}
         </h1>
       )}
 
-      <div className="mt-8 lg:mt-14 flex flex-wrap justify-between gap-x-2 gap-y-6 md:justify-start md:gap-x-6 lg:block lg:space-x-12 lg:whitespace-nowrap lg:overflow-x-auto lg:pb-5">
+      <div className="mt-8 lg:mt-14 flex flex-wrap justify-between gap-x-2 gap-y-6 md:justify-start md:gap-x-6">
         {products &&
           products.map((product, index) => {
             return <ProductContainer key={index} product={product} />;
@@ -178,15 +178,22 @@ function ProductGroups() {
   const [bestSelling, setBestSelling] = useState([]);
   const [recentlyViewed, setRecentlyViewed] = useState([]);
 
+  const checkScreenSize = () => {
+    if (window.innerWidth >= 1500) {
+      return 5;
+    } else {
+      return 4;
+    }
+  };
+
   useEffect(() => {
     fetch(
-      "https://apps-1.lampnets.com/ecommb-staging/products/pagination/active?pageNo=0&pageSize=4&sortBy=createdOn&sortDir=desc"
+      `https://apps-1.lampnets.com/ecommb-staging/products/pagination/active?pageNo=0&pageSize=${checkScreenSize()}&sortBy=createdOn&sortDir=desc`
     )
       .then((res) => {
         return res.json();
       })
       .then((result) => {
-        // console.log(result.content);
         setNewArrivals(result.content);
       })
       .catch((error) => {
@@ -196,13 +203,12 @@ function ProductGroups() {
 
   useEffect(() => {
     fetch(
-      "https://apps-1.lampnets.com/ecommb-staging/products/best-selling?pageNo=0&pageSize=4"
+      `https://apps-1.lampnets.com/ecommb-staging/products/best-selling?pageNo=0&pageSize=${checkScreenSize()}`
     )
       .then((res) => {
         return res.json();
       })
       .then((result) => {
-        // console.log(result.content);
         setBestSelling(result.content);
       })
       .catch((error) => {
@@ -212,13 +218,12 @@ function ProductGroups() {
 
   useEffect(() => {
     fetch(
-      "https://apps-1.lampnets.com/ecommb-staging/products/reviewed?pageNo=0&pageSize=4&sortBy=createdOn&sortDir=desc"
+      `https://apps-1.lampnets.com/ecommb-staging/products/reviewed?pageNo=0&pageSize=${checkScreenSize()}&sortBy=createdOn&sortDir=desc`
     )
       .then((res) => {
         return res.json();
       })
       .then((result) => {
-        // console.log(result.content);
         setRecentlyViewed(result.content);
       })
       .catch((error) => {

@@ -71,47 +71,47 @@ BATTERY
 Type: Li-Po 5000 mAh, non-removable
 Charging: Fast Charging 33W`;
 
-const featuredProducts = [
-  {
-    name: "razer-ornata-v3-base",
-    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1686146167/razer-ornata-v3-base_l7g65h.png",
-    category: "used",
-    price: "350,000",
-  },
-  {
-    name: "Alienware-X15-R1-Gaming-Laptop",
-    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Dell_Alienware_X15_R1_Gaming_Laptop_vliv4z.png",
-    category: "used",
-    price: "350,000",
-  },
-  {
-    name: "Macbook 13",
-    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Macbook_3_bwnzmy.png",
-    category: "used",
-    price: "350,000",
-  },
-  {
-    name: "Iphone 14 pro max",
-    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1683740253/avgro2nmfefnd998cuuc.png",
-    category: "new",
-    price: "350,000",
-  },
-];
+// const featuredProducts = [
+//   {
+//     name: "razer-ornata-v3-base",
+//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1686146167/razer-ornata-v3-base_l7g65h.png",
+//     category: "used",
+//     price: "350,000",
+//   },
+//   {
+//     name: "Alienware-X15-R1-Gaming-Laptop",
+//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Dell_Alienware_X15_R1_Gaming_Laptop_vliv4z.png",
+//     category: "used",
+//     price: "350,000",
+//   },
+//   {
+//     name: "Macbook 13",
+//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Macbook_3_bwnzmy.png",
+//     category: "used",
+//     price: "350,000",
+//   },
+//   {
+//     name: "Iphone 14 pro max",
+//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1683740253/avgro2nmfefnd998cuuc.png",
+//     category: "new",
+//     price: "350,000",
+//   },
+// ];
 
-const recentlyViewed = [
-  {
-    name: "Macbook 13",
-    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Macbook_3_bwnzmy.png",
-    category: "used",
-    price: "350,000",
-  },
-  {
-    name: "razer-ornata-v3-base",
-    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1686146167/razer-ornata-v3-base_l7g65h.png",
-    category: "used",
-    price: "350,000",
-  },
-];
+// const recentlyViewed = [
+//   {
+//     name: "Macbook 13",
+//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Macbook_3_bwnzmy.png",
+//     category: "used",
+//     price: "350,000",
+//   },
+//   {
+//     name: "razer-ornata-v3-base",
+//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1686146167/razer-ornata-v3-base_l7g65h.png",
+//     category: "used",
+//     price: "350,000",
+//   },
+// ];
 
 function ImagesPreviews({ files }) {
   const [pictures, setPictures] = useState();
@@ -281,7 +281,9 @@ function AboutProduct() {
                 <button className="w-full " onClick={decreaseQuantity}>
                   -
                 </button>
-                <p className="w-full text-center text-green">{quantity}</p>
+                <p className="w-full text-center font-semibold text-green">
+                  {quantity}
+                </p>
                 <button className="w-full " onClick={increaseQuantity}>
                   +
                 </button>
@@ -297,12 +299,12 @@ function AboutProduct() {
           350,000
         </h2>
         <div className="my-5 flex items-center justify-between gap-8 md:justify-start">
-          <button className="w-full border-2 border-solid border-secondary-button text-secondary-button font-medium text-sm rounded flex justify-center items-center gap-3 py-2 px-4 md:w-fit">
+          <button className="w-full border-2 border-solid border-secondary-button text-secondary-button hover:bg-gray-100 hover:font-semibold transition-all ease-in duration-200 font-medium text-sm rounded flex justify-center items-center gap-3 py-2 px-4 md:w-fit">
             <img src={IMAGES.icons.cartGreen} alt="cart" className="w-3" />
             add to cart
           </button>
           <button
-            className="w-full font-medium text-white text-sm rounded border-2 border-solid border-green bg-green py-2 px-4 hover:bg-dark-green md:w-fit"
+            className="w-full font-medium text-white text-sm rounded border-2 border-solid border-green bg-green py-2 px-4 transition ease-in duration-200 hover:bg-dark-green md:w-fit"
             onClick={() => {
               if (loggedIn) {
                 navigate("/payment");
@@ -375,7 +377,7 @@ function Description() {
   );
 }
 
-function ProductDetails() {
+function ProductDetails({ bestSelling, recentlyViewed }) {
   return (
     <div className="mt-20">
       <div className="flex flex-col gap-4 md:px-10 lg:hidden">
@@ -407,7 +409,7 @@ function ProductDetails() {
       <div className="mt-8 md:mt-12 px-4 md:px-12 lg:px-24">
         <Groups
           heading="best selling products"
-          products={featuredProducts}
+          products={bestSelling}
           seeMore
         />
       </div>
@@ -419,7 +421,49 @@ function ProductDetails() {
   );
 }
 function ProductDesc() {
+  const [bestSelling, setBestSelling] = useState(null);
+  const [recentlyViewed, setRecentlyViewed] = useState(null);
+
   const navigate = useNavigate();
+
+  const checkScreenSize = () => {
+    if (window.innerWidth >= 1500) {
+      return 5;
+    } else {
+      return 4;
+    }
+  };
+
+  useEffect(() => {
+    fetch(
+      `https://apps-1.lampnets.com/ecommb-staging/products/best-selling?pageNo=0&pageSize=${checkScreenSize()}`
+    )
+      .then((res) => {
+        return res.json();
+      })
+      .then((result) => {
+        setBestSelling(result.content);
+      })
+      .catch((error) => {
+        console.error();
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch(
+      `https://apps-1.lampnets.com/ecommb-staging/products/reviewed?pageNo=0&pageSize=${checkScreenSize()}&sortBy=createdOn&sortDir=desc`
+    )
+      .then((res) => {
+        return res.json();
+      })
+      .then((result) => {
+        setRecentlyViewed(result.content);
+      })
+      .catch((error) => {
+        console.error();
+      });
+  }, []);
+
   return (
     <div className="my-10">
       <div
@@ -444,7 +488,10 @@ function ProductDesc() {
         </div>
       </div>
 
-      <ProductDetails />
+      <ProductDetails
+        bestSelling={bestSelling}
+        recentlyViewed={recentlyViewed}
+      />
     </div>
   );
 }

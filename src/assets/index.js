@@ -55,6 +55,7 @@ const IMAGES = {
     productBack: require("./product-description/product-back-view.png"),
   },
   about: {
+    aboutMobile: require("./about/about-1.jpg"),
     about: require("./about/about.jpg"),
     ourMission: require("./about/our-mission.jpg"),
   },
