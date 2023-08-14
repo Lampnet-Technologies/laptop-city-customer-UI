@@ -180,7 +180,7 @@ function Nav() {
               >
                 categories <i className="bx bx-chevron-down bx-sm"></i>
               </CustomLink>
-              <CustomLink onClick={handleCloseNav} to="/track-order/:id">
+              <CustomLink onClick={handleCloseNav} to="/my-orders">
                 track orders
               </CustomLink>
               <CustomLink onClick={handleCloseNav} to="/coupons">
@@ -216,7 +216,7 @@ function Nav() {
               >
                 categories <i className="bx bx-chevron-down bx-sm"></i>
               </CustomLink>
-              <CustomLink onClick={handleCloseNav} to="/track-order/:id">
+              <CustomLink onClick={handleCloseNav} to="/login">
                 track orders
               </CustomLink>
               <CustomLink onClick={handleCloseNav} to="/blog">
@@ -282,7 +282,7 @@ function Nav() {
                 categories <i className="bx bx-chevron-down bx-sm"></i>
               </CustomLink>
               <CustomLink to="/coupons">coupons</CustomLink>
-              <CustomLink to="/track-order/:id">track orders</CustomLink>
+              <CustomLink to="/my-orders">track orders</CustomLink>
             </ul>
 
             <ul className="flex items-center justify-between gap-4 lg:gap-8 list-none whitespace-nowrap">
@@ -327,7 +327,7 @@ function Nav() {
               <CustomLink to="/categories" subMenu={subMenu}>
                 categories <i className="bx bx-chevron-down bx-sm"></i>
               </CustomLink>
-              <CustomLink to="/track-order/:id">track orders</CustomLink>
+              <CustomLink to="/login">track orders</CustomLink>
               <CustomLink to="/blog">Blog</CustomLink>
               <CustomLink to="/about">about</CustomLink>
             </ul>

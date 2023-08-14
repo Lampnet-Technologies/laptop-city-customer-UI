@@ -16,6 +16,12 @@ function Profile() {
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!loggedIn) {
+      navigate("/login");
+    }
+  });
+
   const handleToggleAlert = () => {
     setOpenAlert(true);
   };

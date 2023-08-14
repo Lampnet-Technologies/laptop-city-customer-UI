@@ -95,9 +95,8 @@ function App() {
                     <Route path="/contact-info" element={<ContactInfo />} />
                   </Route>
                   <Route path="/my-orders" element={<MyOrders />} />
-                  <Route path="/shopping-cart/:id" element={<Cart />} />
+                  <Route path="/shopping-cart" element={<Cart />} />
                   <Route element={<Coupons />}>
-                    {/* <Route element={<RenderedCoupons />} /> */}
                     <Route path="/coupons" element={<RenderedCoupons />} />
                   </Route>
                 </Route>
@@ -107,22 +106,6 @@ function App() {
                   element={<OrderSuccessful />}
                 />
                 <Route path="/track-order/:id" element={<TrackOrder />} />
-                {/* <Route element={<Payment />}>
-              <Route
-                path="/payment/shipping-address"
-                element={<ShippingAddress />}
-              />
-              <Route
-                path="/payment/shipping-method"
-                element={<ShippingMethod />}
-              />
-              <Route
-                path="/payment/payment-method"
-                element={<PaymentMethod />}
-              />
-              <Route path="/payment/review-order" element={<OrderReview />} />
-              <Route path="/payment/successful" element={<OrderSuccessful />} />
-            </Route> */}
                 <Route element={<Company />}>
                   <Route path="/about" element={<About />} />
                   <Route path="/terms-&-conditions" element={<TermsOfUse />} />

@@ -1,9 +1,20 @@
-import React from "react";
+import React, { useState, useEffect, useContext } from "react";
 import IMAGES from "../../assets";
 import NairaSymbol from "../../component/nairaSymbol";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { LoginContext } from "../../App";
 
 function OrderSuccessful() {
+  const [loggedIn, setLoggedIn] = useContext(LoginContext);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loggedIn) {
+      navigate("/login");
+    }
+  });
+
   return (
     <div className="my-20 p-6 md:w-3/4 lg:w-1/2 md:mx-auto">
       <div

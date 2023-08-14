@@ -4,11 +4,15 @@ import AdSlider from "../../component/adSlider";
 import { Banner } from "../../component/homepage";
 import SearchBox from "../../component/searchBox";
 // import ProductGroups, { Groups } from "../../component/homepage/productGroups";
-import Pagination from "../../component/pagination";
+// import Pagination from "../../component/pagination";
 import IMAGES from "../../assets";
 import NairaSymbol from "../../component/nairaSymbol";
 import Loading from "../../component/loading";
 import LaptopCityButton from "../../component/button";
+
+import Pagination from "@mui/material/Pagination";
+import PaginationItem from "@mui/material/PaginationItem";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 // const newArrivals = [
 //   {
@@ -131,6 +135,14 @@ const filters = [
   },
 ];
 
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#009F7F",
+    },
+  },
+});
+
 function ProductContainer({ product }) {
   const navigate = useNavigate();
 
@@ -199,7 +211,7 @@ function Groups({ heading, products, seeMore }) {
         </h1>
       )}
 
-      <div className="mt-8 lg:mt-14 flex flex-wrap justify-around gap-x-2 gap-y-4 md:justify-start md:gap-8 lg:gap-10">
+      <div className="mt-8 lg:mt-14 flex flex-wrap justify-around gap-x-2 gap-y-4 md:justify-start md:gap-8 lg:gap-y-10">
         {products &&
           products.map((product, index) => {
             return <ProductContainer key={index} product={product} />;
@@ -281,6 +293,8 @@ function ProductsListing() {
   const [products, setProducts] = useState(null);
   const [bestSelling, setBestSelling] = useState(null);
   const [recentlyViewed, setRecentlyViewed] = useState(null);
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -293,21 +307,24 @@ function ProductsListing() {
   };
 
   useEffect(() => {
+    setIsLoading(true);
+
     fetch(
-      "https://apps-1.lampnets.com/ecommb-staging/products/pagination/active?pageNo=0&pageSize=12&sortBy=createdOn&sortDir=desc"
+      `https://apps-1.lampnets.com/ecommb-staging/products/pagination/active?pageNo=${currentPage}&pageSize=12&sortBy=createdOn&sortDir=desc`
     )
       .then((res) => {
         return res.json();
       })
       .then((result) => {
-        // console.log(result.content);
+        // console.log(result);
         setProducts(result.content);
+        setTotalPages(result.totalPages);
         setIsLoading(false);
       })
       .catch((error) => {
         console.error();
       });
-  }, []);
+  }, [currentPage]);
 
   useEffect(() => {
     fetch(
@@ -338,6 +355,33 @@ function ProductsListing() {
         console.error();
       });
   }, []);
+
+  const handleSearch = (searchTerm) => {
+    setIsLoading(true);
+
+    const encoded = encodeURI(searchTerm);
+
+    fetch(
+      `https://apps-1.lampnets.com/ecommb-staging/products/search?pageNo=0&pageSize=12&query=${encoded}&sortBy=id&sortDir=asc`
+    )
+      .then((res) => {
+        return res.json();
+      })
+      .then((result) => {
+        // console.log(result);
+        setProducts(result.content);
+        // setTotalPages(result.totalPages)
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        alert(error);
+        setIsLoading(false);
+      });
+  };
+
+  const handleChangePage = (event, page) => {
+    setCurrentPage(page - 1);
+  };
 
   const handleOpen = () => {
     setShowFilters((prev) => !prev);
@@ -372,7 +416,7 @@ function ProductsListing() {
 
         <div className="w-full md:pl-4 lg:pl-0">
           <div className="sticky top-[10%] z-20 bg-filter-green md:relative md:bg-transparent">
-            <SearchBox show={handleOpen} />
+            <SearchBox show={handleOpen} search={handleSearch} />
 
             {showFilters ? (
               <div>
@@ -410,9 +454,38 @@ function ProductsListing() {
         </div>
       </div>
 
-      <Pagination />
+      {/* {products && ( */}
+      {/* <Pagination
+        currentPage={currentPage}
+        totalCount={totalPages}
+        pageSize={pageSize}
+        onPageChange={(page) => setCurrentPage(page - 1)}
+      /> */}
+      {/* )} */}
 
-      <div className="mt-16 mb-10 px-2 space-y-8 md:mx-12 lg:mx-24 ">
+      <div className="w-full flex justify-center items-center">
+        <ThemeProvider theme={theme}>
+          <Pagination
+            // sx={{ backgroundColor: "red" }}
+            count={totalPages}
+            shape="rounded"
+            color="primary"
+            size="large"
+            onChange={handleChangePage}
+            renderItem={(item) => (
+              <PaginationItem
+                sx={{
+                  backgroundColor: (theme) => `${theme.palette.grey[200]}`,
+                  mx: "4px",
+                }}
+                {...item}
+              />
+            )}
+          />
+        </ThemeProvider>
+      </div>
+
+      <div className="mt-16 mb-10 px-2 space-y-8 md:mx-12 lg:mt-24 lg:mx-24 ">
         <Groups
           heading="best selling products"
           products={bestSelling}

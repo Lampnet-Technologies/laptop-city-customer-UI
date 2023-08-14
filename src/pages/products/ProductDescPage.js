@@ -431,7 +431,7 @@ function ProductDetails({ bestSelling, recentlyViewed, product }) {
       )}
 
       {product && (
-        <div className="hidden lg:flex justify-between items-start gap-4 px-20 mb-8">
+        <div className="hidden lg:flex justify-between items-start gap-4 px-20 mb-12">
           <div className="flex flex-col gap-4 w-[120%]">
             <ImagesPreviews files={product.images} />
 
@@ -448,7 +448,7 @@ function ProductDetails({ bestSelling, recentlyViewed, product }) {
 
       <Banner />
 
-      <div className="mt-8 md:mt-12 px-4 md:px-12 lg:px-24">
+      <div className="mt-8 md:mt-12 px-4 md:px-12 lg:mt-24 lg:px-24">
         <Groups
           heading="best selling products"
           products={bestSelling}

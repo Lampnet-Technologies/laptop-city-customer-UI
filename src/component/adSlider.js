@@ -6,25 +6,26 @@ import "slick-carousel/slick/slick-theme.css";
 
 const items = [
   {
-    bg: `${IMAGES.adSlider.ad1}`,
+    bg: `${IMAGES.adSlider.banner1}`,
   },
   {
-    bg: `${IMAGES.adSlider.ad2}`,
+    bg: `${IMAGES.adSlider.banner2}`,
   },
-  {
-    bg: `${IMAGES.adSlider.ad3}`,
-  },
-  {
-    bg: `${IMAGES.adSlider.ad4}`,
-  },
+  // {
+  //   bg: `${IMAGES.adSlider.ad1}`,
+  // },
+  // {
+  //   bg: `${IMAGES.adSlider.ad2}`,
+  // },
 ];
 
 function SliderContent({ bg }) {
   return (
     <div
-      className="h-44 w-full bg-cover bg-center bg-no-repeat rounded md:h-60 lg:h-80"
+      className="h-44 w-full bg-cover bg-center bg-no-repeat rounded md:h-60 lg:bg-contain lg:h-80"
       style={{
-        backgroundImage: `linear-gradient(0deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)), url(${bg})`,
+        // backgroundImage: `linear-gradient(0deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)), url(${bg})`,
+        backgroundImage: `url(${bg})`,
       }}
     ></div>
   );
