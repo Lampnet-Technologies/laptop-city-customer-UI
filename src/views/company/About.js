@@ -4,7 +4,7 @@ import IMAGES from "../../assets";
 function About() {
   return (
     <div>
-      <section className="space-y-6 mb-20 md:space-y-8 lg:space-y-14">
+      <section className="space-y-6 mb-20 md:space-y-8 lg:space-y-10">
         <h1 className="text-[45px] font-bold text-dark-blue mb-8 lg:w-4/5 lg:text-[60px]">
           We believe in providing the highest quality products. Best laptop
           accessories store online

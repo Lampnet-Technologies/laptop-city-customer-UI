@@ -7,7 +7,7 @@ function TermsOfUse() {
         Terms and Conditions of Limited Warranty
       </h1>
 
-      <section className="space-y-4">
+      <section id="warranty" className="space-y-4">
         <h3 className="text-2xl text-gray-700 lg:text-[28px]">
           Warranty Period
         </h3>
@@ -50,7 +50,7 @@ function TermsOfUse() {
         </div>
       </section>
 
-      <section className="space-y-4">
+      <section id="refund" className="space-y-4">
         <h3 className="text-2xl text-gray-700 lg:text-[28px]">
           Returns and Refunds
         </h3>

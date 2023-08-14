@@ -29,7 +29,8 @@ const activeStyles = ({ isActive }) => {
     return {
       color: "#009F7F",
       fontWeight: 600,
-      marginLeft: "40px",
+      // marginLeft: "40px",
+      width: "80%",
     };
   }
 };
@@ -44,7 +45,7 @@ function ProfileMenu({ onLogOut }) {
               <NavLink
                 key={index}
                 to={link.to}
-                className="inline-block w-full transition-{margin-left} duration-1000 hover:text-green hover:font-semibold hover:ml-10 active:text-green active:font-semibold active:ml-10"
+                className="inline-block w-full transition-{margin-left} duration-1000 hover:text-green hover:font-semibold hover:w-4/5 active:text-green active:font-semibold active:w-4/5"
                 style={activeStyles}
               >
                 <div className="p-4 rounded-md bg-white md:text-sm lg:text-base whitespace-nowrap font-medium flex items-center gap-4 capitalize ">

@@ -24,15 +24,15 @@ const linksCollection = [
     title: "Terms",
     links: [
       {
-        to: "",
+        to: "/terms-&-conditions/#warranty",
         name: "Warranty",
       },
       {
-        to: "",
+        to: "/terms-&-conditions",
         name: "Order & Shipping",
       },
       {
-        to: "",
+        to: "/terms-&-conditions/#refund",
         name: "Replacement & Refund",
       },
       {

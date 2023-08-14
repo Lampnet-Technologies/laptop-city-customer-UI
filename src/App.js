@@ -83,7 +83,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<Homepage />} />
                 <Route path="/products" element={<ProductsListing />} />
-                <Route path="/product-desc" element={<ProductDesc />} />
+                <Route path="/product-desc/:id" element={<ProductDesc />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:slug" element={<SingleBlogPost />} />
                 <Route path="/login" element={<Login />} />

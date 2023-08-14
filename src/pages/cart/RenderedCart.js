@@ -1,16 +1,25 @@
 import React, { useState } from "react";
 import NairaSymbol from "../../component/nairaSymbol";
+import { useEffect } from "react";
 
 function RenderedCart({ items }) {
-  const [quantity, setQuantity] = useState(1);
+  // const [quantity, setQuantity] = useState(1);
+  const [cartItems, setCartItems] = useState([]);
+
+  // useEffect(() => {
+  //   console.log(items);
+  // }, []);
+
   let num = 1;
 
-  const increaseQuantity = () => {
-    quantity < 10 && setQuantity((prev) => prev + 1);
+  const increaseQuantity = (quantity) => {
+    // quantity < 10 && quantity++;
+    console.log("increasing quantity:" + (quantity += 1));
   };
 
-  const decreaseQuantity = () => {
-    quantity > 1 && setQuantity((prev) => prev - 1);
+  const decreaseQuantity = (quantity) => {
+    // quantity > 1 && quantity--;
+    console.log("decreasing quantity:" + (quantity -= 1));
   };
 
   return (
@@ -61,44 +70,52 @@ function RenderedCart({ items }) {
           <tbody>
             {items.map((item, index) => {
               return (
-                <tr style={{ borderBlock: "0.5px solid #7f98ae" }} key={index}>
+                <tr
+                  style={{ borderBlock: "0.5px solid #7f98ae" }}
+                  key={item.id}
+                >
                   <td className="text-sm font-normal leading-6 capitalize p-5 text-center">
                     {num++}
                   </td>
                   <td className="text-sm font-normal leading-6 capitalize p-5 text-center">
                     <div className="min-w-[84px] h-[63px] max-w-[109px] lg:h-[82px] flex justify-center items-center">
                       <img
-                        src={item.img}
-                        alt={item.name}
+                        src={item.product?.images[0]?.image}
+                        alt={item.product.name}
                         className="max-w-full max-h-[80%]"
                       />
                     </div>
                   </td>
                   <td className="text-sm font-normal leading-6 capitalize p-5 ">
-                    {item.name}
+                    {item.product.name}
                   </td>
                   <td className="text-sm font-normal leading-6 capitalize p-5 ">
                     <div className="text-base flex items-center divide-x-2 w-20 border border-solid border-gray-700 rounded">
-                      <button className="w-full " onClick={decreaseQuantity}>
+                      <button
+                        className="w-full "
+                        onClick={() => decreaseQuantity(item.quantity)}
+                      >
                         -
                       </button>
                       <p className="w-full text-center text-green">
-                        {quantity}
+                        {item.quantity}
                       </p>
-                      <button className="w-full " onClick={increaseQuantity}>
+                      <button
+                        className="w-full "
+                        onClick={() => increaseQuantity(item.quantity)}
+                      >
                         +
                       </button>
                     </div>
                   </td>
                   <td className="text-sm leading-6 capitalize p-5 text-right font-medium">
                     <NairaSymbol />
-                    {item.price}
+                    {item.product.price}
                   </td>
                   <td className="text-sm leading-6 capitalize p-5 text-right font-medium">
                     <NairaSymbol />
-                    {item.price * quantity}
+                    {item.product.price * item.quantity}
                   </td>
-                  {/* <td colSpan={5} className="h-72 bg-red" /> */}
                 </tr>
               );
             })}

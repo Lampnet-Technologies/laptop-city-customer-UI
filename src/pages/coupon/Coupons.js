@@ -13,7 +13,7 @@ const activeStyles = ({ isActive }) => {
 
 function Coupons() {
   return (
-    <div className="border border-solid border-green rounded w-full lg:ml-24">
+    <div className="border border-solid border-green rounded w-full">
       <div className="border-b border-b-solid border-b-gray-400 p-4 text-center text-xl font-semibold capitalize md:p-8 lg:text-[27px]">
         Coupons
       </div>

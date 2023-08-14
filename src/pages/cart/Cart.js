@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import EmptyCart from "./EmptyCart";
 import RenderedCart from "./RenderedCart";
+import Loading from "../../component/loading";
 
 const localCart = [
   {
@@ -34,18 +35,45 @@ const activeStyles = ({ isActive }) => {
   }
 };
 
+const accessToken = localStorage.getItem("token");
+
 function Cart() {
   const [cart, setCart] = useState([]);
+  const [total, setTotal] = useState();
+  const [isLoading, setIsLoading] = useState(true);
+
+  // useEffect(() => {
+  //   setCart(localCart);
+  // }, []);
 
   useEffect(() => {
-    setCart(localCart);
+    fetch("https://apps-1.lampnets.com/ecommb-staging/cart-items/my-cart", {
+      headers: {
+        "content-type": "application/json",
+        Authorization: "Bearer " + accessToken,
+      },
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((result) => {
+        // console.log(result);
+        setCart(result.cartItems);
+        setTotal(result.total);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error(error.message);
+      });
   }, []);
 
   return (
-    <div className="border border-solid border-green rounded w-full lg:ml-24">
+    <div className="border border-solid border-green rounded w-full">
       <div className="border-b border-b-solid border-b-gray-400 p-4 md:p-8 text-center text-lg font-semibold capitalize md:text-xl lg:text-[27px]">
         shopping Cart
       </div>
+
+      {isLoading && <Loading />}
 
       <div>
         {cart.length < 1 ? <EmptyCart /> : <RenderedCart items={cart} />}

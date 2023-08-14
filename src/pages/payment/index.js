@@ -94,7 +94,7 @@ QontoStepIcon.propTypes = {
   completed: PropTypes.bool,
 };
 
-const steps = ["Welcome", "Shipping method", "Payment", "Order"];
+const steps = ["Welcome", "Shipping method", "Order"];
 
 function CustomizedSteppers({ active }) {
   return (
@@ -145,7 +145,10 @@ function Payment() {
   };
 
   const goBack = () => {
-    if (componentToRender === "payment-method") {
+    if (
+      componentToRender !== "shipping-method" ||
+      componentToRender !== "shipping-address"
+    ) {
       return setComponentToRender("shipping-method");
     } else if (componentToRender === "shipping-method") {
       return setComponentToRender("shipping-address");
@@ -157,10 +160,10 @@ function Payment() {
       setActiveStep(0);
     } else if (componentToRender === "shipping-method") {
       setActiveStep(1);
-    } else if (componentToRender === "payment-method") {
-      setActiveStep(2);
+      // } else if (componentToRender === "payment-method") {
+      //   setActiveStep(2);
     } else {
-      setActiveStep(3);
+      setActiveStep(2);
     }
   }, [componentToRender]);
 
@@ -169,10 +172,10 @@ function Payment() {
       return <ShippingAddress goTo={nextPage} />;
     } else if (componentToRender === "shipping-method") {
       return <ShippingMethod goTo={nextPage} back={goBack} />;
-    } else if (componentToRender === "payment-method") {
-      return <PaymentMethod goTo={nextPage} back={goBack} />;
+      // } else if (componentToRender === "payment-method") {
+      //   return <PaymentMethod goTo={nextPage} back={goBack} />;
     } else {
-      return <OrderReview />;
+      return <OrderReview back={goBack} />;
     }
   }, [componentToRender]);
 
@@ -181,8 +184,8 @@ function Payment() {
       return "Where should we send the order?";
     } else if (componentToRender === "shipping-method") {
       return "How should we send the order?";
-    } else if (componentToRender === "payment-method") {
-      return "Make payment for the order?";
+      // } else if (componentToRender === "payment-method") {
+      //   return "Make payment for the order?";
     } else {
       return "Confirm and enjoy your order";
     }

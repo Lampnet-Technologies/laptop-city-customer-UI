@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import NairaSymbol from "../../component/nairaSymbol";
 
-function OrderReview() {
+function OrderReview({ back }) {
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -88,7 +88,32 @@ function OrderReview() {
         </table>
       </div>
 
-      <button
+      <div
+        className="flex justify-between gap-6 lg:gap-8 md:justify-around lg:justify-end"
+        style={{ marginBlock: "2.5rem 1rem" }}
+      >
+        <button
+          type="button"
+          className="inline-block w-full bg-transparent border border-solid border-green p-2 rounded outline-0 font-semibold text-black text-sm"
+          // onClick={() => navigate(-1)}
+          onClick={back}
+        >
+          {" "}
+          Back
+        </button>
+
+        <button
+          type="submit"
+          // style={{ marginBlock: "2.5rem 1rem" }}
+          className="inline-block w-full bg-green p-4 rounded-md outline-0 font-semibold text-white text-sm"
+        >
+          {" "}
+          Pay <NairaSymbol />
+          350,910.00
+        </button>
+      </div>
+
+      {/* <button
         type="submit"
         style={{ marginBlock: "2.5rem 1rem" }}
         className="inline-block w-full bg-green p-4 rounded-md outline-0 font-semibold text-white text-sm"
@@ -96,7 +121,7 @@ function OrderReview() {
         {" "}
         Pay <NairaSymbol />
         350,910.00
-      </button>
+      </button> */}
     </form>
   );
 }

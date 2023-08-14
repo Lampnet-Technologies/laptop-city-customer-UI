@@ -48,7 +48,7 @@ function Hero() {
 }
 function Homepage() {
   return (
-    <div className="my-14 md:my-16 lg:mt-12 ">
+    <div className="my-14 md:my-16 lg:mt-0 ">
       <Hero />
       <Banner />
       <Categories />

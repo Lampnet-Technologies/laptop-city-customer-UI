@@ -32,7 +32,7 @@ function ShippingMethod({ goTo, back }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    goTo("payment-method");
+    goTo("order-review");
   };
 
   return (

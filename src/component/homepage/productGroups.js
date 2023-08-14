@@ -77,10 +77,14 @@ import NairaSymbol from "../nairaSymbol";
 function ProductContainer({ product }) {
   const navigate = useNavigate();
 
+  const handleProductDesc = (id) => {
+    navigate("/product-desc/" + id);
+  };
+
   return (
     <div
       className="w-44 h-56 rounded-md flex flex-col justify-between cursor-pointer border-[#DADADA] border-tiny border-solid lg:w-60 lg:h-80"
-      onClick={() => navigate("/product-desc")}
+      onClick={() => handleProductDesc(product.id)}
     >
       <div className="h-32 rounded bg-[#D9D9D9] flex justify-center items-center relative lg:h-48">
         {product.images && (

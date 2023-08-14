@@ -134,10 +134,14 @@ const filters = [
 function ProductContainer({ product }) {
   const navigate = useNavigate();
 
+  const handleProductDesc = (id) => {
+    navigate("/product-desc/" + id);
+  };
+
   return (
     <div
       className="w-[170px] h-56 rounded flex flex-col justify-between cursor-pointer border-[#DADADA] border-tiny border-solid md:w-52 lg:w-60 lg:h-[300px]"
-      onClick={() => navigate("/product-desc")}
+      onClick={() => handleProductDesc(product.id)}
     >
       <div className="h-32 rounded bg-[#D9D9D9] flex justify-center items-center relative lg:h-44">
         {product.images && (
@@ -337,8 +341,6 @@ function ProductsListing() {
 
   const handleOpen = () => {
     setShowFilters((prev) => !prev);
-
-    // document.body.scroll = null;
   };
 
   return (

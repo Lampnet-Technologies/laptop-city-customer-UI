@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useContext } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import IMAGES from "../../assets";
 import LaptopCityButton from "../../component/button";
 import { Banner } from "../../component/homepage";
 import { Groups } from "../../component/homepage/productGroups";
 import NairaSymbol from "../../component/nairaSymbol";
 import { LoginContext } from "../../App";
+import Loading from "../../component/loading";
 
 const images = [
   {
@@ -114,13 +115,7 @@ Charging: Fast Charging 33W`;
 // ];
 
 function ImagesPreviews({ files }) {
-  const [pictures, setPictures] = useState();
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    setPictures(files);
-    // console.log(pictures);
-  }, []);
 
   const arrowNext = (arr) => {
     if (arr.length - 1 !== currentIndex) {
@@ -140,54 +135,77 @@ function ImagesPreviews({ files }) {
     }
   };
 
-  return (
-    <div>
-      <div className="p-4 flex flex-col gap-6 relative lg:gap-3 lg:flex-row-reverse lg:justify-around lg:items-center">
-        <div className="lg:hidden">
-          <i
-            onClick={() => arrowPrev(images)}
-            className="bx bx-chevron-left bx-lg text-gray-400 font-normal cursor-pointer absolute top-1/4 left-2"
-            style={{ color: `${currentIndex !== 0 ? "#009F7F" : "#9ca3af"}` }}
-          ></i>
-          <i
-            onClick={() => arrowNext(images)}
-            className="bx bx-chevron-right bx-lg text-green font-normal cursor-pointer absolute top-1/4 right-2"
-            style={{
-              color: `${
-                pictures &&
-                (currentIndex === pictures.length - 1 ? "#9ca3af" : "#009F7F")
-              }`,
-            }}
-          ></i>
-        </div>
-
-        <div className="flex justify-center items-center">
-          <div className="h-60 w-full object-contain flex justify-center items-center md:w-80 lg:h-[360px] lg:w-[480px]">
-            {pictures && (
-              <img
-                src={pictures[currentIndex].image}
-                alt="image-1"
-                className="max-w-full max-h-full object-fill"
-              />
-            )}
-            {/* <img
-              src={images[0].image}
-              alt="image-1"
-              className="max-w-full max-h-full"
-            /> */}
+  if (files && files.length > 0) {
+    return (
+      <div>
+        <div className="p-4 flex flex-col gap-6 relative lg:gap-3 lg:flex-row-reverse lg:justify-around lg:items-center">
+          <div className="lg:hidden">
+            <i
+              onClick={() => arrowPrev(files)}
+              className="bx bx-chevron-left bx-lg text-gray-400 font-normal cursor-pointer absolute top-1/4 left-2"
+              style={{ color: `${currentIndex !== 0 ? "#009F7F" : "#9ca3af"}` }}
+            ></i>
+            <i
+              onClick={() => arrowNext(files)}
+              className="bx bx-chevron-right bx-lg text-green font-normal cursor-pointer absolute top-1/4 right-2"
+              style={{
+                color: `${
+                  files &&
+                  (currentIndex === files.length - 1 ? "#9ca3af" : "#009F7F")
+                }`,
+              }}
+            ></i>
           </div>
-        </div>
 
-        <div className="bg-[#ECF3F9] rounded p-2 flex justify-between items-center gap-4 md:rounded-lg md:justify-around md:py-6 lg:py-11 lg:flex-col lg:w-48 lg:h-[500px]">
-          {pictures &&
-            pictures.map((image, index) => {
+          <div className="flex justify-center items-center">
+            <div className="h-60 w-4/5 mx-auto object-contain flex justify-center items-center md:w-80 lg:h-[360px] lg:w-full">
+              {files && (
+                <img
+                  src={files[currentIndex].image}
+                  alt="image-1"
+                  className="max-w-full max-h-full object-fill"
+                />
+              )}
+              {/* <img
+                src={images[0].image}
+                alt="image-1"
+                className="max-w-full max-h-full"
+              /> */}
+            </div>
+          </div>
+
+          <div className="bg-[#ECF3F9] rounded p-2 flex justify-between items-center gap-4 md:rounded-lg md:justify-around md:py-6 lg:py-11 lg:flex-col lg:w-48 lg:min-h-[500px]">
+            {files &&
+              files.map((image, index) => {
+                return (
+                  <div
+                    key={index}
+                    className="h-24 w-28 rounded py-4 flex justify-center items-center lg:rounded-md lg:w-32 lg:h-28"
+                    style={{
+                      border: `${
+                        currentIndex === index ? "1px solid #009F7F" : "none"
+                      }`,
+                      // transition: "0.5s ease",
+                    }}
+                    onClick={() => setCurrentIndex(index)}
+                  >
+                    <img
+                      src={image.image}
+                      alt={`image-${index + 1}`}
+                      className="max-w-full max-h-full"
+                    />
+                  </div>
+                );
+              })}
+
+            {/* {images.map((image, index) => {
               return (
                 <div
                   key={index}
-                  className="h-24 w-28 rounded py-4 flex justify-center items-center lg:rounded-md lg:w-32 lg:h-28"
+                  className="h-24 w-28 rounded py-4 flex justify-center items-center lg:w-32 lg:h-28"
                   style={{
                     border: `${
-                      currentIndex === index ? "1px solid #009F7F" : "none"
+                      currentIndex === index ? "1.5px solid #009F7F" : "none"
                     }`,
                     // transition: "0.5s ease",
                   }}
@@ -200,56 +218,35 @@ function ImagesPreviews({ files }) {
                   />
                 </div>
               );
-            })}
+            })} */}
+          </div>
+        </div>
 
-          {/* {images.map((image, index) => {
-            return (
-              <div
-                key={index}
-                className="h-24 w-28 rounded py-4 flex justify-center items-center lg:w-32 lg:h-28"
-                style={{
-                  border: `${
-                    currentIndex === index ? "1.5px solid #009F7F" : "none"
-                  }`,
-                  // transition: "0.5s ease",
-                }}
-                onClick={() => setCurrentIndex(index)}
-              >
-                <img
-                  src={image.image}
-                  alt={`image-${index + 1}`}
-                  className="max-w-full max-h-full"
-                />
-              </div>
-            );
-          })} */}
+        <div className="hidden lg:flex justify-center items-center gap-6 mt-10 lg:mt-20">
+          <i
+            onClick={() => arrowPrev(files)}
+            className="bx bx-chevron-left bx-lg text-gray-400 font-normal cursor-pointer"
+            style={{ color: `${currentIndex !== 0 ? "#009F7F" : "#9ca3af"}` }}
+          ></i>
+          <div>
+            {currentIndex + 1} / {files.length}
+          </div>
+          <i
+            onClick={() => arrowNext(files)}
+            className="bx bx-chevron-right bx-lg text-green font-normal cursor-pointer"
+            style={{
+              color: `${
+                currentIndex === files.length - 1 ? "#9ca3af" : "#009F7F"
+              }`,
+            }}
+          ></i>
         </div>
       </div>
-
-      <div className="hidden lg:flex justify-center items-center gap-6 mt-10 lg:mt-20">
-        <i
-          onClick={() => arrowPrev(images)}
-          className="bx bx-chevron-left bx-lg text-gray-400 font-normal cursor-pointer"
-          style={{ color: `${currentIndex !== 0 ? "#009F7F" : "#9ca3af"}` }}
-        ></i>
-        <div>
-          {currentIndex + 1} / {images.length}
-        </div>
-        <i
-          onClick={() => arrowNext(images)}
-          className="bx bx-chevron-right bx-lg text-green font-normal cursor-pointer"
-          style={{
-            color: `${
-              currentIndex === images.length - 1 ? "#9ca3af" : "#009F7F"
-            }`,
-          }}
-        ></i>
-      </div>
-    </div>
-  );
+    );
+  }
 }
 
-function AboutProduct() {
+function AboutProduct({ product }) {
   const [loggedIn, setLoggedIn] = useContext(LoginContext);
   const [showMore, setShowMore] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -257,8 +254,39 @@ function AboutProduct() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const handleAddToCart = (id) => {
+    const dataToSend = { productId: id, quantity: quantity };
+
+    const accessToken = localStorage.getItem("token");
+    console.log(dataToSend);
+    console.log(typeof accessToken);
+
+    if (!loggedIn) {
+      navigate("/login", {
+        state: {
+          previousUrl: location.pathname,
+        },
+      });
+    } else {
+      fetch("https://apps-1.lampnets.com/ecommb-staging/cart-items/add", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          Authorization: "Bearer " + accessToken,
+        },
+        body: JSON.stringify(dataToSend),
+      })
+        .then((res) => {
+          alert(`${product.name} is added to cart`);
+        })
+        .catch((error) => {
+          alert("Failed to add to cart" + error.message);
+        });
+    }
+  };
+
   const increaseQuantity = () => {
-    quantity < 10 && setQuantity((prev) => prev + 1);
+    quantity < product.stock && setQuantity((prev) => prev + 1);
   };
 
   const decreaseQuantity = () => {
@@ -269,12 +297,15 @@ function AboutProduct() {
     <div className="p-4 flex flex-col gap-6">
       <div className="flex flex-col gap-6">
         <h2 className="text-2xl font-semibold lg:text-3xl">
-          HP Pavilion Laptop 14-dv0189nia (2X4V1EA)
+          {/* HP Pavilion Laptop 14-dv0189nia (2X4V1EA) */}
+          {product.name}
         </h2>
         <div className="my-5 flex justify-start items-start gap-10 md:gap-20">
           <div className="text-sm flex flex-col gap-4 lg:gap-8 font-normal lg:text-base">
-            <p>Product id : #56789</p>
-            <p>Brand : HP</p>
+            <p>
+              Product id :{/* #56789 */} {product.id}
+            </p>
+            <p>Brand : {product.brand}</p>
             <div className="flex justify-between items-center gap-4 md:gap-10">
               <p>Quantity</p>
               <div className="text-base flex items-center divide-x-2 w-20 border border-solid border-gray-700 rounded">
@@ -291,15 +322,19 @@ function AboutProduct() {
             </div>
           </div>
           <div className="self-end lg:self-start py-1 px-4 rounded border-2 border-solid border-secondary-button text-secondary-button font-semibold">
-            in stock
+            {product.stock} in stock
           </div>
         </div>
         <h2 className="text-2xl font-semibold lg:text-3xl">
           <NairaSymbol />
-          350,000
+          {/* 350,000 */}
+          {quantity * product.price}
         </h2>
         <div className="my-5 flex items-center justify-between gap-8 md:justify-start">
-          <button className="w-full border-2 border-solid border-secondary-button text-secondary-button hover:bg-gray-100 hover:font-semibold transition-all ease-in duration-200 font-medium text-sm rounded flex justify-center items-center gap-3 py-2 px-4 md:w-fit">
+          <button
+            className="w-full border-2 border-solid border-secondary-button text-secondary-button hover:bg-gray-100 hover:font-semibold transition-all ease-in duration-200 font-medium text-sm rounded flex justify-center items-center gap-3 py-2 px-4 md:w-fit"
+            onClick={() => handleAddToCart(product.id)}
+          >
             <img src={IMAGES.icons.cartGreen} alt="cart" className="w-3" />
             add to cart
           </button>
@@ -350,7 +385,7 @@ function AboutProduct() {
   );
 }
 
-function Description() {
+function Description({ descr }) {
   const [showMore, setShowMore] = useState(false);
 
   return (
@@ -358,51 +393,58 @@ function Description() {
       <div className="w-2/4 h-14 bg-filter-green text-lg font-medium rounded-md flex justify-center items-center tracking-tight lg:text-[22px] lg:w-full">
         Description
       </div>
-      <div className="whitespace-break-spaces lg:text-base">
-        {showMore ? example : `${example.substring(0, 800)}`}
 
-        {example.length >= 800 && (
-          <div>
-            <button
-              className="capitalize text-green font-semibold text-base flex justify-center items-center gap-1 py-2 px-0"
-              onClick={() => setShowMore(!showMore)}
-            >
-              {showMore ? "Show less" : "Show more"}
-              <i className="bx bx-chevron-down bx-sm"></i>
-            </button>
-          </div>
-        )}
-      </div>
+      {descr && (
+        <div className="whitespace-break-spaces lg:text-base">
+          {showMore ? descr : `${descr.substring(0, 800)}`}
+
+          {descr.length >= 800 && (
+            <div>
+              <button
+                className="capitalize text-green font-semibold text-base flex justify-center items-center gap-1 py-2 px-0"
+                onClick={() => setShowMore(!showMore)}
+              >
+                {showMore ? "Show less" : "Show more"}
+                <i className="bx bx-chevron-down bx-sm"></i>
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
 
-function ProductDetails({ bestSelling, recentlyViewed }) {
+function ProductDetails({ bestSelling, recentlyViewed, product }) {
   return (
     <div className="mt-20">
-      <div className="flex flex-col gap-4 md:px-10 lg:hidden">
-        <ImagesPreviews files={images} />
-
-        <div className="w-4/5 border border-pagination rounded self-center my-3" />
-
-        <AboutProduct />
-
-        <Description />
-      </div>
-
-      <div className="hidden lg:flex justify-between items-start gap-4 px-20 mb-8">
-        <div className="flex flex-col gap-4 w-[110%]">
-          <ImagesPreviews files={images} />
+      {product && (
+        <div className="flex flex-col gap-4 md:px-10 lg:hidden">
+          <ImagesPreviews files={product.images} />
 
           <div className="w-4/5 border border-pagination rounded self-center my-3" />
 
-          <AboutProduct />
-        </div>
+          <AboutProduct product={product} />
 
-        <div className="w-[90%]">
-          <Description />
+          <Description descr={product.description} />
         </div>
-      </div>
+      )}
+
+      {product && (
+        <div className="hidden lg:flex justify-between items-start gap-4 px-20 mb-8">
+          <div className="flex flex-col gap-4 w-[120%]">
+            <ImagesPreviews files={product.images} />
+
+            <div className="w-4/5 border border-pagination rounded self-center my-3" />
+
+            <AboutProduct product={product} />
+          </div>
+
+          <div className="w-[80%]">
+            <Description descr={product.description} />
+          </div>
+        </div>
+      )}
 
       <Banner />
 
@@ -423,8 +465,25 @@ function ProductDetails({ bestSelling, recentlyViewed }) {
 function ProductDesc() {
   const [bestSelling, setBestSelling] = useState(null);
   const [recentlyViewed, setRecentlyViewed] = useState(null);
+  const [values, setValues] = useState({
+    name: "",
+    productType: "",
+    category: "BRAND NEW",
+    description: "",
+    brand: "",
+    price: "",
+    stock: "",
+    availableOffers: "",
+    colour: "",
+    images: [],
+  });
+  const [product, setProduct] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
+  const params = useParams();
+
+  const prodId = params.id;
 
   const checkScreenSize = () => {
     if (window.innerWidth >= 1500) {
@@ -433,6 +492,36 @@ function ProductDesc() {
       return 4;
     }
   };
+
+  useEffect(() => {
+    if (prodId) {
+      fetch(`https://apps-1.lampnets.com/ecommb-staging/products/${prodId}`)
+        .then((res) => {
+          return res.json();
+        })
+        .then((response) => {
+          // setValues({
+          //   ...values,
+          //   name: response.name,
+          //   brand: response.brand,
+          //   price: response.price,
+          //   stock: response.stock,
+          //   category: response.category,
+          //   productType: response.productType,
+          //   description: response.description,
+          //   availableOffers: response.availableOffers,
+          //   colour: response.colour,
+          //   images: response.images,
+          // });
+          setProduct(response);
+          setIsLoading(false);
+          // console.log(response);
+        })
+        .catch((error) => {
+          alert(error.message);
+        });
+    }
+  }, [prodId]);
 
   useEffect(() => {
     fetch(
@@ -488,9 +577,12 @@ function ProductDesc() {
         </div>
       </div>
 
+      {isLoading && <Loading />}
+
       <ProductDetails
         bestSelling={bestSelling}
         recentlyViewed={recentlyViewed}
+        product={product}
       />
     </div>
   );

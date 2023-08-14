@@ -27,7 +27,7 @@ function Profile() {
   const handleLogOut = () => {
     setLoggedIn(false);
     localStorage.removeItem("token");
-    navigate("/");
+    navigate("/products");
   };
 
   return (
@@ -56,7 +56,10 @@ function Profile() {
           <Outlet onLogOut={handleToggleAlert} />
         </div>
 
-        <div className="hidden md:flex md:justify-between lg:justify-start md:gap-12 lg:gap-24 items-start pl-6 md:pr-12 lg:pr-24">
+        <div
+          className="hidden md:flex md:justify-between lg:justify-start md:gap-12 lg:gap-24 items-start pl-6 md:pr-12 lg:pr-24"
+          // style={{ border: "4px solid red" }}
+        >
           <ProfileMenu onLogOut={handleToggleAlert} />
 
           <Outlet />

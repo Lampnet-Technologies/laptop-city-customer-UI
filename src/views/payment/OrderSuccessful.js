@@ -24,7 +24,7 @@ function OrderSuccessful() {
 
         <p className="font-normal lg:w-11/12 lg:mx-auto lg:text-lg">
           Your Laptop order{" "}
-          <Link to="*" className="underline text-green">
+          <Link to="/my-orders" className="underline text-green">
             LCT9876
           </Link>{" "}
           has successfully been placed. You will receive a shipping confirmation
