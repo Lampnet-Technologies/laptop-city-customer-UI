@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import {
+  useNavigate,
+  Link,
+  useLocation,
+  useSearchParams,
+} from "react-router-dom";
 import AdSlider from "../../component/adSlider";
 import { Banner } from "../../component/homepage";
 import SearchBox from "../../component/searchBox";
@@ -122,7 +127,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 const filters = [
   {
-    title: "categorries",
+    title: "categories",
     filter: ["brand new", "uk used"],
   },
   {
@@ -227,7 +232,10 @@ function Groups({ heading, products, seeMore }) {
           className="flex justify-end items-center text-sm font-medium mt-4"
         >
           <Link
-            to="/products"
+            to={{
+              pathname: "/products",
+              search: `?filter=${heading}`,
+            }}
             className="flex justify-between items-center hover:text-green hover:font-bold"
           >
             See more <i className="bx bx-chevron-right bx-sm ml-0"></i>
@@ -296,7 +304,32 @@ function ProductsListing() {
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
 
+  // const [searchParams, setSearchParams] = useSearchParams();
+
   const [isLoading, setIsLoading] = useState(true);
+
+  const location = useLocation();
+
+  const myFilter = new URLSearchParams(location.search).get("filter");
+
+  const getFetchURL = (page) => {
+    if (myFilter == "new_products") {
+      return `https://apps-1.lampnets.com/ecommb-staging/products/customers/category/1/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+    } else if (myFilter == "used_products") {
+      return `https://apps-1.lampnets.com/ecommb-staging/products/customers/category/2/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+    } else if (myFilter == "new arrivals") {
+      return `https://apps-1.lampnets.com/ecommb-staging/products/pagination/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+    } else if (myFilter == "best selling products") {
+      return `https://apps-1.lampnets.com/ecommb-staging/products/best-selling?pageNo=${page}&pageSize=12`;
+    } else if (myFilter == "recently viewed") {
+      return `https://apps-1.lampnets.com/ecommb-staging/products/reviewed?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+    } else if (myFilter) {
+      const encoded = encodeURI(myFilter);
+      return `https://apps-1.lampnets.com/ecommb-staging/products/search?pageNo=${page}&pageSize=12&query=${encoded}&sortBy=id&sortDir=asc`;
+    } else if (myFilter === null) {
+      return `https://apps-1.lampnets.com/ecommb-staging/products/pagination/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+    }
+  };
 
   const checkScreenSize = () => {
     if (window.innerWidth >= 1500) {
@@ -307,16 +340,15 @@ function ProductsListing() {
   };
 
   useEffect(() => {
+    const url = getFetchURL(currentPage);
+
     setIsLoading(true);
 
-    fetch(
-      `https://apps-1.lampnets.com/ecommb-staging/products/pagination/active?pageNo=${currentPage}&pageSize=12&sortBy=createdOn&sortDir=desc`
-    )
+    fetch(url)
       .then((res) => {
         return res.json();
       })
       .then((result) => {
-        // console.log(result);
         setProducts(result.content);
         setTotalPages(result.totalPages);
         setIsLoading(false);
@@ -324,7 +356,7 @@ function ProductsListing() {
       .catch((error) => {
         console.error();
       });
-  }, [currentPage]);
+  }, [currentPage, myFilter]);
 
   useEffect(() => {
     fetch(
@@ -357,6 +389,8 @@ function ProductsListing() {
   }, []);
 
   const handleSearch = (searchTerm) => {
+    // setSearchParams({ filter: searchTerm })
+
     setIsLoading(true);
 
     const encoded = encodeURI(searchTerm);
@@ -368,7 +402,6 @@ function ProductsListing() {
         return res.json();
       })
       .then((result) => {
-        // console.log(result);
         setProducts(result.content);
         setTotalPages(result.totalPages);
         setIsLoading(false);

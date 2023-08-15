@@ -12,14 +12,7 @@ function Hero() {
   const showSearchResult = (searchTerm) => {
     const encoded = encodeURI(searchTerm);
 
-    navigate(
-      "/products"
-      // {
-      //   state: {
-      //     fetchURL: `https://apps-1.lampnets.com/ecommb-staging/products/search?pageNo=0&pageSize=12&query=${encoded}&sortBy=id&sortDir=asc`,
-      //   },
-      // }
-    );
+    navigate(`/products?filter=${searchTerm}`);
   };
 
   return (

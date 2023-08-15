@@ -146,7 +146,7 @@ function Payment() {
 
   const goBack = () => {
     if (
-      componentToRender !== "shipping-method" ||
+      componentToRender !== "shipping-method" &&
       componentToRender !== "shipping-address"
     ) {
       return setComponentToRender("shipping-method");

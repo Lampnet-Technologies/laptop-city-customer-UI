@@ -16,9 +16,11 @@ const activeStyles = ({ isActive }) => {
 const subMenu = [
   {
     title: "new products",
+    param: "new_products",
   },
   {
     title: "used products",
+    param: "used_products",
   },
 ];
 
@@ -40,7 +42,14 @@ function NavDropdown({ submenus, dropdown, closeDropdown, closeNav }) {
             }
           }}
         >
-          <Link to="/products">{submenu.title}</Link>
+          <Link
+            to={{
+              pathname: "/products",
+              search: `?filter=${submenu.param}`,
+            }}
+          >
+            {submenu.title}
+          </Link>
         </li>
       ))}
     </ul>
@@ -278,7 +287,7 @@ function Nav() {
 
             <ul className="flex items-center justify-between gap-4 lg:gap-8 list-none whitespace-nowrap">
               <CustomLink to="/">Home</CustomLink>
-              <CustomLink to="/categories" subMenu={subMenu}>
+              <CustomLink subMenu={subMenu}>
                 categories <i className="bx bx-chevron-down bx-sm"></i>
               </CustomLink>
               <CustomLink to="/coupons">coupons</CustomLink>
@@ -324,7 +333,7 @@ function Nav() {
 
             <ul className="flex items-center justify-between gap-4 lg:gap-8 list-none whitespace-nowrap">
               <CustomLink to="/">Home</CustomLink>
-              <CustomLink to="/categories" subMenu={subMenu}>
+              <CustomLink subMenu={subMenu}>
                 categories <i className="bx bx-chevron-down bx-sm"></i>
               </CustomLink>
               <CustomLink to="/login">track orders</CustomLink>

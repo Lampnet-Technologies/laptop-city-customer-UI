@@ -166,7 +166,10 @@ export function Groups({ heading, products, seeMore }) {
           className="mt-10 flex justify-end items-center text-sm font-medium"
         >
           <Link
-            to="/products"
+            to={{
+              pathname: "/products",
+              search: `?filter=${heading}`,
+            }}
             className="flex justify-between items-center hover:text-green hover:font-bold"
           >
             See more <i className="bx bx-chevron-right bx-sm ml-0"></i>
@@ -237,7 +240,7 @@ function ProductGroups() {
 
   return (
     <div className="my-10 px-4 flex flex-col justify-between gap-10 md:gap-12 md:px-12 lg:px-24">
-      <Groups heading="New Arrivals" products={newArrivals} seeMore />
+      <Groups heading="new arrivals" products={newArrivals} seeMore />
       <Groups heading="best selling products" products={bestSelling} seeMore />
       <Groups heading="recently viewed" products={recentlyViewed} seeMore />
     </div>

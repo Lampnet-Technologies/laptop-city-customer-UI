@@ -43,7 +43,7 @@ function Categories() {
             }}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            onClick={() => navigate("/products")}
+            onClick={() => navigate(`/products?filter=new_products`)}
           >
             <h2 className="text-inherit text-white font-semibold capitalize lg:font-bold">
               new products
@@ -59,7 +59,7 @@ function Categories() {
             }}
             onMouseEnter={handleMouseEnter2}
             onMouseLeave={handleMouseLeave2}
-            onClick={() => navigate("/products")}
+            onClick={() => navigate(`/products?filter=used_products`)}
           >
             <h2 className="text-inherit text-white font-semibold capitalize lg:font-bold">
               used products
