@@ -11,12 +11,12 @@ const items = [
   {
     bg: `${IMAGES.adSlider.banner2}`,
   },
-  // {
-  //   bg: `${IMAGES.adSlider.ad1}`,
-  // },
-  // {
-  //   bg: `${IMAGES.adSlider.ad2}`,
-  // },
+  {
+    bg: `${IMAGES.adSlider.banner3}`,
+  },
+  {
+    bg: `${IMAGES.adSlider.banner4}`,
+  },
 ];
 
 function SliderContent({ bg }) {

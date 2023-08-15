@@ -1,5 +1,7 @@
-import React from "react";
-import { Link, NavLink } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { LoginContext } from "../../App";
+import SignOutAlert from "../../component/SignOutAlert";
 
 const links = [
   {
@@ -35,9 +37,32 @@ const activeStyles = ({ isActive }) => {
   }
 };
 
-function ProfileMenu({ onLogOut }) {
+function ProfileMenu() {
+  const [loggedIn, setLoggedIn] = useContext(LoginContext);
+  const [openAlert, setOpenAlert] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleToggleAlert = () => {
+    setOpenAlert(true);
+  };
+
+  const handleCloseAlert = () => {
+    setOpenAlert(false);
+  };
+
+  const handleLogOut = () => {
+    setLoggedIn(false);
+    localStorage.removeItem("token");
+    navigate("/products");
+  };
+
   return (
     <div className="h-screen lg:h-auto">
+      {openAlert && (
+        <SignOutAlert logOut={handleLogOut} closeAlert={handleCloseAlert} />
+      )}
+
       <div className="h-[560px] pt-4 pb-16 bg-filter-green md:w-[25vw] lg:w-72 md:rounded flex flex-col gap-4 justify-between">
         <div className="p-4 space-y-4 lg:space-y-3 lg:py-6">
           {links.map((link, index) => {
@@ -62,7 +87,7 @@ function ProfileMenu({ onLogOut }) {
           <button
             type="button"
             className="text-secondary-button border-2 border-solid border-secondary-button rounded outline-0 flex justify-center items-center gap-2 font-semibold py-4 px-[20px]"
-            onClick={() => onLogOut()}
+            onClick={handleToggleAlert}
           >
             <i className="bx bx-power-off bx-sm"></i>
             Log out

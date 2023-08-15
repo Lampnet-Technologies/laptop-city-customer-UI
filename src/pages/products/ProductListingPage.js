@@ -370,7 +370,7 @@ function ProductsListing() {
       .then((result) => {
         // console.log(result);
         setProducts(result.content);
-        // setTotalPages(result.totalPages)
+        setTotalPages(result.totalPages);
         setIsLoading(false);
       })
       .catch((error) => {
