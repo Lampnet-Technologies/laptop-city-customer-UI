@@ -309,6 +309,7 @@ function ProductsListing() {
   const [isLoading, setIsLoading] = useState(true);
 
   const location = useLocation();
+  const navigate = useNavigate();
 
   const myFilter = new URLSearchParams(location.search).get("filter");
 
@@ -465,7 +466,14 @@ function ProductsListing() {
                   })}
 
                   <div className="flex justify-end items-center">
-                    <button className="flex items-center text-sm">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleOpen();
+                        navigate("/products");
+                      }}
+                      className="flex items-center text-sm"
+                    >
                       View all <i className="bx bx-chevron-right bx-sm"></i>
                     </button>
                   </div>
