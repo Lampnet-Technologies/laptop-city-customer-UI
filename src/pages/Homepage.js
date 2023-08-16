@@ -14,18 +14,10 @@ function Homepage() {
   return (
     <div className="my-14 md:my-16 lg:mt-0 ">
       <Suspense fallback={<Loading />}>
-        <Suspense fallback={<Loading />}>
-          <Hero />
-        </Suspense>
-        <Suspense fallback={<Loading />}>
-          <Banner />
-        </Suspense>
-        <Suspense fallback={<Loading />}>
-          <Categories />
-        </Suspense>
-        <Suspense fallback={<Loading />}>
-          <ProductGroups />
-        </Suspense>
+        <Hero />
+        <Banner />
+        <Categories />
+        <ProductGroups />
       </Suspense>
 
       {/* <div className="bg-yellow-200 p-6 space-x-6 whitespace-nowrap overflow-scroll">
