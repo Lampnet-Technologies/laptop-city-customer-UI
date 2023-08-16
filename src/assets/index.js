@@ -52,6 +52,10 @@ const IMAGES = {
     banner2: require("./ad-slider/banner-2.png"),
     banner3: require("./ad-slider/banner-3.png"),
     banner4: require("./ad-slider/banner-4.png"),
+    banner1Small: require("./ad-slider/banner-1-small.png"),
+    banner2Small: require("./ad-slider/banner-2-small.png"),
+    banner3Small: require("./ad-slider/banner-3-small.png"),
+    banner4Small: require("./ad-slider/banner-4-small.png"),
   },
   productDesc: {
     productMain: require("./product-description/product-main-view.png"),

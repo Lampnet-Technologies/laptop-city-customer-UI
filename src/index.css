@@ -108,6 +108,10 @@
   animation: loading 1s infinite linear;
 }
 
+.adDesktop {
+  display: none;
+}
+
 .block__content p {
   line-height: 30px;
   font-weight: 400;
@@ -157,6 +161,14 @@
 }
 
 @media (min-width: 768px) {
+  .adDesktop {
+    display: inline;
+  }
+
+  .adMobile {
+    display: none;
+  }
+
   .block__content p {
     font-size: 18px;
   }
