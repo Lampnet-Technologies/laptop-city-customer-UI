@@ -91,6 +91,7 @@ function ProductContainer({ product }) {
           <div className="w-4/5 h-4/5 flex justify-center items-center">
             {product.images.length >= 1 ? (
               <img
+                loading="lazy"
                 src={product.images[0].image}
                 alt={product.name || ""}
                 className="max-w-full max-h-full"
@@ -104,13 +105,7 @@ function ProductContainer({ product }) {
             )}
           </div>
         )}
-        {/* <div className="w-4/5 h-4/5 flex justify-center items-center">
-          <img
-            src={product.img || ""}
-            alt={product.name || ""}
-            className="max-w-full max-h-full"
-          />
-        </div> */}
+
         <div
           className="bg-green text-white font-medium capitalize w-9 h-4 rounded-sm flex justify-center items-center absolute top-4 right-2 z-40"
           style={{

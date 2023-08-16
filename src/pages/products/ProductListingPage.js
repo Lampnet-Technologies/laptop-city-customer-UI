@@ -8,7 +8,7 @@ import {
 import AdSlider from "../../component/adSlider";
 import { Banner } from "../../component/homepage";
 import SearchBox from "../../component/searchBox";
-// import ProductGroups, { Groups } from "../../component/homepage/productGroups";
+import ProductGroups, { Groups } from "../../component/homepage/productGroups";
 // import Pagination from "../../component/pagination";
 import IMAGES from "../../assets";
 import NairaSymbol from "../../component/nairaSymbol";
@@ -165,6 +165,7 @@ function ProductContainer({ product }) {
           <div className="w-4/5 h-4/5 flex justify-center items-center">
             {product.images.length >= 1 ? (
               <img
+                loading="lazy"
                 src={product.images[0].image}
                 alt={product.name || ""}
                 className="max-w-full max-h-full"
@@ -207,7 +208,7 @@ function ProductContainer({ product }) {
   );
 }
 
-function Groups({ heading, products, seeMore }) {
+function MainGroups({ heading, products, seeMore }) {
   return (
     <div className="max-w-full w-fit">
       {heading && (
@@ -490,7 +491,7 @@ function ProductsListing() {
           {isLoading && <Loading />}
 
           <div className="my-5 px-2 flex flex-col justify-between gap-10 md:px-6 lg:px-0">
-            <Groups products={products} />
+            <MainGroups products={products} />
           </div>
         </div>
       </div>
