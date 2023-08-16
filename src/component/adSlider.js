@@ -108,7 +108,7 @@ function AdSlider() {
   };
 
   return (
-    <div className="p-4 w-full md:p-0 md:mb-8 rounded">
+    <div className="px-4 mb-4 w-full md:p-0 md:mb-8 rounded">
       <Slider {...settings}>
         {items.map((item, index) => {
           return <SliderContent key={index} image={item} />;
