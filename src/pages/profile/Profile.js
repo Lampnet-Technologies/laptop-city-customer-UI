@@ -38,7 +38,7 @@ function Profile() {
           <Outlet />
         </div>
 
-        <div className="hidden md:flex md:justify-between lg:justify-start md:gap-12 lg:gap-24 items-start pl-6 md:pr-12 lg:pr-24">
+        <div className="hidden w-full md:flex md:justify-between lg:justify-start md:gap-12 lg:gap-24 items-start pl-6 md:pr-12 lg:pr-24">
           <ProfileMenu />
 
           <Outlet />

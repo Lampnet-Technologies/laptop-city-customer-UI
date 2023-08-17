@@ -564,7 +564,7 @@ function ProductDesc() {
         <div className="h-full flex items-center gap-5 px-4 relative md:px-12 lg:px-24">
           <button
             className="rounded-full outline-none bg-transparent flex items-center text-lg lg:text-[22px] font-medium"
-            onClick={() => navigate("/products")}
+            onClick={() => navigate(-1)}
           >
             {/* <img src={IMAGES.icons.arrowBackward} alt="back" /> */}
             <i className="bx bx-chevron-left bx-md"></i>

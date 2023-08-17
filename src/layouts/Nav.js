@@ -3,6 +3,9 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import IMAGES from "../assets";
 import LaptopCityButton from "../component/button";
 import { LoginContext, UserProfileContext } from "../App";
+import { IconButton } from "@mui/material";
+import ProfileDropdown from "../component/ProfileDropdown";
+import SignOutAlert from "../component/SignOutAlert";
 
 const activeStyles = ({ isActive }) => {
   if (isActive) {
@@ -13,7 +16,7 @@ const activeStyles = ({ isActive }) => {
   }
 };
 
-const subMenu = [
+const categoriesSubMenu = [
   {
     title: "new products",
     param: "new_products",
@@ -127,6 +130,33 @@ function Nav() {
   const [loggedIn, setLoggedIn] = useContext(LoginContext);
   const [profile, setProfile] = useContext(UserProfileContext);
   const [clicked, setClicked] = useState(false);
+  const [openAlert, setOpenAlert] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleToggleAlert = () => {
+    setOpenAlert(true);
+  };
+
+  const handleCloseAlert = () => {
+    setOpenAlert(false);
+  };
+
+  const handleLogOut = () => {
+    setLoggedIn(false);
+    localStorage.removeItem("token");
+    setOpenAlert(false);
+    navigate("/products");
+  };
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const handleOpenProfileMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseProfileMenu = () => {
+    setAnchorEl(null);
+  };
 
   const handleShowNav = () => {
     setClicked(true);
@@ -145,6 +175,9 @@ function Nav() {
 
   return (
     <>
+      {openAlert && (
+        <SignOutAlert logOut={handleLogOut} closeAlert={handleCloseAlert} />
+      )}
       <nav className="z-50 sticky top-0 bg-[#fbfbfb] p-4 flex justify-between items-center gap-4 md:hidden">
         <div className="flex justify-center items-center w-32 h-11">
           <Link to="/" onClick={handleCloseNav}>
@@ -185,7 +218,7 @@ function Nav() {
               <CustomLink
                 onClick={handleCloseNav}
                 to="/categories"
-                subMenu={subMenu}
+                subMenu={categoriesSubMenu}
               >
                 categories <i className="bx bx-chevron-down bx-sm"></i>
               </CustomLink>
@@ -221,7 +254,7 @@ function Nav() {
               <CustomLink
                 onClick={handleCloseNav}
                 to="/categories"
-                subMenu={subMenu}
+                subMenu={categoriesSubMenu}
               >
                 categories <i className="bx bx-chevron-down bx-sm"></i>
               </CustomLink>
@@ -287,7 +320,7 @@ function Nav() {
 
             <ul className="flex items-center justify-between gap-4 lg:gap-8 list-none whitespace-nowrap">
               <CustomLink to="/">Home</CustomLink>
-              <CustomLink subMenu={subMenu}>
+              <CustomLink subMenu={categoriesSubMenu}>
                 categories <i className="bx bx-chevron-down bx-sm"></i>
               </CustomLink>
               <CustomLink to="/coupons">coupons</CustomLink>
@@ -300,21 +333,37 @@ function Nav() {
 
               <div className="h-6 w-px border border-black"></div>
 
-              <NavLink
+              {/* <NavLink
                 to="/personal-info"
                 className="hover:text-green active:text-green focus:text-green"
                 style={activeStyles}
-              >
-                {profile?.avatar ? (
-                  <img
-                    src={profile?.avatar}
-                    alt={profile?.username}
-                    className="w-8 h-8 lg:w-10 lg:h-10 rounded-full"
+              > */}
+              <div>
+                <IconButton
+                  className="hover:text-green active:text-green focus:text-green"
+                  onClick={handleOpenProfileMenu}
+                >
+                  {profile?.avatar ? (
+                    <img
+                      src={profile?.avatar}
+                      alt={profile?.username}
+                      className="w-8 h-8 lg:w-10 lg:h-10 rounded-full"
+                    />
+                  ) : (
+                    <i className="bx bxs-user-circle bx-md"></i>
+                  )}
+                </IconButton>
+                {anchorEl && (
+                  <ProfileDropdown
+                    anchorEl={anchorEl}
+                    handleClose={handleCloseProfileMenu}
+                    picture={profile?.avatar}
+                    username={profile?.username}
+                    logout={handleToggleAlert}
                   />
-                ) : (
-                  <i className="bx bxs-user-circle bx-md"></i>
                 )}
-              </NavLink>
+              </div>
+              {/* </NavLink> */}
             </ul>
           </div>
         </nav>
@@ -333,7 +382,7 @@ function Nav() {
 
             <ul className="flex items-center justify-between gap-4 lg:gap-8 list-none whitespace-nowrap">
               <CustomLink to="/">Home</CustomLink>
-              <CustomLink subMenu={subMenu}>
+              <CustomLink subMenu={categoriesSubMenu}>
                 categories <i className="bx bx-chevron-down bx-sm"></i>
               </CustomLink>
               <CustomLink to="/login">track orders</CustomLink>

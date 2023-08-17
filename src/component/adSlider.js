@@ -27,7 +27,7 @@ function NextArrow(props) {
   const { onClick } = props;
   return (
     <div
-      className="w-10 h-10 rounded-full bg-[#63BB8295] absolute right-5 top-[45%] flex justify-center items-center"
+      className="w-10 h-10 rounded-full bg-[#63BB8298] absolute right-5 top-[45%] cursor-pointer flex justify-center items-center"
       onClick={onClick}
     >
       <i className="bx bxs-chevron-right"></i>
@@ -39,7 +39,7 @@ function PrevArrow(props) {
   const { onClick } = props;
   return (
     <div
-      className="w-10 h-10 rounded-full bg-[#63BB8298] absolute z-10 left-5 top-[45%] flex justify-center items-center"
+      className="w-10 h-10 rounded-full bg-[#63BB8298] absolute z-10 left-5 top-[45%] cursor-pointer flex justify-center items-center"
       onClick={onClick}
     >
       <i className="bx bxs-chevron-left"></i>
@@ -60,12 +60,12 @@ function SliderContent({ image }) {
         <img
           src={image.bgSmall}
           alt="banner"
-          className="max-w-full max-h-full w-full h-full"
+          className="max-w-full max-h-full w-full h-full rounded"
         />
       </div>
 
       <div
-        className="hidden md:block h-60 w-full bg-cover bg-center bg-no-repeat rounded lg:bg-contain lg:h-80"
+        className="hidden md:block h-56 w-full bg-cover bg-center bg-no-repeat rounded lg:bg-contain lg:h-64 xl:h-80"
         // style={{
         //   // backgroundImage: `linear-gradient(0deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)), url(${bg})`,
         //   // backgroundImage: `url(${bg})`,
@@ -74,7 +74,7 @@ function SliderContent({ image }) {
         <img
           src={image.bg}
           alt="banner"
-          className="max-w-full max-h-full w-full h-full"
+          className="max-w-full max-h-full w-full h-full rounded-md"
         />
       </div>
     </>
@@ -100,7 +100,7 @@ function AdSlider() {
       <div
         style={{
           position: "absolute",
-          bottom: "5%",
+          bottom: "4%",
         }}
       >
         <ul style={{ margin: "0px" }}> {dots} </ul>
@@ -109,7 +109,10 @@ function AdSlider() {
   };
 
   return (
-    <div className="px-4 mb-4 w-full md:p-0 md:mb-8 rounded">
+    <div
+      className="px-4 mb-4 w-full md:w-[90%] md:mx-auto md:p-0 md:mb-8 rounded"
+      // style={{ border: "3px solid red" }}
+    >
       <Slider {...settings}>
         {items.map((item, index) => {
           return <SliderContent key={index} image={item} />;

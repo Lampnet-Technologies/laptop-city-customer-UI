@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import EmptyCart from "./EmptyCart";
 import RenderedCart from "./RenderedCart";
 import Loading from "../../component/loading";
+import DeleteButtonAlert from "../../component/DeleteButtonAlert";
 
 const localCart = [
   {
@@ -40,7 +41,9 @@ const accessToken = localStorage.getItem("token");
 function Cart() {
   const [cart, setCart] = useState([]);
   const [total, setTotal] = useState();
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
+  const [deleteAlert, setDeleteAlert] = useState(false);
+  const idRef = useRef();
 
   // useEffect(() => {
   //   setCart(localCart);
@@ -60,23 +63,62 @@ function Cart() {
         // console.log(result);
         setCart(result.cartItems);
         setTotal(result.total);
-        setIsLoading(false);
+        // setIsLoading(false);
       })
       .catch((error) => {
         console.error(error.message);
       });
   }, []);
 
+  const handleDelete = (id) => {
+    idRef.current = id;
+    setDeleteAlert(true);
+
+    // ** For reference purposes
+  };
+
+  const handleDeleteItem = () => {
+    console.log(idRef.current);
+    fetch(
+      `https://apps-1.lampnets.com/ecommb-staging/cart-items/delete/${idRef.current}`,
+      {
+        method: "DELETE",
+        headers: {
+          "content-type": "application/json",
+          Authorization: "Bearer " + accessToken,
+        },
+      }
+    )
+      .then((res) => {
+        setDeleteAlert(false);
+
+        window.location.reload();
+      })
+      .catch((error) => {
+        alert(error.message);
+      });
+  };
+
   return (
     <div className="border border-solid border-green rounded w-full">
       <div className="border-b border-b-solid border-b-gray-400 p-4 md:p-8 text-center text-lg font-semibold capitalize md:text-xl lg:text-[27px]">
-        shopping Cart
+        shopping Cart ({cart.length})
       </div>
 
-      {isLoading && <Loading />}
+      {/* {isLoading && <Loading />} */}
+      {deleteAlert && (
+        <DeleteButtonAlert
+          setter={setDeleteAlert}
+          deleteItem={handleDeleteItem}
+        />
+      )}
 
       <div>
-        {cart.length < 1 ? <EmptyCart /> : <RenderedCart items={cart} />}
+        {cart.length < 1 ? (
+          <EmptyCart />
+        ) : (
+          <RenderedCart items={cart} remove={handleDelete} />
+        )}
       </div>
     </div>
   );

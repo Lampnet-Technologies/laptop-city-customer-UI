@@ -16,7 +16,7 @@ const links = [
   },
   {
     icon: "bx bx-cart-add bx-sm",
-    name: "shopping cart",
+    name: "cart",
     to: "/shopping-cart",
   },
   {
