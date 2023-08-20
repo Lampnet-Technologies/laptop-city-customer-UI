@@ -18,6 +18,8 @@ import LaptopCityButton from "../../component/button";
 import Pagination from "@mui/material/Pagination";
 import PaginationItem from "@mui/material/PaginationItem";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import ProductFilter from "../../component/ProductFilter";
+import { IconButton } from "@mui/material";
 
 // const newArrivals = [
 //   {
@@ -247,55 +249,59 @@ function MainGroups({ heading, products, seeMore }) {
   );
 }
 
-function FilterGroup({ item }) {
-  const [checkedState, setCheckedState] = useState(
-    new Array(item.filter.length).fill(false)
-  );
+// function FilterGroup({ item }) {
+//   // const [brandId, setBrandId] = useState("")
+//   // const [categoryId, setCategoryId] = useState("")
+//   // const [productTypeId, setProductTypeId] = useState("")
 
-  const handleChange = (position, name) => {
-    const updatedCheckedState = checkedState.map((item, index) =>
-      index === position ? !item : item
-    );
+//   const [checkedState, setCheckedState] = useState(
+//     new Array(item.filter.length).fill(false)
+//   );
 
-    setCheckedState(updatedCheckedState);
+//   const handleChange = (position, name) => {
+//     const updatedCheckedState = checkedState.map((item, index) =>
+//       index === position ? !item : item
+//     );
 
-    // ** Fetch products using the {name} to filter
-  };
+//     setCheckedState(updatedCheckedState);
 
-  return (
-    <div className="flex flex-col gap-6">
-      <h4 className="text-lg font-bold capitalize text-center">{item.title}</h4>
+//     // ** Fetch products using the {name} to filter
+//   };
 
-      <div className="space-y-3">
-        {item.filter &&
-          item.filter.map((name, index) => {
-            return (
-              <div
-                key={index}
-                className="bg-white py-5 px-4 flex items-center gap-5 rounded-md"
-              >
-                <input
-                  type="checkbox"
-                  id={`${name}-filter`}
-                  name={name}
-                  value={name}
-                  checked={checkedState[index]}
-                  onChange={() => handleChange(index, name)}
-                  className="accent-green cursor-pointer caret-green w-[18px] h-[18px] lg:w-5 lg:h-5"
-                />
-                <label
-                  htmlFor={`${name}-filter`}
-                  className="capitalize text-sm font-semibold cursor-pointer"
-                >
-                  {name}
-                </label>
-              </div>
-            );
-          })}
-      </div>
-    </div>
-  );
-}
+//   return (
+//     <div className="flex flex-col gap-6">
+//       <h4 className="text-lg font-bold capitalize text-center">{item.title}</h4>
+
+//       <div className="space-y-3">
+//         {item.filter &&
+//           item.filter.map((name, index) => {
+//             return (
+//               <div
+//                 key={index}
+//                 className="bg-white py-5 px-4 flex items-center gap-5 rounded-md"
+//               >
+//                 <input
+//                   type="checkbox"
+//                   id={`${name}-filter`}
+//                   name={name}
+//                   value={name}
+//                   checked={checkedState[index]}
+//                   onChange={() => handleChange(index, name)}
+//                   className="accent-green cursor-pointer caret-green w-[18px] h-[18px] lg:w-5 lg:h-5"
+//                 />
+//                 <label
+//                   htmlFor={`${name}-filter`}
+//                   className="capitalize text-sm font-semibold cursor-pointer"
+//                 >
+//                   {name}
+//                 </label>
+//               </div>
+//             );
+//           })}
+//       </div>
+//     </div>
+//   );
+// }
 
 function ProductsListing() {
   const [showFilters, setShowFilters] = useState(false);
@@ -304,6 +310,10 @@ function ProductsListing() {
   const [recentlyViewed, setRecentlyViewed] = useState(null);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
+
+  const [brandId, setBrandId] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [productTypeId, setProductTypeId] = useState("");
 
   // const [searchParams, setSearchParams] = useSearchParams();
 
@@ -414,6 +424,27 @@ function ProductsListing() {
       });
   };
 
+  const handleFilter = () => {
+    fetch(
+      `https://apps-1.lampnets.com/ecommb-staging/products/filter-products?${
+        brandId && `brandId=${brandId}`
+      }${categoryId && `&categoryId=${categoryId}`}&pageNo=0&pageSize=12${
+        productTypeId && `&productTypeId=${productTypeId}`
+      }&sortBy=id&sortDir=desc`
+    )
+      .then((res) => {
+        return res.json();
+      })
+      .then((result) => {
+        setProducts(result.content);
+        setTotalPages(result.totalPages);
+        setCurrentPage(result.pageNo);
+      })
+      .catch((error) => {
+        console.error();
+      });
+  };
+
   const handleChangePage = (event, page) => {
     setCurrentPage(page - 1);
   };
@@ -431,26 +462,59 @@ function ProductsListing() {
       <Banner />
 
       <div className="flex items-start justify-between lg:px-8 lg:mt-6 mb-8">
-        <div className="hidden lg:block w-80 mr-20 bg-filter-green rounded">
-          <div className="pt-4 pb-8 px-3 flex flex-col gap-10">
-            {filters.map((item, index) => {
+        <div
+          className="filterDesktop hidden lg:block w-80 max-h-[1300px] overflow-y-auto mr-20 bg-filter-green rounded"
+          style={{ scrollBehavior: "smooth", scrollbarWidth: "none" }}
+        >
+          <div className="m-2 mt-3 text-right">
+            <IconButton onClick={handleFilter} title="click to send filter">
+              <i className="bx bxs-send text-green"></i>
+            </IconButton>
+          </div>
+
+          <div className="pb-8 px-3 flex flex-col gap-10">
+            {/* {filters.map((item, index) => {
               return <FilterGroup item={item} key={index} />;
-            })}
+            })} */}
+            <ProductFilter
+              fetchUrl="https://apps-1.lampnets.com/ecommb-staging/categories"
+              title="category"
+              checked={categoryId}
+              setter={setCategoryId}
+            />
+            <ProductFilter
+              fetchUrl="https://apps-1.lampnets.com/ecommb-staging/brands"
+              title="brands"
+              checked={brandId}
+              setter={setBrandId}
+            />
+            <ProductFilter
+              fetchUrl="https://apps-1.lampnets.com/ecommb-staging/product-types"
+              title="product"
+              checked={productTypeId}
+              setter={setProductTypeId}
+            />
 
             <div className="flex justify-end items-center">
-              <button className="flex items-center text-sm">
+              <button
+                className="flex items-center text-sm"
+                onClick={() => {
+                  handleOpen();
+                  navigate("/products");
+                }}
+              >
                 View all <i className="bx bx-chevron-right bx-sm"></i>
               </button>
             </div>
 
             <div className="text-center lg:mt-4 lg:mb-2">
-              <LaptopCityButton>search</LaptopCityButton>
+              <LaptopCityButton onClick={handleFilter}>search</LaptopCityButton>
             </div>
           </div>
         </div>
 
         <div className="w-full md:pl-4 lg:pl-0">
-          <div className="sticky top-[10%] z-20 bg-filter-green md:relative md:bg-transparent">
+          <div className="sticky top-[9%] z-20 bg-filter-green md:relative md:bg-transparent">
             <SearchBox show={handleOpen} search={handleSearch} />
 
             {showFilters ? (
@@ -461,10 +525,27 @@ function ProductsListing() {
                     showFilters ? "#mobileFilter active" : "#mobileFilter"
                   }
                 >
-                  {/* <div className="h-full flex flex-col gap-6"> */}
-                  {filters.map((item, index) => {
+                  {/* {filters.map((item, index) => {
                     return <FilterGroup item={item} key={index} />;
-                  })}
+                  })} */}
+                  <ProductFilter
+                    fetchUrl="https://apps-1.lampnets.com/ecommb-staging/categories"
+                    title="category"
+                    checked={categoryId}
+                    setter={setCategoryId}
+                  />
+                  <ProductFilter
+                    fetchUrl="https://apps-1.lampnets.com/ecommb-staging/brands"
+                    title="brands"
+                    checked={brandId}
+                    setter={setBrandId}
+                  />
+                  <ProductFilter
+                    fetchUrl="https://apps-1.lampnets.com/ecommb-staging/product-types"
+                    title="product"
+                    checked={productTypeId}
+                    setter={setProductTypeId}
+                  />
 
                   <div className="flex justify-end items-center">
                     <button
@@ -480,8 +561,15 @@ function ProductsListing() {
                   </div>
                   {/* </div> */}
 
-                  <div className="text-center mt-3 mb-5">
-                    <LaptopCityButton>search</LaptopCityButton>
+                  <div className="text-center mt-3 mb-5 sticky bottom-0 bg-filter-green py-4">
+                    <LaptopCityButton
+                      onClick={() => {
+                        handleOpen();
+                        handleFilter();
+                      }}
+                    >
+                      search
+                    </LaptopCityButton>
                   </div>
                 </div>
               </div>

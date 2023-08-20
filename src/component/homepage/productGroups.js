@@ -107,7 +107,7 @@ function ProductContainer({ product }) {
         )}
 
         <div
-          className="bg-green text-white font-medium capitalize w-9 h-4 rounded-sm flex justify-center items-center absolute top-4 right-2 z-40"
+          className="bg-green text-white font-medium capitalize w-9 h-4 rounded-sm flex justify-center items-center absolute top-4 right-2 z-10"
           style={{
             fontSize: "10px",
           }}
@@ -115,7 +115,7 @@ function ProductContainer({ product }) {
           {product.category == "BRAND NEW" ? "new" : "used"}
           {/* {product.category} */}
         </div>
-        <div className="flex justify-center items-center w-3 h-4 absolute bottom-3 right-2 z-40">
+        <div className="flex justify-center items-center w-3 h-4 absolute bottom-3 right-2 z-10">
           <img
             src={IMAGES.icons.cartSmall}
             alt="cart"

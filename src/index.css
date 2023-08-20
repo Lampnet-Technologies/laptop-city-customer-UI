@@ -91,7 +91,8 @@
 
   margin-left: 5px;
   overflow-y: auto;
-  padding: 24px 16px;
+  /* padding: 24px 16px; */
+  padding: 24px 16px 0px;
   border-radius: 5px;
   background-color: #aedabe;
   box-shadow: 0 40px 60px rgba(0, 0, 0, 0.1);
@@ -136,6 +137,10 @@
 
 .block__content figure {
   margin-block: 20px;
+}
+
+.filterDesktop::-webkit-scrollbar {
+  width: 0px;
 }
 
 @keyframes loading {

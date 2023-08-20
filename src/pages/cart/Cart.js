@@ -39,7 +39,7 @@ const activeStyles = ({ isActive }) => {
 const accessToken = localStorage.getItem("token");
 
 function Cart() {
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(null);
   const [total, setTotal] = useState();
   // const [isLoading, setIsLoading] = useState(true);
   const [deleteAlert, setDeleteAlert] = useState(false);
@@ -60,7 +60,6 @@ function Cart() {
         return res.json();
       })
       .then((result) => {
-        // console.log(result);
         setCart(result.cartItems);
         setTotal(result.total);
         // setIsLoading(false);
@@ -102,7 +101,7 @@ function Cart() {
   return (
     <div className="border border-solid border-green rounded w-full">
       <div className="border-b border-b-solid border-b-gray-400 p-4 md:p-8 text-center text-lg font-semibold capitalize md:text-xl lg:text-[27px]">
-        shopping Cart ({cart.length})
+        shopping Cart {cart && `(${cart.length})`}
       </div>
 
       {/* {isLoading && <Loading />} */}
@@ -113,12 +112,20 @@ function Cart() {
         />
       )}
 
-      <div>
+      {/* <div>
         {cart.length < 1 ? (
           <EmptyCart />
         ) : (
           <RenderedCart items={cart} remove={handleDelete} />
         )}
+      </div> */}
+
+      <div>
+        {cart && cart.length < 1 ? (
+          <EmptyCart />
+        ) : cart && cart.length > 1 ? (
+          <RenderedCart items={cart} remove={handleDelete} />
+        ) : null}
       </div>
     </div>
   );

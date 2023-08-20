@@ -212,6 +212,19 @@ function Nav() {
                 )}
               </NavLink>
 
+              <IconButton
+                className="hover:text-green active:text-green focus:text-green"
+                sx={{ p: 0, my: 1 }}
+                onClick={() => {
+                  handleCloseNav();
+                  navigate("/shopping-cart");
+                }}
+              >
+                <i className="bx bx-cart-add text-3xl text-[#111] transition ease-in-out duration-200 hover:text-green"></i>
+              </IconButton>
+
+              {/* <div className="h-px w-4/5 border border-black"></div> */}
+
               <CustomLink onClick={handleCloseNav} to="/">
                 Home
               </CustomLink>
@@ -222,12 +235,12 @@ function Nav() {
               >
                 categories <i className="bx bx-chevron-down bx-sm"></i>
               </CustomLink>
-              <CustomLink onClick={handleCloseNav} to="/my-orders">
+              {/* <CustomLink onClick={handleCloseNav} to="/my-orders">
                 track orders
               </CustomLink>
               <CustomLink onClick={handleCloseNav} to="/coupons">
                 coupons
-              </CustomLink>
+              </CustomLink> */}
 
               <CustomLink onClick={handleCloseNav} to="/blog">
                 Blog
@@ -235,6 +248,18 @@ function Nav() {
               <CustomLink onClick={handleCloseNav} to="/about">
                 about
               </CustomLink>
+
+              <button
+                type="button"
+                className="text-secondary-button border border-solid border-secondary-button rounded-md outline-0 flex justify-center items-center gap-2 font-semibold p-2 my-4"
+                onClick={() => {
+                  handleCloseNav();
+                  handleToggleAlert();
+                }}
+              >
+                <i className="bx bx-power-off bx-sm"></i>
+                Log out
+              </button>
             </ul>
           </div>
         ) : (
@@ -306,7 +331,7 @@ function Nav() {
       {clicked ? <div className="overlay" /> : null}
 
       {loggedIn ? (
-        <nav className="hidden z-50 sticky top-0 bg-[#fbfbfb] md:block text-sm lg:text-base py-4 px-12 lg:px-24">
+        <nav className="hidden z-50 sticky top-0 bg-[#fbfbfb] md:block text-sm lg:text-base xl:text-lg py-4 px-12 lg:px-24">
           <div className="w-full flex justify-between items-center gap-6">
             <div className="flex items-center w-36 h-11">
               <Link to="/">
@@ -323,13 +348,22 @@ function Nav() {
               <CustomLink subMenu={categoriesSubMenu}>
                 categories <i className="bx bx-chevron-down bx-sm"></i>
               </CustomLink>
-              <CustomLink to="/coupons">coupons</CustomLink>
-              <CustomLink to="/my-orders">track orders</CustomLink>
-            </ul>
-
-            <ul className="flex items-center justify-between gap-4 lg:gap-8 list-none whitespace-nowrap">
+              {/* <CustomLink to="/coupons">coupons</CustomLink>
+              <CustomLink to="/my-orders">track orders</CustomLink> */}
               <CustomLink to="/blog">Blog</CustomLink>
               <CustomLink to="/about">about</CustomLink>
+            </ul>
+
+            <ul className="flex items-center justify-between gap-4 lg:gap-4 list-none whitespace-nowrap">
+              {/* <CustomLink to="/blog">Blog</CustomLink>
+              <CustomLink to="/about">about</CustomLink> */}
+              <IconButton
+                className="hover:text-green active:text-green focus:text-green"
+                sx={{ p: 1 }}
+                onClick={() => navigate("/shopping-cart")}
+              >
+                <i className="bx bx-cart-add text-[#111] transition ease-in-out duration-200 hover:text-green"></i>
+              </IconButton>
 
               <div className="h-6 w-px border border-black"></div>
 
@@ -341,6 +375,7 @@ function Nav() {
               <div>
                 <IconButton
                   className="hover:text-green active:text-green focus:text-green"
+                  sx={{ p: 0 }}
                   onClick={handleOpenProfileMenu}
                 >
                   {profile?.avatar ? (
