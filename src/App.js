@@ -21,14 +21,7 @@ import {
 } from "./pages/profile";
 import { Coupons, RenderedCoupons } from "./pages/coupon";
 import Payment from "./pages/payment";
-import {
-  OrderReview,
-  OrderSuccessful,
-  PaymentMethod,
-  ShippingAddress,
-  ShippingMethod,
-  TrackOrder,
-} from "./views/payment";
+import { OrderSuccessful, TrackOrder } from "./views/payment";
 import Company from "./pages/about";
 import { About, PrivacyPolicy, TermsOfUse } from "./views/company";
 import PageNotFound from "./pages/404";
@@ -37,6 +30,7 @@ import { MyOrders } from "./pages/orders";
 import { lazy } from "react";
 import { Suspense } from "react";
 import Loading from "./component/loading";
+import OrderDetails from "./pages/orders/OrderDetails";
 
 export const LoginContext = createContext();
 export const UserProfileContext = createContext();
@@ -50,14 +44,6 @@ const ProductDesc = lazy(() => import("./pages/products/ProductDescPage"));
 function App() {
   const [loggedIn, setLoggedIn] = useState(localStorage.token ? true : false);
   const [profile, setProfile] = useState("");
-
-  // useEffect(() => {
-  //   if (localStorage.token) {
-  //     setLoggedIn(true);
-  //   } else {
-  //     setLoggedIn(false);
-  //   }
-  // }, []);
 
   useEffect(() => {
     const accessToken = localStorage.getItem("token");
@@ -90,7 +76,7 @@ function App() {
             <Nav />
 
             <Suspense fallback={<Loading />}>
-              <div className="pb-10">
+              <div className="pb-10 w-full">
                 <Routes>
                   <Route path="/" element={<Homepage />} />
                   <Route path="/products" element={<ProductsListing />} />
@@ -105,6 +91,10 @@ function App() {
                       <Route path="/personal-info" element={<PersonalInfo />} />
                       <Route path="/contact-info" element={<ContactInfo />} />
                     </Route>
+                    <Route
+                      path="/my-orders/viewOrder/:id"
+                      element={<OrderDetails />}
+                    />
                     <Route path="/my-orders" element={<MyOrders />} />
                     <Route path="/shopping-cart" element={<Cart />} />
                     <Route element={<Coupons />}>

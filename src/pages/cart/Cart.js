@@ -112,21 +112,23 @@ function Cart() {
         />
       )}
 
-      {/* <div>
-        {cart.length < 1 ? (
-          <EmptyCart />
-        ) : (
-          <RenderedCart items={cart} remove={handleDelete} />
-        )}
-      </div> */}
+      {!cart && null}
 
       <div>
+        {cart && cart.length < 1 ? (
+          <EmptyCart />
+        ) : (
+          <RenderedCart total={total} items={cart} remove={handleDelete} />
+        )}
+      </div>
+
+      {/* <div>
         {cart && cart.length < 1 ? (
           <EmptyCart />
         ) : cart && cart.length > 1 ? (
           <RenderedCart items={cart} remove={handleDelete} />
         ) : null}
-      </div>
+      </div> */}
     </div>
   );
 }

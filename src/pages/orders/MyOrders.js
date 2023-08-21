@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import EmptyOrders from "./EmptyOrders";
 import RenderedOrders from "./RenderedOrders";
+import { useNavigate } from "react-router-dom";
 
 const localOrders = [
   {
@@ -37,12 +38,39 @@ const localOrders = [
   },
 ];
 
+const accessToken = localStorage.getItem("token");
+
 function MyOrders() {
   const [orders, setOrders] = useState([]);
 
+  const navigate = useNavigate();
+
+  // useEffect(() => {
+  //   setOrders(localOrders);
+  // }, []);
+
   useEffect(() => {
-    setOrders(localOrders);
+    fetch("https://apps-1.lampnets.com/ecommb-staging/orders/my-orders", {
+      headers: {
+        "content-type": "application/json",
+        Authorization: "Bearer " + accessToken,
+      },
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((result) => {
+        setOrders(result);
+      })
+      .catch((error) => {
+        console.error();
+      });
   }, []);
+
+  const handleViewDetails = (id) => {
+    navigate("/my-orders/viewOrder/" + id);
+  };
+
   return (
     <div className="border border-solid border-green rounded w-full">
       <div className="border-b border-b-solid border-b-gray-400 p-4 md:p-8 text-center text-lg font-semibold capitalize md:text-xl lg:text-[27px]">
@@ -53,7 +81,7 @@ function MyOrders() {
         {orders.length < 1 ? (
           <EmptyOrders />
         ) : (
-          <RenderedOrders orders={orders} />
+          <RenderedOrders orders={orders} viewDetails={handleViewDetails} />
         )}
       </div>
     </div>

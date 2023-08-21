@@ -1,8 +1,4 @@
-import React from "react";
-import { Suspense } from "react";
-// import { Banner, Categories, ProductGroups } from "../component/homepage";
-// import Hero from "../component/homepage/hero";
-import { lazy } from "react";
+import React, { lazy, Suspense } from "react";
 import Loading from "../component/loading";
 
 const Hero = lazy(() => import("../component/homepage/hero"));
@@ -19,16 +15,6 @@ function Homepage() {
         <Categories />
         <ProductGroups />
       </Suspense>
-
-      {/* <div className="bg-yellow-200 p-6 space-x-6 whitespace-nowrap overflow-scroll">
-        <div className="w-52 h-52 bg-red-300 inline-block"></div>
-        <div className="w-52 h-52 bg-red-300 inline-block"></div>
-        <div className="w-52 h-52 bg-red-300 inline-block"></div>
-        <div className="w-52 h-52 bg-red-300 inline-block"></div>
-        <div className="w-52 h-52 bg-red-300 inline-block"></div>
-        <div className="w-52 h-52 bg-red-300 inline-block"></div>
-        <div className="w-52 h-52 bg-red-300 inline-block"></div>
-      </div> */}
     </div>
   );
 }

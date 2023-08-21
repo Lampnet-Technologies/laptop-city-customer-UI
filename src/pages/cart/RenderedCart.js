@@ -1,9 +1,8 @@
-import React, { useState } from "react";
-import NairaSymbol from "../../component/nairaSymbol";
-import { useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
+import NairaSymbol from "../../component/nairaSymbol";
 
-function RenderedCart({ items, remove }) {
+function RenderedCart({ total, items, remove }) {
   const navigate = useNavigate();
 
   // let num = 1;
@@ -19,107 +18,6 @@ function RenderedCart({ items, remove }) {
   };
 
   return (
-    // <div className="overflow-x-auto mt-12 mb-24">
-    //   <table className="w-full whitespace-nowrap border-collapse">
-    //     <thead>
-    //       <tr style={{ borderBlock: "0.5px solid #7f98ae" }}>
-    //         <th
-    //           style={{ fontVariant: "all-small-caps" }}
-    //           className="text-base leading-[21px] p-5 text-center"
-    //         >
-    //           s/n
-    //         </th>
-    //         <th
-    //           style={{ fontVariant: "all-small-caps" }}
-    //           className="text-base leading-[21px] p-5 text-center"
-    //         >
-    //           image
-    //         </th>
-    //         <th
-    //           style={{ fontVariant: "all-small-caps" }}
-    //           className="text-base leading-[21px] p-5 text-left"
-    //         >
-    //           product
-    //         </th>
-    //         <th
-    //           style={{ fontVariant: "all-small-caps" }}
-    //           className="text-base leading-[21px] p-5 "
-    //         >
-    //           quantity
-    //         </th>
-    //         <th
-    //           style={{ fontVariant: "all-small-caps" }}
-    //           className="text-base leading-[21px] p-5 text-right"
-    //         >
-    //           price/unit
-    //         </th>
-    //         <th
-    //           style={{ fontVariant: "all-small-caps" }}
-    //           className="text-base leading-[21px] p-5 text-right"
-    //         >
-    //           subtotal
-    //         </th>
-    //       </tr>
-    //     </thead>
-
-    //     {items && (
-    //       <tbody>
-    //         {items.map((item, index) => {
-    //           return (
-    //             <tr
-    //               style={{ borderBlock: "0.5px solid #7f98ae" }}
-    //               key={item.id}
-    //             >
-    //               <td className="text-sm font-normal leading-6 capitalize p-5 text-center">
-    //                 {num++}
-    //               </td>
-    //               <td className="text-sm font-normal leading-6 capitalize p-5 text-center">
-    //                 <div className="min-w-[84px] h-[63px] max-w-[109px] lg:h-[82px] flex justify-center items-center">
-    //                   <img
-    //                     src={item.product?.images[0]?.image}
-    //                     alt={item.product.name}
-    //                     className="max-w-full max-h-[80%]"
-    //                   />
-    //                 </div>
-    //               </td>
-    //               <td className="text-sm font-normal leading-6 capitalize p-5 ">
-    //                 {item.product.name}
-    //               </td>
-    //               <td className="text-sm font-normal leading-6 capitalize p-5 ">
-    //                 <div className="text-base flex items-center divide-x-2 w-20 border border-solid border-gray-700 rounded">
-    //                   <button
-    //                     className="w-full "
-    //                     onClick={() => decreaseQuantity(item.quantity)}
-    //                   >
-    //                     -
-    //                   </button>
-    //                   <p className="w-full text-center text-green">
-    //                     {item.quantity}
-    //                   </p>
-    //                   <button
-    //                     className="w-full "
-    //                     onClick={() => increaseQuantity(item.quantity)}
-    //                   >
-    //                     +
-    //                   </button>
-    //                 </div>
-    //               </td>
-    //               <td className="text-sm leading-6 capitalize p-5 text-right font-medium">
-    //                 <NairaSymbol />
-    //                 {item.product.price}
-    //               </td>
-    //               <td className="text-sm leading-6 capitalize p-5 text-right font-medium">
-    //                 <NairaSymbol />
-    //                 {item.product.price * item.quantity}
-    //               </td>
-    //             </tr>
-    //           );
-    //         })}
-    //       </tbody>
-    //     )}
-    //   </table>
-    // </div>
-
     <div className=" mt-6 mb-24 space-y-4 lg:space-y-6">
       {items &&
         items.map((item) => {
@@ -189,6 +87,19 @@ function RenderedCart({ items, remove }) {
             </div>
           );
         })}
+
+      <div className="text-center" style={{ marginTop: "60px" }}>
+        <button
+          className="capitalize font-medium text-white text-sm lg:text-base md:font-semibold md:px-6 lg:py-4 lg:px-20 rounded lg:rounded-md bg-green py-[11px] px-5 hover:bg-dark-green"
+          onClick={() => navigate("/payment")}
+        >
+          checkout{" "}
+          <span className="ml-2">
+            <NairaSymbol />
+            {total}
+          </span>
+        </button>
+      </div>
     </div>
   );
 }
