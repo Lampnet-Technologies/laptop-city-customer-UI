@@ -6,7 +6,6 @@ const IMAGES = {
     heroBgSVG: require("./homepage/hero-bg.svg"),
     heroImage1: require("./homepage/hero-image-1.png"),
     heroImage: require("./homepage/hero-image.png"),
-    heroImage1SVG: require("./homepage/hero-image-1.svg"),
     catergoryNewBg: require("./homepage/category-new-bg.jpg"),
     categroryUsedBg: require("./homepage/category-used-bg.jpg"),
   },
@@ -44,10 +43,6 @@ const IMAGES = {
     power: require("./product-types/power.jpg"),
   },
   adSlider: {
-    ad1: require("./ad-slider/ad-1.jpg"),
-    ad2: require("./ad-slider/ad-2.jpg"),
-    ad3: require("./ad-slider/ad-3.jpg"),
-    ad4: require("./ad-slider/ad-4.jpg"),
     banner1: require("./ad-slider/banner-1.png"),
     banner2: require("./ad-slider/banner-2.png"),
     banner3: require("./ad-slider/banner-3.png"),
@@ -64,7 +59,8 @@ const IMAGES = {
   },
   about: {
     aboutMobile: require("./about/about-1.jpg"),
-    about: require("./about/about.jpg"),
+    about1: require("./about/about.jpg"),
+    about: require("./about/about.webp"),
     ourMission: require("./about/our-mission.jpg"),
   },
   err: {
