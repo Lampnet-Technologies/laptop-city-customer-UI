@@ -5,9 +5,12 @@ import IMAGES from "../../assets";
 import { Link } from "react-router-dom";
 import Loading from "../../component/loading";
 
+const filters = ["view all", "laptops", "desktops", "accessories"];
+
 function Blog() {
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [defaultFilter, setDefaultFilter] = useState("view all");
 
   useEffect(() => {
     client
@@ -52,30 +55,21 @@ function Blog() {
         </div>
 
         <div className="p-1 rounded-md border border-solid border-green flex justify-between items-center gap-0.5 flex-wrap md:justify-center md:gap-3 w-fit mx-auto">
-          <button
-            type="button"
-            className="p-2 text-xs md:text-sm lg:text-base font-normal bg-transparent outline-0 rounded transition-colors duration-300 hover:bg-blue-300 hover:text-white hover:font-semibold active:bg-dark-blue active:text-white active:font-semibold focus:bg-dark-blue focus:text-white focus:font-semibold"
-          >
-            View all
-          </button>
-          <button
-            type="button"
-            className="p-2 text-xs md:text-sm lg:text-base font-normal bg-transparent outline-0 rounded transition-colors duration-300 hover:bg-blue-300 hover:text-white hover:font-semibold active:bg-dark-blue active:text-white active:font-semibold focus:bg-dark-blue focus:text-white focus:font-semibold"
-          >
-            Laptops
-          </button>
-          <button
-            type="button"
-            className="p-2 text-xs md:text-sm lg:text-base font-normal bg-transparent outline-0 rounded transition-colors duration-300 hover:bg-blue-300 hover:text-white hover:font-semibold active:bg-dark-blue active:text-white active:font-semibold focus:bg-dark-blue focus:text-white focus:font-semibold"
-          >
-            Desktops
-          </button>
-          <button
-            type="button"
-            className="p-2 text-xs md:text-sm lg:text-base font-normal bg-transparent outline-0 rounded transition-colors duration-300 hover:bg-blue-300 hover:text-white hover:font-semibold active:bg-dark-blue active:text-white active:font-semibold focus:bg-dark-blue focus:text-white focus:font-semibold"
-          >
-            Accessories
-          </button>
+          {filters.map((filter, index) => {
+            return (
+              <button
+                key={index}
+                type="button"
+                className={`p-2 text-xs md:text-sm lg:text-base font-normal bg-transparent outline-0 rounded transition-colors duration-300 hover:bg-blue-300 hover:text-white hover:font-semibold ${
+                  defaultFilter == filter &&
+                  "bg-dark-blue text-white font-semibold"
+                } focus:bg-dark-blue focus:text-white focus:font-semibold`}
+                onClick={() => setDefaultFilter(filter)}
+              >
+                {filter}
+              </button>
+            );
+          })}
         </div>
 
         {posts[0] && (
