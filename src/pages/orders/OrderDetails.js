@@ -67,7 +67,7 @@ function OrderDetails() {
             <tr style={{ borderBlock: "0.5px solid #7f98ae" }}>
               <th
                 style={{ fontVariant: "all-small-caps" }}
-                className="text-base leading-[21px] p-5 text-left"
+                className="text-base leading-[21px] p-5 text-center"
               >
                 s/n
               </th>
@@ -114,7 +114,7 @@ function OrderDetails() {
                       {num++}
                     </td>
                     <td className="text-sm font-normal leading-6 capitalize p-5 text-center">
-                      <div className="w-20 h-14 rounded-md flex justify-center items-center">
+                      <div className="mx-auto w-20 h-14 rounded-md flex justify-center items-center">
                         <img
                           src={row.product.images[0]?.image}
                           alt={row.product.name}
@@ -131,10 +131,14 @@ function OrderDetails() {
                         <p className="font-semibold">{row.product.name}</p>
                         {/* <p>Category:</p> */}
                         <div
-                          className="bg-green text-white font-medium capitalize w-10 h-5 rounded-sm flex justify-center items-center"
-                          style={{
-                            fontSize: "10px", // #FFB400
-                          }}
+                          className={`font-medium capitalize rounded text-center text-[10px] py-[1px] px-4 w-fit border border-solid ${
+                            row.product.category == "BRAND NEW"
+                              ? "border-green text-green"
+                              : "border-[#FFB400] text-[#FFB400]"
+                          } `}
+                          //   style={{
+                          //     fontSize: "10px", // #FFB400
+                          //   }}
                         >
                           {row.product.category == "BRAND NEW" ? "new" : "used"}
                         </div>

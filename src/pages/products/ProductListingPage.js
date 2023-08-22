@@ -71,7 +71,7 @@ function ProductsListing() {
         return res.json();
       })
       .then((result) => {
-        window.scrollTo(0, 0);
+        // window.scrollTo(0, 0);
         setProducts(result.content);
         setTotalPages(result.totalPages);
         setIsLoading(false);
