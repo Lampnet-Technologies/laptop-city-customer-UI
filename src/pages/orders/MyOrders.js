@@ -65,7 +65,7 @@ function MyOrders() {
       .catch((error) => {
         console.error();
       });
-  }, []);
+  });
 
   const handleViewDetails = (id) => {
     navigate("/my-orders/viewOrder/" + id);

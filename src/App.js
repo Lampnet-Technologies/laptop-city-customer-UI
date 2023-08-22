@@ -77,7 +77,8 @@ function App() {
 
             <Suspense fallback={<Loading />}>
               <div className="pb-10 w-full">
-                <Routes>
+                hello
+                {/* <Routes>
                   <Route path="/" element={<Homepage />} />
                   <Route path="/products" element={<ProductsListing />} />
                   <Route path="/product-desc/:id" element={<ProductDesc />} />
@@ -116,7 +117,7 @@ function App() {
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                   </Route>
                   <Route path="*" element={<PageNotFound />} />
-                </Routes>
+                </Routes> */}
               </div>
             </Suspense>
 

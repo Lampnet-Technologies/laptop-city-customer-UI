@@ -67,7 +67,7 @@ function Cart() {
       .catch((error) => {
         console.error(error.message);
       });
-  }, []);
+  });
 
   const handleDelete = (id) => {
     idRef.current = id;
