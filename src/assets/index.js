@@ -59,7 +59,6 @@ const IMAGES = {
   },
   about: {
     aboutMobile: require("./about/about-1.jpg"),
-    about1: require("./about/about.jpg"),
     about: require("./about/about.webp"),
     ourMission: require("./about/our-mission.jpg"),
   },
