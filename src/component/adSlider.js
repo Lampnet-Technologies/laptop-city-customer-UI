@@ -50,13 +50,7 @@ function PrevArrow(props) {
 function SliderContent({ image }) {
   return (
     <>
-      <div
-        className="h-44 w-full bg-cover bg-center bg-no-repeat rounded md:hidden"
-        // style={{
-        //   // backgroundImage: `linear-gradient(0deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)), url(${bg})`,
-        //   // backgroundImage: `url(${bg})`,
-        // }}
-      >
+      <div className="h-44 w-full bg-cover bg-center bg-no-repeat rounded md:hidden">
         <img
           src={image.bgSmall}
           alt="banner"
@@ -64,13 +58,7 @@ function SliderContent({ image }) {
         />
       </div>
 
-      <div
-        className="hidden md:block h-56 w-full bg-cover bg-center bg-no-repeat rounded lg:bg-contain lg:h-64 xl:h-80"
-        // style={{
-        //   // backgroundImage: `linear-gradient(0deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)), url(${bg})`,
-        //   // backgroundImage: `url(${bg})`,
-        // }}
-      >
+      <div className="hidden md:block h-56 w-full bg-cover bg-center bg-no-repeat rounded lg:bg-contain lg:h-64 xl:h-80">
         <img
           src={image.bg}
           alt="banner"
