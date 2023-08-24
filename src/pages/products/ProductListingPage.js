@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useState } from "react";
+import React, { lazy, Suspense, useEffect, useState, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 import Pagination from "@mui/material/Pagination";
@@ -9,6 +9,7 @@ import { IconButton } from "@mui/material";
 import Loading from "../../component/loading";
 import LaptopCityButton from "../../component/button";
 import ScrollToTop from "../../utils/ScrollToTop";
+import { LoginContext } from "../../App";
 
 const AdSlider = lazy(() => import("../../component/adSlider"));
 const Banner = lazy(() => import("../../component/homepage/banner"));
@@ -26,6 +27,7 @@ const theme = createTheme({
 });
 
 function ProductsListing() {
+  const [loggedIn, setLoggedIn] = useContext(LoginContext);
   const [showFilters, setShowFilters] = useState(false);
   const [products, setProducts] = useState(null);
   const [totalPages, setTotalPages] = useState(0);
@@ -130,6 +132,39 @@ function ProductsListing() {
 
   const handleOpen = () => {
     setShowFilters((prev) => !prev);
+  };
+
+  const handleAddToCart = (product) => {
+    const dataToSend = { productId: product.id, quantity: 1 };
+
+    const accessToken = localStorage.getItem("token");
+
+    if (!loggedIn) {
+      navigate("/login", {
+        state: {
+          previousUrl: location.pathname,
+        },
+      });
+    } else {
+      fetch("https://apps-1.lampnets.com/ecommb-staging/cart-items/add", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          Authorization: "Bearer " + accessToken,
+        },
+        body: JSON.stringify(dataToSend),
+      })
+        .then((res) => {
+          if (res.status == 200) {
+            alert(`${product.name} is added to cart`);
+          } else {
+            alert("Item was not added to cart");
+          }
+        })
+        .catch((error) => {
+          alert("Failed to add to cart" + error.message);
+        });
+    }
   };
 
   return (
@@ -268,7 +303,7 @@ function ProductsListing() {
                   </div>
                 </div>
               ) : (
-                <MainGroups products={products} />
+                <MainGroups addToCart={handleAddToCart} products={products} />
               )}
               {/* <MainGroups products={products} /> */}
             </div>
@@ -297,7 +332,7 @@ function ProductsListing() {
           </ThemeProvider>
         </div>
 
-        <SubProducts />
+        <SubProducts addToCart={handleAddToCart} />
       </div>
     </Suspense>
   );

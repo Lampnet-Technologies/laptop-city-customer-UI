@@ -328,7 +328,7 @@ function AboutProduct({ product }) {
           {/* 350,000 */}
           {quantity * product.price}
         </h2>
-        <div className="my-5 flex items-center justify-between gap-8 md:justify-start">
+        <div className="my-5 flex items-center justify-start flex-wrap gap-4 md:gap-8 md:justify-start">
           <button
             className="w-full border-2 border-solid border-secondary-button text-secondary-button hover:bg-gray-100 hover:font-semibold transition-all ease-in duration-200 font-medium text-sm rounded flex justify-center items-center gap-3 py-2 px-4 md:w-fit"
             onClick={() => handleAddToCart(product.id)}
@@ -353,7 +353,7 @@ function AboutProduct({ product }) {
             Checkout
           </button>
           <button
-            className="w-full font-medium text-secondary-button text-sm rounded border-2 border-solid border-secondary-button bg-transparent py-2 px-4 transition ease-in duration-200 hover:bg-secondary-button hover:text-white md:w-fit"
+            className="w-full font-medium text-green text-sm rounded border-2 border-solid border-light-green bg-transparent py-2 px-4 transition ease-in duration-200 hover:bg-light-green hover:text-white md:w-fit"
             onClick={() => {
               navigate("/products");
             }}

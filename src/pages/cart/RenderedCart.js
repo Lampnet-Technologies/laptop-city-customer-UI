@@ -2,25 +2,13 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NairaSymbol from "../../component/nairaSymbol";
 
-function RenderedCart({ total, items, remove }) {
+function RenderedCart({ total, items, remove, incrQty, decrQty }) {
   const [show, setShow] = useState(false);
   const navigate = useNavigate();
 
-  // let num = 1;
-
-  const increaseQuantity = (quantity) => {
-    // quantity < 10 && quantity++;
-    console.log("increasing quantity:" + (quantity += 1));
-  };
-
-  const decreaseQuantity = (quantity) => {
-    // quantity > 1 && quantity--;
-    console.log("decreasing quantity:" + (quantity -= 1));
-  };
-
   return (
     <div className=" mt-6 mb-24 space-y-4 lg:space-y-6">
-      <div className="w-[95%] md:w-[70%] lg:w-[60%] mx-auto mb-8 space-y-3 border border-solid border-gray-300 p-3 rounded-2xl lg:px-6 lg:py-4">
+      <div className="w-[95%] md:w-[70%] lg:w-[60%] mx-auto mb-10 space-y-3 border border-solid border-gray-300 p-3 rounded-2xl lg:px-6 lg:py-4">
         <div className="flex justify-between items-center">
           <h4 className="font-medium capitalize text-base text-gray-700 lg:text-lg">
             add Coupon
@@ -57,7 +45,7 @@ function RenderedCart({ total, items, remove }) {
         items.map((item) => {
           return (
             <div
-              className="w-[95%] mx-auto rounded shadow-sm shadow-gray-400 p-4 space-y-5 lg:space-y-3 cursor-pointer"
+              className="w-[95%] mx-auto rounded shadow-sm shadow-gray-400 p-4 space-y-6 lg:space-y-4 lg:pb-6 lg:px-8 cursor-pointer"
               key={item.id}
               onClick={() => navigate(`/product-desc/${item.product.id}`)}
             >
@@ -103,7 +91,9 @@ function RenderedCart({ total, items, remove }) {
                 >
                   <button
                     className="w-full "
-                    onClick={() => decreaseQuantity(item.quantity)}
+                    onClick={() =>
+                      decrQty(item.quantity, item.id, item.product.id)
+                    }
                   >
                     -
                   </button>
@@ -112,7 +102,14 @@ function RenderedCart({ total, items, remove }) {
                   </p>
                   <button
                     className="w-full "
-                    onClick={() => increaseQuantity(item.quantity)}
+                    onClick={() =>
+                      incrQty(
+                        item.quantity,
+                        item.id,
+                        item.product.id,
+                        item.product.stock
+                      )
+                    }
                   >
                     +
                   </button>

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import IMAGES from "../assets";
 import LaptopCityButton from "../component/button";
-import { LoginContext, UserProfileContext } from "../App";
+import { LoginContext, UserCart, UserProfileContext } from "../App";
 import { IconButton } from "@mui/material";
 import ProfileDropdown from "../component/ProfileDropdown";
 import SignOutAlert from "../component/SignOutAlert";
@@ -129,6 +129,7 @@ function CustomLink({ to, children, ...props }) {
 function Nav() {
   const [loggedIn, setLoggedIn] = useContext(LoginContext);
   const [profile, setProfile] = useContext(UserProfileContext);
+  const [cart, setCart] = useContext(UserCart);
   const [clicked, setClicked] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
 
@@ -214,12 +215,17 @@ function Nav() {
 
               <IconButton
                 className="hover:text-green active:text-green focus:text-green"
-                sx={{ p: 0, my: 1 }}
+                sx={{ pl: 0, py: "2px", my: 1, position: "relative" }}
                 onClick={() => {
                   handleCloseNav();
                   navigate("/shopping-cart");
                 }}
               >
+                {cart.cartItems && (
+                  <div className="absolute top-0 right-0 bg-green text-white font-semibold rounded-full w-4 h-4 p-[2px] text-[10px] flex justify-center items-center">
+                    {cart.cartItems.length}
+                  </div>
+                )}
                 <i className="bx bx-cart-add text-3xl text-[#111] transition ease-in-out duration-200 hover:text-green"></i>
               </IconButton>
 
@@ -283,9 +289,9 @@ function Nav() {
               >
                 categories <i className="bx bx-chevron-down bx-sm"></i>
               </CustomLink>
-              <CustomLink onClick={handleCloseNav} to="/login">
+              {/* <CustomLink onClick={handleCloseNav} to="/login">
                 track orders
-              </CustomLink>
+              </CustomLink> */}
               <CustomLink onClick={handleCloseNav} to="/blog">
                 Blog
               </CustomLink>
@@ -358,10 +364,15 @@ function Nav() {
               {/* <CustomLink to="/blog">Blog</CustomLink>
               <CustomLink to="/about">about</CustomLink> */}
               <IconButton
-                className="hover:text-green active:text-green focus:text-green"
-                sx={{ p: 1 }}
+                className="hover:text-green active:text-green focus:text-green outline-0"
+                sx={{ p: 1, position: "relative" }}
                 onClick={() => navigate("/shopping-cart")}
               >
+                {cart.cartItems && (
+                  <div className="absolute top-0 right-0 bg-green text-white font-semibold rounded-full w-4 h-4 p-[2px] text-[10px] flex justify-center items-center">
+                    {cart.cartItems.length}
+                  </div>
+                )}
                 <i className="bx bx-cart-add text-[#111] transition ease-in-out duration-200 hover:text-green"></i>
               </IconButton>
 
@@ -420,7 +431,7 @@ function Nav() {
               <CustomLink subMenu={categoriesSubMenu}>
                 categories <i className="bx bx-chevron-down bx-sm"></i>
               </CustomLink>
-              <CustomLink to="/login">track orders</CustomLink>
+              {/* <CustomLink to="/login">track orders</CustomLink> */}
               <CustomLink to="/blog">Blog</CustomLink>
               <CustomLink to="/about">about</CustomLink>
             </ul>

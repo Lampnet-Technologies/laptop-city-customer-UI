@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import EmptyCart from "./EmptyCart";
 import RenderedCart from "./RenderedCart";
 import Loading from "../../component/loading";
 import DeleteButtonAlert from "../../component/DeleteButtonAlert";
+import { UserCart } from "../../App";
 
 const localCart = [
   {
@@ -39,8 +40,9 @@ const activeStyles = ({ isActive }) => {
 const accessToken = localStorage.getItem("token");
 
 function Cart() {
-  const [cart, setCart] = useState(null);
-  const [total, setTotal] = useState();
+  const [cart, setCart] = useContext(UserCart);
+  // const [cart, setCart] = useState(null);
+  // const [total, setTotal] = useState();
   // const [isLoading, setIsLoading] = useState(true);
   const [deleteAlert, setDeleteAlert] = useState(false);
   const idRef = useRef();
@@ -49,25 +51,83 @@ function Cart() {
   //   setCart(localCart);
   // }, []);
 
-  useEffect(() => {
-    fetch("https://apps-1.lampnets.com/ecommb-staging/cart-items/my-cart", {
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + accessToken,
-      },
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .then((result) => {
-        setCart(result.cartItems);
-        setTotal(result.total);
-        // setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error(error.message);
-      });
-  });
+  // useEffect(() => {
+  //   fetch("https://apps-1.lampnets.com/ecommb-staging/cart-items/my-cart", {
+  //     headers: {
+  //       "content-type": "application/json",
+  //       Authorization: "Bearer " + accessToken,
+  //     },
+  //   })
+  //     .then((res) => {
+  //       return res.json();
+  //     })
+  //     .then((result) => {
+  //       setCart(result.cartItems);
+  //       setTotal(result.total);
+  //       // setIsLoading(false);
+  //     })
+  //     .catch((error) => {
+  //       console.error(error.message);
+  //     });
+  // });
+
+  const handleIncreaseQty = (quantity, cartId, productId, stock) => {
+    if (quantity == stock) {
+      return null;
+    } else {
+      let newQuantity = quantity + 1;
+
+      const dataToSend = { productId: productId, quantity: newQuantity };
+      // console.log(newQuantity);
+
+      fetch(
+        `https://apps-1.lampnets.com/ecommb-staging/cart-items/edit/${cartId}`,
+        {
+          method: "PUT",
+          headers: {
+            "content-type": "application/json",
+            Authorization: "Bearer " + accessToken,
+          },
+          body: JSON.stringify(dataToSend),
+        }
+      )
+        .then((res) => {
+          console.log("product quantity increased");
+        })
+        .catch((error) => {
+          console.error(error.message);
+        });
+    }
+  };
+
+  const handleDecreaseQty = (quantity, cartId, productId) => {
+    if (quantity == 1) {
+      return null;
+    } else {
+      let newQuantity = quantity - 1;
+
+      const dataToSend = { productId: productId, quantity: newQuantity };
+      // console.log(newQuantity);
+
+      fetch(
+        `https://apps-1.lampnets.com/ecommb-staging/cart-items/edit/${cartId}`,
+        {
+          method: "PUT",
+          headers: {
+            "content-type": "application/json",
+            Authorization: "Bearer " + accessToken,
+          },
+          body: JSON.stringify(dataToSend),
+        }
+      )
+        .then((res) => {
+          console.log("product quantity decreased");
+        })
+        .catch((error) => {
+          console.error(error.message);
+        });
+    }
+  };
 
   const handleDelete = (id) => {
     idRef.current = id;
@@ -77,7 +137,6 @@ function Cart() {
   };
 
   const handleDeleteItem = () => {
-    console.log(idRef.current);
     fetch(
       `https://apps-1.lampnets.com/ecommb-staging/cart-items/delete/${idRef.current}`,
       {
@@ -91,7 +150,7 @@ function Cart() {
       .then((res) => {
         setDeleteAlert(false);
 
-        window.location.reload();
+        // window.location.reload();
       })
       .catch((error) => {
         alert(error.message);
@@ -101,7 +160,7 @@ function Cart() {
   return (
     <div className="border border-solid border-green rounded w-full">
       <div className="border-b border-b-solid border-b-gray-400 p-4 md:p-8 text-center text-lg font-semibold capitalize md:text-xl lg:text-[27px]">
-        shopping Cart {cart && `(${cart.length})`}
+        shopping Cart {cart.cartItems && `(${cart.cartItems.length})`}
       </div>
 
       {/* {isLoading && <Loading />} */}
@@ -112,13 +171,19 @@ function Cart() {
         />
       )}
 
-      {!cart && null}
+      {!cart.cartItems && null}
 
       <div>
-        {cart && cart.length < 1 ? (
+        {cart.cartItems && cart.cartItems.length < 1 ? (
           <EmptyCart />
         ) : (
-          <RenderedCart total={total} items={cart} remove={handleDelete} />
+          <RenderedCart
+            total={cart.total}
+            items={cart.cartItems}
+            remove={handleDelete}
+            incrQty={handleIncreaseQty}
+            decrQty={handleDecreaseQty}
+          />
         )}
       </div>
     </div>

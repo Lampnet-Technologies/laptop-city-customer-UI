@@ -27,18 +27,24 @@ import { Suspense } from "react";
 import Loading from "./component/loading";
 import OrderDetails from "./pages/orders/OrderDetails";
 
+import Homepage from "./pages/Homepage";
+import ProductsListing from "./pages/products/ProductListingPage";
+import ProductDesc from "./pages/products/ProductDescPage";
+
+// const Homepage = lazy(() => import("./pages/Homepage"));
+// const ProductsListing = lazy(() =>
+//   import("./pages/products/ProductListingPage")
+// );
+// const ProductDesc = lazy(() => import("./pages/products/ProductDescPage"));
+
 export const LoginContext = createContext();
 export const UserProfileContext = createContext();
-
-const Homepage = lazy(() => import("./pages/Homepage"));
-const ProductsListing = lazy(() =>
-  import("./pages/products/ProductListingPage")
-);
-const ProductDesc = lazy(() => import("./pages/products/ProductDescPage"));
+export const UserCart = createContext();
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(localStorage.token ? true : false);
   const [profile, setProfile] = useState("");
+  const [cart, setCart] = useState({ cartItems: null, total: "" });
 
   useEffect(() => {
     const accessToken = localStorage.getItem("token");
@@ -61,16 +67,45 @@ function App() {
     }
   }, [loggedIn]);
 
+  useEffect(() => {
+    const accessToken = localStorage.getItem("token");
+
+    if (loggedIn) {
+      fetch("https://apps-1.lampnets.com/ecommb-staging/cart-items/my-cart", {
+        headers: {
+          "content-type": "application/json",
+          Authorization: "Bearer " + accessToken,
+        },
+      })
+        .then((res) => {
+          return res.json();
+        })
+        .then((result) => {
+          setCart({
+            ...cart,
+            cartItems: result.cartItems,
+            total: result.total,
+          });
+          // setCartTotal(result.total);
+          // setIsLoading(false);
+        })
+        .catch((error) => {
+          console.error(error.message);
+        });
+    }
+  });
+
   return (
     <LoginContext.Provider value={[loggedIn, setLoggedIn]}>
       <UserProfileContext.Provider value={[profile, setProfile]}>
-        <Router>
-          {/* <Suspense fallback={<Loading />}> */}
-          <div className="w-full max-w-[1600px] mx-auto">
-            <ScrollToTop />
-            <Nav />
+        <UserCart.Provider value={[cart, setCart]}>
+          <Router>
+            {/* <Suspense fallback={<Loading />}> */}
+            <div className="w-full max-w-[1600px] mx-auto">
+              <ScrollToTop />
+              <Nav />
 
-            <Suspense fallback={<Loading />}>
+              {/* <Suspense fallback={null}> */}
               <div className="pb-10 w-full">
                 <Routes>
                   <Route path="/" element={<Homepage />} />
@@ -113,12 +148,13 @@ function App() {
                   <Route path="*" element={<PageNotFound />} />
                 </Routes>
               </div>
-            </Suspense>
+              {/* </Suspense> */}
 
-            <Footer />
-          </div>
-          {/* </Suspense> */}
-        </Router>
+              <Footer />
+            </div>
+            {/* </Suspense> */}
+          </Router>
+        </UserCart.Provider>
       </UserProfileContext.Provider>
     </LoginContext.Provider>
   );

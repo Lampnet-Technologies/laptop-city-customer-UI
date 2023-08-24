@@ -115,22 +115,42 @@ function ProductContainer({ product }) {
           {product.category == "BRAND NEW" ? "new" : "used"}
           {/* {product.category} */}
         </div>
-        <div className="flex justify-center items-center w-3 h-4 absolute bottom-3 right-2 z-10">
-          <img
-            src={IMAGES.icons.cartSmall}
-            alt="cart"
-            className="max-w-full w-full"
-          />
-        </div>
+        {/* <button
+          type="button"
+          className="hidden lg:flex justify-center items-center text-dark-blue absolute bottom-2 right-2 z-10"
+          onClick={(e) => {
+            e.stopPropagation();
+
+            addToCart(product);
+          }}
+        >
+          <i className="bx bx-cart-add bx-sm"></i>
+          
+        </button> */}
       </div>
       <div className="flex flex-col gap-1 justify-between h-20 px-2 pb-3 lg:h-28 lg:pt-2">
         <p className="text-xs font-medium capitalize md:text-sm lg:text-base whitespace-break-spaces">
           {product.name}
         </p>
-        <p className="text-base font-bold text-green md:text-lg lg:text-xl">
-          <NairaSymbol />
-          {product.price}
-        </p>
+
+        <div className="flex justify-between items-center gap-2">
+          <p className="text-base font-bold text-green md:text-lg lg:text-xl">
+            <NairaSymbol />
+            {product.price}
+          </p>
+
+          {/* <button
+            type="button"
+            className="bg-green text-white text-xs capitalize py-1 px-2 rounded flex justify-between items-center lg:hidden"
+            onClick={(e) => {
+              e.stopPropagation();
+
+              addToCart(product);
+            }}
+          >
+            <i className="bx bx-cart-add"></i> add
+          </button> */}
+        </div>
       </div>
     </div>
   );
