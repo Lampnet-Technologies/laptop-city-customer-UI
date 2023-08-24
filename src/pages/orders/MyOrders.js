@@ -41,7 +41,7 @@ const localOrders = [
 const accessToken = localStorage.getItem("token");
 
 function MyOrders() {
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState(null);
 
   const navigate = useNavigate();
 
@@ -77,8 +77,10 @@ function MyOrders() {
         my orders
       </div>
 
+      {!orders && null}
+
       <div>
-        {orders.length < 1 ? (
+        {orders && orders.length < 1 ? (
           <EmptyOrders />
         ) : (
           <RenderedOrders orders={orders} viewDetails={handleViewDetails} />

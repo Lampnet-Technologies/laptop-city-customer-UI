@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NairaSymbol from "../../component/nairaSymbol";
 
 function RenderedCart({ total, items, remove }) {
+  const [show, setShow] = useState(false);
   const navigate = useNavigate();
 
   // let num = 1;
@@ -19,6 +20,39 @@ function RenderedCart({ total, items, remove }) {
 
   return (
     <div className=" mt-6 mb-24 space-y-4 lg:space-y-6">
+      <div className="w-[95%] md:w-[70%] lg:w-[60%] mx-auto mb-8 space-y-3 border border-solid border-gray-300 p-3 rounded-2xl lg:px-6 lg:py-4">
+        <div className="flex justify-between items-center">
+          <h4 className="font-medium capitalize text-base text-gray-700 lg:text-lg">
+            add Coupon
+          </h4>
+
+          <button type="button" onClick={() => setShow((prev) => !prev)}>
+            <i
+              className={`bx bx-${
+                show ? "x-circle" : "plus-circle"
+              } bx-sm text-gray-700 transition-all ease-in-out duration-700`}
+            ></i>
+          </button>
+        </div>
+
+        {show && (
+          <div className="rounded-md flex justify-between items-center gap-4">
+            <input
+              type="text"
+              placeholder="input coupon code"
+              className="w-full outline-0 py-2 px-4 placeholder:text-xs text-xs lg:placeholder:text-sm md:text-sm"
+            />
+
+            <button
+              type="button"
+              className="bg-green py-1 px-4 capitalize text-center text-sm lg:text-base text-white rounded outline-0"
+            >
+              add
+            </button>
+          </div>
+        )}
+      </div>
+
       {items &&
         items.map((item) => {
           return (

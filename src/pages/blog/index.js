@@ -60,7 +60,7 @@ function Blog() {
               <button
                 key={index}
                 type="button"
-                className={`p-2 text-xs md:text-sm lg:text-base font-normal bg-transparent outline-0 rounded transition-colors duration-300 hover:bg-blue-300 hover:text-white hover:font-semibold ${
+                className={`p-2 text-xs md:text-sm lg:text-base font-normal outline-0 rounded transition-colors duration-300 hover:bg-blue-300 hover:text-white hover:font-semibold ${
                   defaultFilter == filter &&
                   "bg-dark-blue text-white font-semibold"
                 } focus:bg-dark-blue focus:text-white focus:font-semibold`}

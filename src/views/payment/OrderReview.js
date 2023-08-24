@@ -27,7 +27,7 @@ function OrderReview({ back }) {
         </div>
       </div>
 
-      <div className="space-y-2 border border-solid border-gray-300 p-3 rounded-2xl lg:px-6 lg:py-4">
+      {/* <div className="space-y-2 border border-solid border-gray-300 p-3 rounded-2xl lg:px-6 lg:py-4">
         <div className="flex justify-between items-center">
           <h4 className="font-medium text-lg text-gray-700 lg:text-xl">
             Coupons
@@ -35,7 +35,7 @@ function OrderReview({ back }) {
 
           <i className="bx bx-plus-circle text-gray-700"></i>
         </div>
-      </div>
+      </div> */}
 
       <div className="space-y-2 border border-solid border-gray-300 p-3 rounded-2xl lg:px-6 lg:py-4">
         <h4 className="font-medium text-lg text-gray-700 lg:text-xl">

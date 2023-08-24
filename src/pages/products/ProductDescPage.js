@@ -258,8 +258,6 @@ function AboutProduct({ product }) {
     const dataToSend = { productId: id, quantity: quantity };
 
     const accessToken = localStorage.getItem("token");
-    console.log(dataToSend);
-    console.log(typeof accessToken);
 
     if (!loggedIn) {
       navigate("/login", {
@@ -342,7 +340,7 @@ function AboutProduct({ product }) {
             className="w-full font-medium text-white text-sm rounded border-2 border-solid border-green bg-green py-2 px-4 transition ease-in duration-200 hover:bg-dark-green md:w-fit"
             onClick={() => {
               if (loggedIn) {
-                navigate("/payment");
+                navigate("/shopping-cart");
               } else {
                 navigate("/login", {
                   state: {
@@ -352,7 +350,15 @@ function AboutProduct({ product }) {
               }
             }}
           >
-            Buy now
+            Checkout
+          </button>
+          <button
+            className="w-full font-medium text-secondary-button text-sm rounded border-2 border-solid border-secondary-button bg-transparent py-2 px-4 transition ease-in duration-200 hover:bg-secondary-button hover:text-white md:w-fit"
+            onClick={() => {
+              navigate("/products");
+            }}
+          >
+            Continue browsing
           </button>
         </div>
       </div>
@@ -564,7 +570,7 @@ function ProductDesc() {
         <div className="h-full flex items-center gap-5 px-4 relative md:px-12 lg:px-24">
           <button
             className="rounded-full outline-none bg-transparent flex items-center text-lg lg:text-[22px] font-medium"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/products")}
           >
             {/* <img src={IMAGES.icons.arrowBackward} alt="back" /> */}
             <i className="bx bx-chevron-left bx-md"></i>

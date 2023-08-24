@@ -17,7 +17,7 @@ function Coupons() {
             <button
               key={index}
               type="button"
-              className={`inline-block rounded px-4 transition-all ease-in-out duration-500 bg-transparent outline-0 hover:text-white hover:bg-green ${
+              className={`inline-block rounded px-4 transition-all ease-in-out duration-500 outline-0 hover:text-white hover:bg-green ${
                 defaultFilter == filter && "bg-dark-green text-white"
               } focus:text-white focus:bg-green`}
               onClick={() => setDefaultFilter(filter)}
