@@ -213,7 +213,7 @@ function Nav() {
                 )}
               </NavLink>
 
-              <IconButton
+              {/* <IconButton
                 className="hover:text-green active:text-green focus:text-green"
                 sx={{ pl: 0, py: "2px", my: 1, position: "relative" }}
                 onClick={() => {
@@ -227,7 +227,7 @@ function Nav() {
                   </div>
                 )}
                 <i className="bx bx-cart-add text-3xl text-[#111] transition ease-in-out duration-200 hover:text-green"></i>
-              </IconButton>
+              </IconButton> */}
 
               {/* <div className="h-px w-4/5 border border-black"></div> */}
 
@@ -318,19 +318,39 @@ function Nav() {
           </div>
         )}
 
-        <div className="flex justify-center items-center w-6 h-5 z-50">
-          {!clicked ? (
-            <img
-              src={IMAGES.icons.hamburger2}
-              alt="logo"
-              className="max-w-full max-h-full"
-              onClick={handleShowNav}
-            />
-          ) : (
-            <button onClick={handleCloseNav}>
-              <i className="bx bx-x bx-md"></i>
-            </button>
+        <div className="flex justify-center items-center gap-8">
+          {loggedIn && (
+            <IconButton
+              className="hover:text-green active:text-green focus:text-green"
+              sx={{ pl: 0, py: "2px", my: 1, position: "relative" }}
+              onClick={() => {
+                handleCloseNav();
+                navigate("/shopping-cart");
+              }}
+            >
+              {cart.cartItems && (
+                <div className="absolute top-0 right-0 bg-green text-white font-semibold rounded-full w-4 h-4 p-[2px] text-[10px] flex justify-center items-center">
+                  {cart.cartItems.length}
+                </div>
+              )}
+              <i className="bx bx-cart-add text-3xl text-[#111] transition ease-in-out duration-200 hover:text-green"></i>
+            </IconButton>
           )}
+
+          <div className="flex justify-center items-center w-6 h-5 z-50">
+            {!clicked ? (
+              <img
+                src={IMAGES.icons.hamburger2}
+                alt="logo"
+                className="max-w-full max-h-full"
+                onClick={handleShowNav}
+              />
+            ) : (
+              <button onClick={handleCloseNav}>
+                <i className="bx bx-x bx-md"></i>
+              </button>
+            )}
+          </div>
         </div>
       </nav>
 

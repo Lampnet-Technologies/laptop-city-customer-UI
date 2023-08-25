@@ -133,7 +133,7 @@ function Login() {
           <div className="mt-14 flex flex-col items-center gap-10 text-sm font-normal md:text-base md:gap-12 lg:gap-16">
             <button
               disabled={loading}
-              className="capitalize font-medium text-white text-sm lg:text-base md:font-semibold md:px-6 lg:py-4 lg:px-[86px] rounded bg-green py-[11px] px-3 hover:bg-dark-green"
+              className="capitalize font-semibold text-white text-sm lg:text-base md:px-16 lg:py-4 lg:px-[86px] rounded bg-green py-[11px] px-12 hover:bg-dark-green"
               onClick={handleSubmit}
             >
               Login
