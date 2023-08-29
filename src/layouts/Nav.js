@@ -318,7 +318,7 @@ function Nav() {
           </div>
         )}
 
-        <div className="flex justify-center items-center gap-8">
+        <div className="flex justify-center items-center gap-6">
           {loggedIn && (
             <IconButton
               className="hover:text-green active:text-green focus:text-green"
@@ -328,7 +328,7 @@ function Nav() {
                 navigate("/shopping-cart");
               }}
             >
-              {cart.cartItems && (
+              {cart.cartItems && cart.cartItems.length !== 0 && (
                 <div className="absolute top-0 right-0 bg-green text-white font-semibold rounded-full w-4 h-4 p-[2px] text-[10px] flex justify-center items-center">
                   {cart.cartItems.length}
                 </div>
@@ -388,7 +388,7 @@ function Nav() {
                 sx={{ p: 1, position: "relative" }}
                 onClick={() => navigate("/shopping-cart")}
               >
-                {cart.cartItems && (
+                {cart.cartItems && cart.cartItems.length !== 0 && (
                   <div className="absolute top-0 right-0 bg-green text-white font-semibold rounded-full w-4 h-4 p-[2px] text-[10px] flex justify-center items-center">
                     {cart.cartItems.length}
                   </div>

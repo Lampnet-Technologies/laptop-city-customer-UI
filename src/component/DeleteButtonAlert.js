@@ -50,13 +50,17 @@ export default function DeleteButtonAlert({ setter, deleteItem }) {
             onClick={deleteItem}
             variant="outlined"
             sx={{
-              color: "#009F7F",
+              color: "#ef4444",
               fontWeight: 600,
-              border: "1px solid #009F7F",
+              border: "1px solid #f87171",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: 0.5,
             }}
           >
             {" "}
-            <i className="bx bxs-trash bx-sm"></i> Remove
+            <i className="bx bxs-trash text-[20px]"></i> Remove
           </Button>
         </DialogActions>
       </Dialog>

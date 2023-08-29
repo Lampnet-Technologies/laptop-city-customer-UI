@@ -40,7 +40,7 @@ function Login() {
     })
       .then((res) => {
         if (res.status != 200) {
-          throw Error("res.statusText");
+          throw Error(res.statusText);
         }
         return res.json();
       })
