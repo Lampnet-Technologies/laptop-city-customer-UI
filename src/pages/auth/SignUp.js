@@ -3,6 +3,7 @@ import { Banner } from "../../component/homepage";
 import { Link, useNavigate } from "react-router-dom";
 import LaptopCityButton from "../../component/button";
 import { LoginContext } from "../../App";
+import CustomAlert from "../../component/CustomAlert";
 
 const signupAPI = "https://apps-1.lampnets.com/ecommb-staging/register";
 
@@ -22,6 +23,16 @@ function SignUp() {
 
   const navigate = useNavigate();
 
+  const [alert, setAlert] = useState({
+    open: false,
+    severity: "",
+    message: "",
+    title: "",
+  });
+  const handleCloseAlert = () => {
+    setAlert({ ...alert, open: false });
+  };
+
   useEffect(() => {
     localStorage.removeItem("token");
     setLoggedIn(false);
@@ -39,7 +50,14 @@ function SignUp() {
     e.preventDefault();
 
     if (values.password !== values.confirmPassword) {
-      alert("Confirm your password!!!");
+      // alert("Confirm your password!!!");
+      setAlert({
+        ...alert,
+        open: true,
+        severity: "warning",
+        title: "Wrong password",
+        message: "Confirm your password!!!",
+      });
     } else {
       fetch(signupAPI, {
         method: "POST",
@@ -47,11 +65,25 @@ function SignUp() {
         body: JSON.stringify(values),
       })
         .then((res) => {
-          alert("Welcome onboard 🎊🎉");
+          // alert("Welcome onboard 🎊🎉");
+          setAlert({
+            ...alert,
+            open: true,
+            severity: "success",
+            title: "Welcome!!",
+            message: `Welcome onboard ${values.userName} 🎊🎉`,
+          });
           navigate("/login");
         })
         .catch((error) => {
-          alert("Confirm Credentials", error.message);
+          setAlert({
+            ...alert,
+            open: true,
+            severity: "error",
+            title: "Confirm your Credentials",
+            message: error.message,
+          });
+          // alert("Confirm Credentials", error.message);
         });
     }
   };
@@ -59,6 +91,14 @@ function SignUp() {
   return (
     <div className="my-10 md:my-16 lg:my-20">
       <Banner />
+
+      {alert && alert.severity && (
+        <CustomAlert
+          open={alert.open}
+          details={alert}
+          close={handleCloseAlert}
+        />
+      )}
 
       <div className="my-8 p-4 lg:my-20 md:w-4/5 lg:w-3/5 md:mx-auto">
         <h1 className="text-3xl text-center font-bold mb-8 md:text-4xl lg:text-[45px] lg:mb-20">
