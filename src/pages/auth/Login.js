@@ -3,6 +3,7 @@ import { Banner } from "../../component/homepage";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import LaptopCityButton from "../../component/button";
 import { LoginContext } from "../../App";
+import CustomAlert from "../../component/CustomAlert";
 
 const loginAPI = "https://apps-1.lampnets.com/ecommb-staging/login";
 
@@ -16,6 +17,16 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
 
   const [loading, setLoading] = useState(false);
+
+  const [alert, setAlert] = useState({
+    open: false,
+    severity: "",
+    message: "",
+    title: "",
+  });
+  const handleCloseAlert = () => {
+    setAlert({ ...alert, open: false });
+  };
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -40,9 +51,16 @@ function Login() {
     })
       .then((res) => {
         if (res.status != 200) {
-          throw Error(res.statusText);
+          // throw Error(res.statusText);
+          setAlert({
+            ...alert,
+            open: true,
+            severity: "info",
+            title: res.statusText,
+          });
+        } else {
+          return res.json();
         }
-        return res.json();
       })
       .then((result) => {
         localStorage.setItem("token", result.accessToken);
@@ -55,7 +73,14 @@ function Login() {
       })
       .catch((error) => {
         console.log(error);
-        alert("Wrong credentials input");
+        // alert("Wrong credentials input");
+        setAlert({
+          ...alert,
+          open: true,
+          severity: "error",
+          title: "Wrong credentials input",
+          message: error.message,
+        });
         setLoading(false);
         setValues({ ...values, usernameOrEmail: "", password: "" });
       });
@@ -64,6 +89,14 @@ function Login() {
   return (
     <div className="my-10 md:my-16 lg:my-20">
       <Banner />
+
+      {alert && alert.severity && (
+        <CustomAlert
+          open={alert.open}
+          details={alert}
+          close={handleCloseAlert}
+        />
+      )}
 
       <div className="my-8 p-4 lg:my-20 md:w-4/5 lg:w-3/5 md:mx-auto">
         <h1 className="text-3xl text-center font-bold mb-8 md:text-4xl lg:text-[45px] lg:mb-20">

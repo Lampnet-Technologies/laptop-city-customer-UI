@@ -7,6 +7,7 @@ import { Groups } from "../../component/homepage/productGroups";
 import NairaSymbol from "../../component/nairaSymbol";
 import { LoginContext } from "../../App";
 import Loading from "../../component/loading";
+import CustomAlert from "../../component/CustomAlert";
 
 const images = [
   {
@@ -251,6 +252,16 @@ function AboutProduct({ product }) {
   const [showMore, setShowMore] = useState(false);
   const [quantity, setQuantity] = useState(1);
 
+  const [alert, setAlert] = useState({
+    open: false,
+    severity: "",
+    message: "",
+    title: "",
+  });
+  const handleCloseAlert = () => {
+    setAlert({ ...alert, open: false });
+  };
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -275,10 +286,24 @@ function AboutProduct({ product }) {
         body: JSON.stringify(dataToSend),
       })
         .then((res) => {
-          alert(`${product.name} is added to cart`);
+          setAlert({
+            ...alert,
+            open: true,
+            severity: "success",
+            title: "1 item added to cart",
+            message: `${product.name} is added to cart`,
+          });
+          // alert(`${product.name} is added to cart`);
         })
         .catch((error) => {
-          alert("Failed to add to cart" + error.message);
+          setAlert({
+            ...alert,
+            open: true,
+            severity: "error",
+            title: "Failed to add item to cart",
+            message: error.message,
+          });
+          // alert("Failed to add to cart" + error.message);
         });
     }
   };
@@ -306,14 +331,20 @@ function AboutProduct({ product }) {
             <p>Brand : {product.brand}</p>
             <div className="flex justify-between items-center gap-4 md:gap-10">
               <p>Quantity</p>
-              <div className="text-base flex items-center divide-x-2 w-20 border border-solid border-gray-700 rounded">
-                <button className="w-full " onClick={decreaseQuantity}>
+              <div className="text-base flex items-center divide-x-2 w-28 border border-solid border-gray-700 rounded">
+                <button
+                  className="w-full p-1 font-semibold"
+                  onClick={decreaseQuantity}
+                >
                   -
                 </button>
-                <p className="w-full text-center font-semibold text-green">
+                <p className="w-full p-1 text-center font-semibold text-green">
                   {quantity}
                 </p>
-                <button className="w-full " onClick={increaseQuantity}>
+                <button
+                  className="w-full p-1 font-semibold"
+                  onClick={increaseQuantity}
+                >
                   +
                 </button>
               </div>
@@ -358,35 +389,18 @@ function AboutProduct({ product }) {
               navigate("/products");
             }}
           >
-            Continue browsing
+            Continue shopping
           </button>
         </div>
       </div>
 
-      {/* <div className="flex flex-col gap-6 mt-8 text-sm font-light">
-        <div className="w-2/4 h-14 bg-filter-green font-medium rounded flex justify-center items-center">
-          Description
-        </div>
-        <div className="whitespace-break-spaces">
-          {showMore ? example : `${example.substring(0, 800)}`}
-
-          {example.length >= 800 && (
-            <div>
-              <button
-                className="capitalize text-secondary-button font-semibold text-base flex justify-center items-center gap-2 py-2 px-0"
-                onClick={() => setShowMore(!showMore)}
-              >
-                {showMore ? "Show less" : "Show more"}
-                <img
-                  src={IMAGES.icons.showMore}
-                  alt="arrow-down"
-                  className="w-3"
-                />
-              </button>
-            </div>
-          )}
-        </div>
-      </div> */}
+      {alert && alert.severity && (
+        <CustomAlert
+          open={alert.open}
+          details={alert}
+          close={handleCloseAlert}
+        />
+      )}
     </div>
   );
 }

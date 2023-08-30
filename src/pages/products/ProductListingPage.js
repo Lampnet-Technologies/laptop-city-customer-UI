@@ -10,6 +10,7 @@ import Loading from "../../component/loading";
 import LaptopCityButton from "../../component/button";
 import ScrollToTop from "../../utils/ScrollToTop";
 import { LoginContext } from "../../App";
+import CustomAlert from "../../component/CustomAlert";
 
 const AdSlider = lazy(() => import("../../component/adSlider"));
 const Banner = lazy(() => import("../../component/homepage/banner"));
@@ -38,6 +39,16 @@ function ProductsListing() {
   const [productTypeId, setProductTypeId] = useState("");
 
   const [isLoading, setIsLoading] = useState(true);
+
+  const [alert, setAlert] = useState({
+    open: false,
+    severity: "",
+    message: "",
+    title: "",
+  });
+  const handleCloseAlert = () => {
+    setAlert({ ...alert, open: false });
+  };
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -156,13 +167,33 @@ function ProductsListing() {
       })
         .then((res) => {
           if (res.status == 200) {
-            alert(`${product.name} is added to cart`);
+            setAlert({
+              ...alert,
+              open: true,
+              severity: "success",
+              title: "1 item added to cart",
+              message: `${product.name} is added to cart`,
+            });
+            // alert(`${product.name} is added to cart`);
           } else {
-            alert("Item was not added to cart");
+            setAlert({
+              ...alert,
+              open: true,
+              severity: "info",
+              title: "Item was not added to cart",
+            });
+            // alert("Item was not added to cart");
           }
         })
         .catch((error) => {
-          alert("Failed to add to cart" + error.message);
+          setAlert({
+            ...alert,
+            open: true,
+            severity: "error",
+            title: "Failed to add item to cart",
+            message: error.message,
+          });
+          // alert("Failed to add to cart" + error.message);
         });
     }
   };
@@ -170,6 +201,14 @@ function ProductsListing() {
   return (
     <Suspense fallback={<Loading />}>
       <ScrollToTop />
+
+      {alert && alert.severity && (
+        <CustomAlert
+          open={alert.open}
+          details={alert}
+          close={handleCloseAlert}
+        />
+      )}
 
       <div className="my-4 flex flex-col gap-8 lg:my-16">
         <div className="md:mx-12 lg:mx-24">
@@ -183,37 +222,65 @@ function ProductsListing() {
             className="filterDesktop hidden lg:block w-80 max-h-[1300px] overflow-y-auto mr-20 bg-filter-green rounded"
             style={{ scrollBehavior: "smooth", scrollbarWidth: "none" }}
           >
-            <div className="m-2 mt-3 text-right">
+            {/* <div className="m-2 mt-3 text-right">
               <IconButton onClick={handleFilter} title="click to send filter">
                 <i className="bx bxs-send text-green"></i>
               </IconButton>
-            </div>
+            </div> */}
 
             <div className="pb-8 px-3 flex flex-col gap-10">
-              <ProductFilter
-                fetchUrl="https://apps-1.lampnets.com/ecommb-staging/categories"
-                title="category"
-                checked={categoryId}
-                setter={setCategoryId}
-              />
-              <ProductFilter
-                fetchUrl="https://apps-1.lampnets.com/ecommb-staging/brands"
-                title="brands"
-                checked={brandId}
-                setter={setBrandId}
-              />
-              <ProductFilter
-                fetchUrl="https://apps-1.lampnets.com/ecommb-staging/product-types"
-                title="product"
-                checked={productTypeId}
-                setter={setProductTypeId}
-              />
+              <div className="mt-3 text-right">
+                <IconButton
+                  sx={{ p: 0 }}
+                  onClick={handleFilter}
+                  title="click to send filter"
+                >
+                  <i className="bx bxs-send text-green"></i>
+                </IconButton>
+                <ProductFilter
+                  fetchUrl="https://apps-1.lampnets.com/ecommb-staging/categories"
+                  title="category"
+                  checked={categoryId}
+                  setter={setCategoryId}
+                />
+              </div>
+
+              <div className="text-right">
+                <IconButton
+                  sx={{ p: 0 }}
+                  onClick={handleFilter}
+                  title="click to send filter"
+                >
+                  <i className="bx bxs-send text-green"></i>
+                </IconButton>
+                <ProductFilter
+                  fetchUrl="https://apps-1.lampnets.com/ecommb-staging/brands"
+                  title="brands"
+                  checked={brandId}
+                  setter={setBrandId}
+                />
+              </div>
+
+              <div className="text-right">
+                <IconButton
+                  sx={{ p: 0 }}
+                  onClick={handleFilter}
+                  title="click to send filter"
+                >
+                  <i className="bx bxs-send text-green"></i>
+                </IconButton>
+                <ProductFilter
+                  fetchUrl="https://apps-1.lampnets.com/ecommb-staging/product-types"
+                  title="product"
+                  checked={productTypeId}
+                  setter={setProductTypeId}
+                />
+              </div>
 
               <div className="flex justify-end items-center">
                 <button
                   className="flex items-center text-sm"
                   onClick={() => {
-                    handleOpen();
                     navigate("/products");
                   }}
                 >

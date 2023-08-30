@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import NairaSymbol from "../../component/nairaSymbol";
 
-function OrderReview({ back }) {
+function OrderReview({ cart, back }) {
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -19,10 +19,14 @@ function OrderReview({ back }) {
         </h4>
 
         <div className="flex justify-between items-center gap-2 text-sm font-normal lg:text-base">
-          <p>1 item in Cart</p>
+          <p>
+            {cart.cartItems.length} item{cart.cartItems.length > 1 ? "s" : null}{" "}
+            in Order
+          </p>
           <p>
             <NairaSymbol />
-            350,000.00
+            {/* 350,000.00 */}
+            {cart.total}
           </p>
         </div>
       </div>
@@ -48,7 +52,8 @@ function OrderReview({ back }) {
               <td>Subtotal</td>
               <td className="text-right">
                 <NairaSymbol />
-                350,000.00
+                {/* 350,000.00 */}
+                {cart.total}
               </td>
             </tr>
             <tr>
@@ -112,16 +117,6 @@ function OrderReview({ back }) {
           350,910.00
         </button>
       </div>
-
-      {/* <button
-        type="submit"
-        style={{ marginBlock: "2.5rem 1rem" }}
-        className="inline-block w-full bg-green p-4 rounded-md outline-0 font-semibold text-white text-sm"
-      >
-        {" "}
-        Pay <NairaSymbol />
-        350,910.00
-      </button> */}
     </form>
   );
 }

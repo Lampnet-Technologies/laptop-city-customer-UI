@@ -86,22 +86,22 @@ function RenderedCart({ total, items, remove, incrQty, decrQty }) {
                 </button>
 
                 <div
-                  className="text-base flex items-center divide-x-2 w-24 lg:w-40 lg:py-1 border border-solid border-gray-700 rounded lg:rounded-md"
+                  className="text-base flex items-center divide-x-2 w-28 lg:w-40 lg:py-1 border border-solid border-gray-700 rounded lg:rounded-md"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <button
-                    className="w-full "
+                    className="w-full px-1 py-0.5 font-semibold"
                     onClick={() =>
                       decrQty(item.quantity, item.id, item.product.id)
                     }
                   >
                     -
                   </button>
-                  <p className="w-full text-center text-green">
+                  <p className="w-full px-1 py-0.5 font-semibold text-center text-green">
                     {item.quantity}
                   </p>
                   <button
-                    className="w-full "
+                    className="w-full px-1 py-0.5 font-semibold"
                     onClick={() =>
                       incrQty(
                         item.quantity,

@@ -5,6 +5,7 @@ import RenderedCart from "./RenderedCart";
 import Loading from "../../component/loading";
 import DeleteButtonAlert from "../../component/DeleteButtonAlert";
 import { UserCart } from "../../App";
+import CustomAlert from "../../component/CustomAlert";
 
 const localCart = [
   {
@@ -41,35 +42,18 @@ const accessToken = localStorage.getItem("token");
 
 function Cart() {
   const [cart, setCart] = useContext(UserCart);
-  // const [cart, setCart] = useState(null);
-  // const [total, setTotal] = useState();
-  // const [isLoading, setIsLoading] = useState(true);
   const [deleteAlert, setDeleteAlert] = useState(false);
   const idRef = useRef();
 
-  // useEffect(() => {
-  //   setCart(localCart);
-  // }, []);
-
-  // useEffect(() => {
-  //   fetch("https://apps-1.lampnets.com/ecommb-staging/cart-items/my-cart", {
-  //     headers: {
-  //       "content-type": "application/json",
-  //       Authorization: "Bearer " + accessToken,
-  //     },
-  //   })
-  //     .then((res) => {
-  //       return res.json();
-  //     })
-  //     .then((result) => {
-  //       setCart(result.cartItems);
-  //       setTotal(result.total);
-  //       // setIsLoading(false);
-  //     })
-  //     .catch((error) => {
-  //       console.error(error.message);
-  //     });
-  // });
+  const [alert, setAlert] = useState({
+    open: false,
+    severity: "",
+    message: "",
+    title: "",
+  });
+  const handleCloseAlert = () => {
+    setAlert({ ...alert, open: false });
+  };
 
   const handleIncreaseQty = (quantity, cartId, productId, stock) => {
     if (quantity == stock) {
@@ -78,7 +62,6 @@ function Cart() {
       let newQuantity = quantity + 1;
 
       const dataToSend = { productId: productId, quantity: newQuantity };
-      // console.log(newQuantity);
 
       fetch(
         `https://apps-1.lampnets.com/ecommb-staging/cart-items/edit/${cartId}`,
@@ -107,7 +90,6 @@ function Cart() {
       let newQuantity = quantity - 1;
 
       const dataToSend = { productId: productId, quantity: newQuantity };
-      // console.log(newQuantity);
 
       fetch(
         `https://apps-1.lampnets.com/ecommb-staging/cart-items/edit/${cartId}`,
@@ -137,6 +119,8 @@ function Cart() {
   };
 
   const handleDeleteItem = () => {
+    setDeleteAlert(false);
+
     fetch(
       `https://apps-1.lampnets.com/ecommb-staging/cart-items/delete/${idRef.current}`,
       {
@@ -148,12 +132,25 @@ function Cart() {
       }
     )
       .then((res) => {
-        setDeleteAlert(false);
-
-        // window.location.reload();
+        if (res.status !== 200) {
+          setAlert({
+            ...alert,
+            open: true,
+            severity: "error",
+            title: "Couldn't delete item",
+            message: res.statusText,
+          });
+        }
       })
       .catch((error) => {
-        alert(error.message);
+        setAlert({
+          ...alert,
+          open: true,
+          severity: "error",
+          title: "Couldn't delete item",
+          message: error.message,
+        });
+        // alert(error.message);
       });
   };
 
@@ -168,6 +165,14 @@ function Cart() {
         <DeleteButtonAlert
           setter={setDeleteAlert}
           deleteItem={handleDeleteItem}
+        />
+      )}
+
+      {alert && alert.severity && (
+        <CustomAlert
+          open={alert.open}
+          details={alert}
+          close={handleCloseAlert}
         />
       )}
 

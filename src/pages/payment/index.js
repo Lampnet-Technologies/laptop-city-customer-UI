@@ -6,7 +6,7 @@ import {
   PaymentMethod,
   OrderReview,
 } from "../../views/payment";
-import { LoginContext } from "../../App";
+import { LoginContext, UserCart } from "../../App";
 
 import PropTypes from "prop-types";
 import { styled } from "@mui/material/styles";
@@ -128,6 +128,7 @@ function CustomizedSteppers({ active }) {
 
 function Payment() {
   const [loggedIn, setLoggedIn] = useContext(LoginContext);
+  const [cart, setCart] = useContext(UserCart);
   const [componentToRender, setComponentToRender] =
     useState("shipping-address");
   const [activeStep, setActiveStep] = useState(0);
@@ -175,7 +176,7 @@ function Payment() {
       // } else if (componentToRender === "payment-method") {
       //   return <PaymentMethod goTo={nextPage} back={goBack} />;
     } else {
-      return <OrderReview back={goBack} />;
+      return <OrderReview cart={cart} back={goBack} />;
     }
   }, [componentToRender]);
 
