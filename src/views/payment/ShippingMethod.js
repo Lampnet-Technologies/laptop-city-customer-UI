@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NairaSymbol from "../../component/nairaSymbol";
+import { PlaceOrderContext } from "../../pages/payment";
 
 const deliveryMethods = [
   {
@@ -21,6 +22,7 @@ const deliveryMethods = [
 ];
 
 function ShippingMethod({ goTo, back }) {
+  const [placeOrder, setPlaceOrder] = useContext(PlaceOrderContext);
   const [shippingMethod, setShippingMethod] = useState("company");
 
   const navigate = useNavigate();

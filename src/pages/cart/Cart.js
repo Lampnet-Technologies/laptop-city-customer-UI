@@ -75,10 +75,30 @@ function Cart() {
         }
       )
         .then((res) => {
-          console.log("product quantity increased");
+          if (res.status == 200 || res.status == 201) {
+            setAlert({
+              ...alert,
+              open: true,
+              severity: "success",
+              title: "Cart has been updated",
+            });
+          } else if (res.status == 401) {
+            setAlert({
+              ...alert,
+              open: true,
+              severity: "info",
+              title: "Please login again",
+            });
+          }
         })
         .catch((error) => {
-          console.error(error.message);
+          setAlert({
+            ...alert,
+            open: true,
+            severity: "error",
+            title: "Couldn't update cart item",
+            message: error.message,
+          });
         });
     }
   };
@@ -103,10 +123,30 @@ function Cart() {
         }
       )
         .then((res) => {
-          console.log("product quantity decreased");
+          if (res.status == 200 || res.status == 201) {
+            setAlert({
+              ...alert,
+              open: true,
+              severity: "success",
+              title: "Cart has been updated",
+            });
+          } else if (res.status == 401) {
+            setAlert({
+              ...alert,
+              open: true,
+              severity: "info",
+              title: "Please login again",
+            });
+          }
         })
         .catch((error) => {
-          console.error(error.message);
+          setAlert({
+            ...alert,
+            open: true,
+            severity: "error",
+            title: "Couldn't update cart item",
+            message: error.message,
+          });
         });
     }
   };

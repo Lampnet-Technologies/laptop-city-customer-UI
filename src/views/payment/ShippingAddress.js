@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { PlaceOrderContext } from "../../pages/payment";
 
 function ShippingAddress({ goTo }) {
+  const [placeOrder, setPlaceOrder] = useContext(PlaceOrderContext);
   const [values, setValues] = useState({
     firstName: "",
     lastName: "",
@@ -32,7 +34,7 @@ function ShippingAddress({ goTo }) {
         setStates(result.data.states);
       })
       .catch((error) => {
-        alert(error.message);
+        console.log(error.message);
       });
   }, [location.pathname]);
 
@@ -50,7 +52,7 @@ function ShippingAddress({ goTo }) {
           setCities(result.data);
         })
         .catch((error) => {
-          alert(error.message);
+          console.log(error.message);
         });
     }
   }, [values.state]);
@@ -61,6 +63,10 @@ function ShippingAddress({ goTo }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    setPlaceOrder({ ...values });
+
+    // console.log(values);
 
     goTo("shipping-method");
   };
@@ -76,28 +82,31 @@ function ShippingAddress({ goTo }) {
 
       <div className="flex justify-between gap-6 md:gap-11 lg:gap-20">
         <input
+          required
           placeholder="First Name"
           name="firstName"
           type="text"
           id="firstName"
           value={values.firstName}
           onChange={handleChange("firstName")}
-          className="w-full h-11 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
+          className="w-full h-11 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm capitalize"
         />
 
         <input
+          required
           placeholder="Last Name"
           name="lastName"
           type="text"
           id="lastName"
           value={values.lastName}
           onChange={handleChange("lastName")}
-          className="w-full h-11 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
+          className="w-full h-11 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm capitalize"
         />
       </div>
 
       <div className="">
         <input
+          required
           placeholder="Email"
           name="email"
           type="email"
@@ -110,6 +119,7 @@ function ShippingAddress({ goTo }) {
 
       <div className="">
         <input
+          required
           placeholder="Street Address"
           name="streetAddress"
           type="text"
@@ -122,6 +132,7 @@ function ShippingAddress({ goTo }) {
 
       <div className="flex justify-between gap-6  md:gap-11 lg:gap-20">
         <select
+          required
           placeholder="State"
           name="state"
           id="state"
@@ -143,6 +154,7 @@ function ShippingAddress({ goTo }) {
         </select>
 
         <select
+          required
           placeholder="City"
           name="city"
           id="city"
@@ -176,6 +188,7 @@ function ShippingAddress({ goTo }) {
         />
 
         <input
+          required
           placeholder="Phone Number"
           name="phoneNumber"
           type="tel"

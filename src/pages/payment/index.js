@@ -1,4 +1,10 @@
-import React, { useMemo, useState, useEffect, useContext } from "react";
+import React, {
+  useMemo,
+  useState,
+  useEffect,
+  useContext,
+  createContext,
+} from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   ShippingAddress,
@@ -18,6 +24,8 @@ import Check from "@mui/icons-material/Check";
 import StepConnector, {
   stepConnectorClasses,
 } from "@mui/material/StepConnector";
+
+export const PlaceOrderContext = createContext();
 
 const QontoConnector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -133,6 +141,8 @@ function Payment() {
     useState("shipping-address");
   const [activeStep, setActiveStep] = useState(0);
 
+  const [placeOrder, setPlaceOrder] = useState("");
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -200,12 +210,14 @@ function Payment() {
 
       <CustomizedSteppers active={activeStep} />
 
-      <div
-        className="w-full px-4 py-6 rounded-3xl md:p-8 lg:p-10"
-        style={{ boxShadow: "0px 3px 6px 0px rgba(18, 29, 60, 0.15)" }}
-      >
-        {conditions}
-      </div>
+      <PlaceOrderContext.Provider value={[placeOrder, setPlaceOrder]}>
+        <div
+          className="w-full px-4 py-6 rounded-3xl md:p-8 lg:p-10"
+          style={{ boxShadow: "0px 3px 6px 0px rgba(18, 29, 60, 0.15)" }}
+        >
+          {conditions}
+        </div>
+      </PlaceOrderContext.Provider>
     </div>
   );
 }

@@ -180,6 +180,21 @@ function SignUp() {
           </div>
 
           <div className="flex flex-col gap-3 mb-4 md:gap-5 md:mb-8">
+            <label className="text-sm font-medium md:text-lg" htmlFor="email">
+              Phone number *
+            </label>
+            <input
+              required
+              name="phoneNumber"
+              type="tel"
+              id="phoneNumber"
+              value={values.phoneNumber}
+              onChange={handleChange("phoneNumber")}
+              className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 outline-0 font-light text-sm"
+            />
+          </div>
+
+          <div className="flex flex-col gap-3 mb-4 md:gap-5 md:mb-8">
             <label
               className="text-sm font-medium md:text-lg"
               htmlFor="password"
