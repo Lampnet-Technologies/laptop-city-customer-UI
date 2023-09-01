@@ -39,7 +39,7 @@ const localOrders = [
   },
 ];
 
-const accessToken = localStorage.getItem("token");
+// const accessToken = localStorage.getItem("token");
 
 function MyOrders() {
   const [orders, setOrders] = useState(null);
@@ -57,6 +57,8 @@ function MyOrders() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const accessToken = localStorage.getItem("token");
+
     fetch("https://apps-1.lampnets.com/ecommb-staging/orders/my-orders", {
       headers: {
         "content-type": "application/json",
