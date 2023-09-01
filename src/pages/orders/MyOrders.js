@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import EmptyOrders from "./EmptyOrders";
 import RenderedOrders from "./RenderedOrders";
 import { useNavigate } from "react-router-dom";
+import CustomAlert from "../../component/CustomAlert";
 
 const localOrders = [
   {
@@ -43,11 +44,17 @@ const accessToken = localStorage.getItem("token");
 function MyOrders() {
   const [orders, setOrders] = useState(null);
 
-  const navigate = useNavigate();
+  const [alert, setAlert] = useState({
+    open: false,
+    severity: "",
+    message: "",
+    title: "",
+  });
+  const handleCloseAlert = () => {
+    setAlert({ ...alert, open: false });
+  };
 
-  // useEffect(() => {
-  //   setOrders(localOrders);
-  // }, []);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("https://apps-1.lampnets.com/ecommb-staging/orders/my-orders", {
@@ -57,7 +64,18 @@ function MyOrders() {
       },
     })
       .then((res) => {
-        return res.json();
+        if (res.status != 200) {
+          setAlert({
+            ...alert,
+            open: true,
+            severity: "info",
+            title: "Something went wrong",
+            message: res.statusText,
+          });
+        } else {
+          return res.json();
+        }
+        // return res.json();
       })
       .then((result) => {
         setOrders(result);
@@ -65,7 +83,7 @@ function MyOrders() {
       .catch((error) => {
         console.error();
       });
-  });
+  }, []);
 
   const handleViewDetails = (id) => {
     navigate("/my-orders/viewOrder/" + id);
@@ -76,6 +94,14 @@ function MyOrders() {
       <div className="border-b border-b-solid border-b-gray-400 p-4 md:p-8 text-center text-lg font-semibold capitalize md:text-xl lg:text-[27px]">
         my orders
       </div>
+
+      {alert && alert.severity && (
+        <CustomAlert
+          open={alert.open}
+          details={alert}
+          close={handleCloseAlert}
+        />
+      )}
 
       {!orders && null}
 
