@@ -68,7 +68,7 @@ function MyOrders() {
           setAlert({
             ...alert,
             open: true,
-            severity: "info",
+            severity: "warning",
             title: "Something went wrong",
             message: res.statusText,
           });
