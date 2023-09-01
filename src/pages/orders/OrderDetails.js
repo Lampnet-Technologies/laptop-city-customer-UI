@@ -13,7 +13,6 @@ function OrderDetails() {
   const [order, setOrder] = useState("");
   const [orderItems, setOrderItems] = useState("");
   const [total, setTotal] = useState("");
-  const [noItems, setNoItems] = useState(false);
 
   const params = useParams();
 
@@ -45,7 +44,6 @@ function OrderDetails() {
           setTotal(result.total);
         })
         .catch((error) => {
-          setNoItems(true);
           console.error();
         });
     }
