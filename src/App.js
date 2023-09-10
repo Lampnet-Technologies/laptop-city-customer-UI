@@ -96,7 +96,7 @@ function App() {
           console.error(error.message);
         });
     }
-  }, [cartDep]);
+  }, [loggedIn, cartDep]);
 
   return (
     <LoginContext.Provider value={[loggedIn, setLoggedIn]}>
