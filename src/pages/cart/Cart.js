@@ -182,7 +182,7 @@ function Cart() {
             message: res.statusText,
           });
         }
-        setCartDep("");
+        setCartDep(idRef.current);
       })
       .catch((error) => {
         setAlert({
