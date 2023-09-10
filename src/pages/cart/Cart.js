@@ -1,10 +1,8 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
 import EmptyCart from "./EmptyCart";
 import RenderedCart from "./RenderedCart";
-import Loading from "../../component/loading";
 import DeleteButtonAlert from "../../component/DeleteButtonAlert";
-import { UserCart } from "../../App";
+import { PlaceOrderContext, UserCart } from "../../App";
 import CustomAlert from "../../component/CustomAlert";
 
 const localCart = [
@@ -42,6 +40,7 @@ const accessToken = localStorage.getItem("token");
 
 function Cart() {
   const [cart, setCart] = useContext(UserCart);
+  const [placeOrder, setPlaceOrder] = useContext(PlaceOrderContext);
   const [deleteAlert, setDeleteAlert] = useState(false);
   const idRef = useRef();
 
@@ -51,6 +50,7 @@ function Cart() {
     message: "",
     title: "",
   });
+
   const handleCloseAlert = () => {
     setAlert({ ...alert, open: false });
   };
@@ -154,8 +154,6 @@ function Cart() {
   const handleDelete = (id) => {
     idRef.current = id;
     setDeleteAlert(true);
-
-    // ** For reference purposes
   };
 
   const handleDeleteItem = () => {
@@ -190,8 +188,33 @@ function Cart() {
           title: "Couldn't delete item",
           message: error.message,
         });
-        // alert(error.message);
       });
+  };
+
+  const verifyCoupon = (code) => {
+    const dataToSend = { couponCode: code };
+
+    console.log(dataToSend);
+
+    // const accessToken = localStorage.getItem("token");
+
+    // fetch("https://apps-1.lampnets.com/ecommb-staging/coupons/verify", {
+    //   method: "GET",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     Authorization: "Bearer " + accessToken,
+    //   },
+    //   body: JSON.stringify(dataToSend),
+    // })
+    //   .then((res) => {
+    //     return res.text();
+    //   })
+    //   .then((result) => {
+    //     console.log(result);
+    //   })
+    //   .catch((error) => {
+    //     console.error();
+    //   });
   };
 
   return (
@@ -200,7 +223,6 @@ function Cart() {
         shopping Cart {cart.cartItems && `(${cart.cartItems.length})`}
       </div>
 
-      {/* {isLoading && <Loading />} */}
       {deleteAlert && (
         <DeleteButtonAlert
           setter={setDeleteAlert}
@@ -228,6 +250,7 @@ function Cart() {
             remove={handleDelete}
             incrQty={handleIncreaseQty}
             decrQty={handleDecreaseQty}
+            verifyCoupon={verifyCoupon}
           />
         )}
       </div>

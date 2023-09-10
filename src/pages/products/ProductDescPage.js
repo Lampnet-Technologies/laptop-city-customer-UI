@@ -8,6 +8,7 @@ import NairaSymbol from "../../component/nairaSymbol";
 import { LoginContext } from "../../App";
 import Loading from "../../component/loading";
 import CustomAlert from "../../component/CustomAlert";
+import CustomSnackbar from "../../component/CustomSnackbar";
 
 const images = [
   {
@@ -258,8 +259,19 @@ function AboutProduct({ product }) {
     message: "",
     title: "",
   });
+
+  const [toast, setToast] = useState({
+    open: false,
+    severity: "",
+    message: "",
+  });
+
   const handleCloseAlert = () => {
     setAlert({ ...alert, open: false });
+  };
+
+  const handleCloseToast = () => {
+    setToast({ ...toast, open: false });
   };
 
   const navigate = useNavigate();
@@ -304,6 +316,47 @@ function AboutProduct({ product }) {
             message: error.message,
           });
           // alert("Failed to add to cart" + error.message);
+        });
+    }
+  };
+
+  const handleAddToWishlist = (id) => {
+    const dataToSend = { basketId: 1, productId: id, quantity: quantity };
+
+    const accessToken = localStorage.getItem("token");
+
+    if (!loggedIn) {
+      setAlert({
+        ...alert,
+        open: true,
+        severity: "warning",
+        title: "YOU ARE NOT SIGNED IN!",
+        message: "Please Sign in first",
+      });
+    } else {
+      fetch("https://apps-1.lampnets.com/ecommb-staging/wish-lists/add", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          Authorization: "Bearer " + accessToken,
+        },
+        body: JSON.stringify(dataToSend),
+      })
+        .then((res) => {
+          setToast({
+            ...toast,
+            open: true,
+            severity: "success",
+            message: "product added to wishlist",
+          });
+        })
+        .catch((error) => {
+          setToast({
+            ...toast,
+            open: true,
+            severity: "error",
+            message: "product NOT added to wishlist",
+          });
         });
     }
   };
@@ -354,11 +407,21 @@ function AboutProduct({ product }) {
             {product.stock} in stock
           </div>
         </div>
-        <h2 className="text-2xl font-semibold lg:text-3xl">
-          <NairaSymbol />
-          {/* 350,000 */}
-          {quantity * product.price}
-        </h2>
+        <div className="flex justify-between items-center gap-1 md:justify-start md:gap-20">
+          <h2 className="text-2xl font-semibold lg:text-3xl">
+            <NairaSymbol />
+            {/* 350,000 */}
+            {quantity * product.price}
+          </h2>
+
+          <button
+            className="outline-0 text-sm flex justify-center items-center gap-1"
+            onClick={() => handleAddToWishlist(product.id)}
+          >
+            <i className="bx bx-heart bx-sm"></i>
+            Add to Wishlist
+          </button>
+        </div>
         <div className="my-5 flex items-center justify-start flex-wrap gap-4 md:gap-8 md:justify-start">
           <button
             className="w-full border-2 border-solid border-secondary-button text-secondary-button hover:bg-gray-100 hover:font-semibold transition-all ease-in duration-200 font-medium text-sm rounded flex justify-center items-center gap-3 py-2 px-4 md:w-fit"
@@ -399,6 +462,14 @@ function AboutProduct({ product }) {
           open={alert.open}
           details={alert}
           close={handleCloseAlert}
+        />
+      )}
+
+      {toast && toast.severity && (
+        <CustomSnackbar
+          open={toast.open}
+          close={handleCloseToast}
+          toast={toast}
         />
       )}
     </div>

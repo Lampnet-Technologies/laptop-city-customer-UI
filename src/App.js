@@ -30,6 +30,7 @@ import OrderDetails from "./pages/orders/OrderDetails";
 import Homepage from "./pages/Homepage";
 import ProductsListing from "./pages/products/ProductListingPage";
 import ProductDesc from "./pages/products/ProductDescPage";
+import { MyWishlists } from "./pages/wishlist";
 
 // const Homepage = lazy(() => import("./pages/Homepage"));
 // const ProductsListing = lazy(() =>
@@ -40,11 +41,13 @@ import ProductDesc from "./pages/products/ProductDescPage";
 export const LoginContext = createContext();
 export const UserProfileContext = createContext();
 export const UserCart = createContext();
+export const PlaceOrderContext = createContext();
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(localStorage.token ? true : false);
   const [profile, setProfile] = useState("");
   const [cart, setCart] = useState({ cartItems: null, total: "" });
+  const [placeOrder, setPlaceOrder] = useState({});
 
   useEffect(() => {
     const accessToken = localStorage.getItem("token");
@@ -93,67 +96,76 @@ function App() {
           console.error(error.message);
         });
     }
-  });
+  }, []);
 
   return (
     <LoginContext.Provider value={[loggedIn, setLoggedIn]}>
       <UserProfileContext.Provider value={[profile, setProfile]}>
         <UserCart.Provider value={[cart, setCart]}>
-          <Router>
-            {/* <Suspense fallback={<Loading />}> */}
-            <div className="w-full max-w-[1600px] mx-auto">
-              <ScrollToTop />
-              <Nav />
+          <PlaceOrderContext.Provider value={[placeOrder, setPlaceOrder]}>
+            <Router>
+              {/* <Suspense fallback={<Loading />}> */}
+              <div className="w-full max-w-[1600px] mx-auto">
+                <ScrollToTop />
+                <Nav />
 
-              {/* <Suspense fallback={null}> */}
-              <div className="pb-10 w-full">
-                <Routes>
-                  <Route path="/" element={<Homepage />} />
-                  <Route path="/products" element={<ProductsListing />} />
-                  <Route path="/product-desc/:id" element={<ProductDesc />} />
-                  <Route path="/blog" element={<Blog />} />
-                  <Route path="/blog/:slug" element={<SingleBlogPost />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/signup" element={<SignUp />} />
-                  <Route element={<Profile />}>
-                    <Route path="/profile" element={<ProfileMenu />} />
-                    <Route element={<ProfileInfo />}>
-                      <Route path="/personal-info" element={<PersonalInfo />} />
-                      <Route path="/contact-info" element={<ContactInfo />} />
+                {/* <Suspense fallback={null}> */}
+                <div className="pb-10 w-full">
+                  <Routes>
+                    <Route path="/" element={<Homepage />} />
+                    <Route path="/products" element={<ProductsListing />} />
+                    <Route path="/product-desc/:id" element={<ProductDesc />} />
+                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/blog/:slug" element={<SingleBlogPost />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/signup" element={<SignUp />} />
+                    <Route element={<Profile />}>
+                      <Route path="/profile" element={<ProfileMenu />} />
+                      <Route element={<ProfileInfo />}>
+                        <Route
+                          path="/personal-info"
+                          element={<PersonalInfo />}
+                        />
+                        <Route path="/contact-info" element={<ContactInfo />} />
+                      </Route>
+                      <Route
+                        path="/my-orders/viewOrder/:id"
+                        element={<OrderDetails />}
+                      />
+                      <Route path="/my-orders" element={<MyOrders />} />
+                      <Route path="/shopping-cart" element={<Cart />} />
+                      <Route element={<Coupons />}>
+                        <Route path="/coupons" element={<RenderedCoupons />} />
+                      </Route>
+                      <Route path="/wishlist" element={<MyWishlists />} />
                     </Route>
+                    <Route path="/payment" element={<Payment />} />
                     <Route
-                      path="/my-orders/viewOrder/:id"
-                      element={<OrderDetails />}
+                      path="/payment/successful"
+                      element={<OrderSuccessful />}
                     />
-                    <Route path="/my-orders" element={<MyOrders />} />
-                    <Route path="/shopping-cart" element={<Cart />} />
-                    <Route element={<Coupons />}>
-                      <Route path="/coupons" element={<RenderedCoupons />} />
+                    <Route path="/track-order/:id" element={<TrackOrder />} />
+                    <Route element={<Company />}>
+                      <Route path="/about" element={<About />} />
+                      <Route
+                        path="/terms-&-conditions"
+                        element={<TermsOfUse />}
+                      />
+                      <Route
+                        path="/privacy-policy"
+                        element={<PrivacyPolicy />}
+                      />
                     </Route>
-                  </Route>
-                  <Route path="/payment" element={<Payment />} />
-                  <Route
-                    path="/payment/successful"
-                    element={<OrderSuccessful />}
-                  />
-                  <Route path="/track-order/:id" element={<TrackOrder />} />
-                  <Route element={<Company />}>
-                    <Route path="/about" element={<About />} />
-                    <Route
-                      path="/terms-&-conditions"
-                      element={<TermsOfUse />}
-                    />
-                    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                  </Route>
-                  <Route path="*" element={<PageNotFound />} />
-                </Routes>
+                    <Route path="*" element={<PageNotFound />} />
+                  </Routes>
+                </div>
+                {/* </Suspense> */}
+
+                <Footer />
               </div>
               {/* </Suspense> */}
-
-              <Footer />
-            </div>
-            {/* </Suspense> */}
-          </Router>
+            </Router>
+          </PlaceOrderContext.Provider>
         </UserCart.Provider>
       </UserProfileContext.Provider>
     </LoginContext.Provider>

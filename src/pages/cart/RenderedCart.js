@@ -2,8 +2,16 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NairaSymbol from "../../component/nairaSymbol";
 
-function RenderedCart({ total, items, remove, incrQty, decrQty }) {
+function RenderedCart({
+  total,
+  items,
+  remove,
+  incrQty,
+  decrQty,
+  verifyCoupon,
+}) {
   const [show, setShow] = useState(false);
+  const [couponCode, setCOuponCode] = useState("");
   const navigate = useNavigate();
 
   return (
@@ -27,13 +35,19 @@ function RenderedCart({ total, items, remove, incrQty, decrQty }) {
           <div className="rounded-md flex justify-between items-center gap-4">
             <input
               type="text"
+              value={couponCode}
               placeholder="input coupon code"
-              className="w-full outline-0 py-2 px-4 placeholder:text-xs text-xs lg:placeholder:text-sm md:text-sm"
+              className="bg-transparent w-full outline-0 py-2 px-4 placeholder:text-xs text-xs lg:placeholder:text-sm md:text-sm"
+              onChange={(e) => setCOuponCode(e.target.value)}
             />
 
             <button
               type="button"
               className="bg-green py-1 px-4 capitalize text-center text-sm lg:text-base text-white rounded outline-0"
+              onClick={() => {
+                verifyCoupon(couponCode);
+                // setShow(false);
+              }}
             >
               add
             </button>

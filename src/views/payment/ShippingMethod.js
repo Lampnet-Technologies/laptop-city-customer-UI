@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import NairaSymbol from "../../component/nairaSymbol";
-import { PlaceOrderContext } from "../../pages/payment";
+import { PlaceOrderContext } from "../../App";
 
 const deliveryMethods = [
   {
@@ -23,9 +22,30 @@ const deliveryMethods = [
 
 function ShippingMethod({ goTo, back }) {
   const [placeOrder, setPlaceOrder] = useContext(PlaceOrderContext);
+  const [methods, setMethods] = useState(null);
   const [shippingMethod, setShippingMethod] = useState("company");
 
-  const navigate = useNavigate();
+  // ** Use below when there's an available shipping methods in the backend
+  // useEffect(() => {
+  //   const accessToken = localStorage.getItem("token");
+
+  //   fetch("https://apps-1.lampnets.com/ecommb-staging/shipping-methods", {
+  //     headers: {
+  //       "content-type": "application/json",
+  //       Authorization: "Bearer " + accessToken,
+  //     },
+  //   })
+  //     .then((res) => {
+  //       return res.json();
+  //     })
+  //     .then((result) => {
+  //       console.log(result);
+  //       setMethods(result)
+  //     })
+  //     .catch((error) => {
+  //       console.error();
+  //     });
+  // }, []);
 
   const handleChange = (e) => {
     setShippingMethod(e.target.value);
@@ -87,7 +107,6 @@ function ShippingMethod({ goTo, back }) {
         <button
           type="button"
           className="inline-block w-full md:w-48 bg-transparent border border-solid border-green p-2 rounded outline-0 font-semibold text-black text-sm"
-          // onClick={() => navigate(-1)}
           onClick={back}
         >
           {" "}
@@ -97,7 +116,6 @@ function ShippingMethod({ goTo, back }) {
         <button
           type="submit"
           className="inline-block w-full md:w-48 bg-green p-2 rounded outline-0 font-semibold text-white text-sm"
-          // onClick={() => navigate("/payment/payment-method")}
         >
           {" "}
           Next

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { PlaceOrderContext } from "../../pages/payment";
+import { PlaceOrderContext } from "../../App";
 
 function ShippingAddress({ goTo }) {
   const [placeOrder, setPlaceOrder] = useContext(PlaceOrderContext);
@@ -64,9 +64,7 @@ function ShippingAddress({ goTo }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    setPlaceOrder({ ...values });
-
-    // console.log(values);
+    setPlaceOrder({ ...placeOrder, ...values });
 
     goTo("shipping-method");
   };

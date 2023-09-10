@@ -6,6 +6,7 @@ const IMAGES = {
     heroBgSVG: require("./homepage/hero-bg.svg"),
     heroImage1: require("./homepage/hero-image-1.png"),
     heroImage: require("./homepage/hero-image.png"),
+    heroImage2: require("./homepage/hero-image-2.png"),
     catergoryNewBg: require("./homepage/category-new-bg.jpg"),
     categroryUsedBg: require("./homepage/category-used-bg.jpg"),
   },

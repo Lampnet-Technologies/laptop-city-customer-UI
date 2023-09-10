@@ -27,6 +27,11 @@ const profileSubMenu = [
     name: "coupons",
     to: "/coupons",
   },
+  {
+    icon: "bx bx-heart bx-sm",
+    name: "wishlist",
+    to: "/wishlist",
+  },
 ];
 
 export default function ProfileDropdown({

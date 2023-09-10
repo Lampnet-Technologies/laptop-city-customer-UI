@@ -24,6 +24,11 @@ const links = [
     name: "coupons",
     to: "/coupons",
   },
+  {
+    icon: "bx bx-heart bx-sm",
+    name: "wishlist",
+    to: "/wishlist",
+  },
 ];
 
 const activeStyles = ({ isActive }) => {

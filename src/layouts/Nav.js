@@ -126,6 +126,7 @@ function CustomLink({ to, children, ...props }) {
     </li>
   );
 }
+
 function Nav() {
   const [loggedIn, setLoggedIn] = useContext(LoginContext);
   const [profile, setProfile] = useContext(UserProfileContext);

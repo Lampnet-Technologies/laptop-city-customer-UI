@@ -54,7 +54,7 @@ function Blog() {
           </p>
         </div>
 
-        <div className="p-1 rounded-md border border-solid border-green flex justify-between items-center gap-0.5 flex-wrap md:justify-center md:gap-3 w-fit mx-auto">
+        {/* <div className="p-1 rounded-md border border-solid border-green flex justify-between items-center gap-0.5 flex-wrap md:justify-center md:gap-3 w-fit mx-auto">    ------> use if category is implemented
           {filters.map((filter, index) => {
             return (
               <button
@@ -70,7 +70,7 @@ function Blog() {
               </button>
             );
           })}
-        </div>
+        </div> */}
 
         {posts[0] && (
           <section>
@@ -79,15 +79,15 @@ function Blog() {
                 <img
                   src={posts[0].mainImage.asset.url}
                   alt={posts[0].title}
-                  className="max-w-full h-full w-full object-cover rounded-l-md"
+                  className="max-w-full h-full w-full object-cover rounded-t-md rounded-b"
                 />
               </div>
               <div className="w-full h-2/5 md:h-full md:w-[90%] lg:w-[80%] p-3 md:p-10 lg:p-14 flex flex-col justify-between gap-3">
                 <div className="space-y-2 md:space-y-3 lg:space-y-2 overflow-y-hidden">
                   <div className="flex items-center gap-4 mb-2 lg:mb-3">
-                    <span className="bg-black text-white py-1 px-2 text-sm rounded-sm">
+                    {/* <span className="bg-black text-white py-1 px-2 text-sm rounded-sm">    ------> use if category is implemented
                       category
-                    </span>
+                    </span> */}
                     <span className="font-light text-xs lg:text-sm">
                       {format(new Date(posts[0].publishedAt), "dd MMMM yyyy")}
                     </span>
@@ -123,14 +123,16 @@ function Blog() {
         {isLoading ? (
           <Loading />
         ) : (
-          <div className="overflow-x-auto pb-4 flex flex-nowrap gap-3 md:py-0 md:gap-10 md:grid md:grid-cols-2 lg:grid-cols-3">
+          // <div className="overflow-x-auto pb-4 flex flex-nowrap gap-3 md:py-0 md:gap-10 md:grid md:grid-cols-2 lg:grid-cols-3">  ------> use if pagination is implemented
+          <div className="pb-4 grid grid-cols-1 gap-8 md:gap-10 md:grid-cols-2 lg:grid-cols-3">
             {posts.map((post) => (
               <article
                 key={post.slug.current}
-                className="min-w-[168px] border border-solid border-green rounded-md flex flex-col h-[600px] mx-auto md:w-full md:mx-0"
+                // className="min-w-[168px] border border-solid border-green rounded-md flex flex-col h-[600px] mx-auto md:w-full md:mx-0"   ------> use if pagination is implemented
+                className="w-[90%] h-[500px] min-w-[168px] border border-solid border-green rounded-md flex flex-col md:h-[600px] mx-auto md:w-full md:mx-0"
               >
                 <div
-                  className="h-64 md:h-60 bg-cover bg-center"
+                  className="h-64 md:h-60 bg-cover bg-center rounded-t-md rounded-b-sm"
                   style={{
                     backgroundImage: `url(${post.mainImage.asset.url})`,
                   }}
@@ -149,9 +151,9 @@ function Blog() {
                 <div className="px-[8px] py-[12px] md:p-4 flex flex-col justify-between items-start flex-1">
                   <div className="space-y-2 md:space-y-3 lg:space-y-2 overflow-y-hidden">
                     <div className="flex items-center justify-between gap-[2px] md:justify-start md:gap-4 mb-2 text-xs lg:text-sm lg:mb-3">
-                      <span className="bg-black text-white p-1 md:py-1 md:px-2 rounded-sm">
+                      {/* <span className="bg-black text-white p-1 md:py-1 md:px-2 rounded-sm">    ------> use if category is implemented
                         category
-                      </span>
+                      </span> */}
                       <span className="font-normal">
                         {format(new Date(post.publishedAt), "dd MMMM yyyy")}
                       </span>
