@@ -47,15 +47,15 @@ export default function Hero() {
       </div>
 
       <div
-        className="w-full h-96 bg-contain bg-top bg-no-repeat flex justify-center items-center md:bg-cover lg:h-[600px]"
+        className="w-full h-96 bg-contain bg-bottom bg-no-repeat flex justify-center items-center xl:bg-top md:bg-cover lg:h-[600px]"
         style={{
           backgroundImage: `url(${IMAGES.homepage.heroBg})`,
         }}
       >
         <img
-          src={IMAGES.homepage.heroImage}
+          src={IMAGES.homepage.heroImage2}
           alt="hero-image"
-          className="max-w-10/12 h-4/5"
+          className="max-w-10/12 h-[90%] md:h-4/5 object-cover xl:h-[90%]"
         />
       </div>
     </div>
