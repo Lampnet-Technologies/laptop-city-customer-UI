@@ -9,7 +9,7 @@ import { IconButton } from "@mui/material";
 import Loading from "../../component/loading";
 import LaptopCityButton from "../../component/button";
 import ScrollToTop from "../../utils/ScrollToTop";
-import { LoginContext } from "../../App";
+import { LoginContext, UserCartDependency } from "../../App";
 import CustomAlert from "../../component/CustomAlert";
 
 const AdSlider = lazy(() => import("../../component/adSlider"));
@@ -29,6 +29,7 @@ const theme = createTheme({
 
 function ProductsListing() {
   const [loggedIn, setLoggedIn] = useContext(LoginContext);
+  const [cartDep, setCartDep] = useContext(UserCartDependency);
   const [showFilters, setShowFilters] = useState(false);
   const [products, setProducts] = useState(null);
   const [totalPages, setTotalPages] = useState(0);
@@ -167,6 +168,7 @@ function ProductsListing() {
       })
         .then((res) => {
           if (res.status == 200) {
+            setCartDep(product.id);
             setAlert({
               ...alert,
               open: true,

@@ -5,7 +5,7 @@ import LaptopCityButton from "../../component/button";
 import { Banner } from "../../component/homepage";
 import { Groups } from "../../component/homepage/productGroups";
 import NairaSymbol from "../../component/nairaSymbol";
-import { LoginContext } from "../../App";
+import { LoginContext, UserCartDependency } from "../../App";
 import Loading from "../../component/loading";
 import CustomAlert from "../../component/CustomAlert";
 import CustomSnackbar from "../../component/CustomSnackbar";
@@ -250,6 +250,7 @@ function ImagesPreviews({ files }) {
 
 function AboutProduct({ product }) {
   const [loggedIn, setLoggedIn] = useContext(LoginContext);
+  const [cartDep, setCartDep] = useContext(UserCartDependency);
   const [showMore, setShowMore] = useState(false);
   const [quantity, setQuantity] = useState(1);
 
@@ -298,6 +299,7 @@ function AboutProduct({ product }) {
         body: JSON.stringify(dataToSend),
       })
         .then((res) => {
+          setCartDep(id);
           setAlert({
             ...alert,
             open: true,

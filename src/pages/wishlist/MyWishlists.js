@@ -1,12 +1,14 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import EmptyWishlist from "./EmptyWishlist";
 import RenderedWishlist from "./RenderedWishlist";
 import CustomSnackbar from "../../component/CustomSnackbar";
 import DeleteButtonAlert from "../../component/DeleteButtonAlert";
+import { UserCartDependency } from "../../App";
 
 const accessToken = localStorage.getItem("token");
 
 function MyWishlists() {
+  const [cartDep, setCartDep] = useContext(UserCartDependency);
   const [wishlists, setWishlists] = useState(null);
   const [deleteAlert, setDeleteAlert] = useState(false);
   const [toast, setToast] = useState({
@@ -52,6 +54,7 @@ function MyWishlists() {
       body: JSON.stringify(dataToSend),
     })
       .then((res) => {
+        setCartDep(id);
         setToast({
           ...toast,
           open: true,

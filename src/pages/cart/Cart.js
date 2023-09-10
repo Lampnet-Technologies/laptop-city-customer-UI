@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import EmptyCart from "./EmptyCart";
 import RenderedCart from "./RenderedCart";
 import DeleteButtonAlert from "../../component/DeleteButtonAlert";
-import { PlaceOrderContext, UserCart } from "../../App";
+import { PlaceOrderContext, UserCart, UserCartDependency } from "../../App";
 import CustomAlert from "../../component/CustomAlert";
 
 const localCart = [
@@ -40,6 +40,7 @@ const accessToken = localStorage.getItem("token");
 
 function Cart() {
   const [cart, setCart] = useContext(UserCart);
+  const [cartDep, setCartDep] = useContext(UserCartDependency);
   const [placeOrder, setPlaceOrder] = useContext(PlaceOrderContext);
   const [deleteAlert, setDeleteAlert] = useState(false);
   const idRef = useRef();
@@ -76,6 +77,7 @@ function Cart() {
       )
         .then((res) => {
           if (res.status == 200 || res.status == 201) {
+            setCartDep(quantity);
             setAlert({
               ...alert,
               open: true,
@@ -124,6 +126,7 @@ function Cart() {
       )
         .then((res) => {
           if (res.status == 200 || res.status == 201) {
+            setCartDep(quantity);
             setAlert({
               ...alert,
               open: true,
@@ -179,6 +182,7 @@ function Cart() {
             message: res.statusText,
           });
         }
+        setCartDep("");
       })
       .catch((error) => {
         setAlert({
