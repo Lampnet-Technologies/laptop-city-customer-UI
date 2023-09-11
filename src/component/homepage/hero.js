@@ -47,7 +47,7 @@ export default function Hero() {
       </div>
 
       <div
-        className="w-full h-96 bg-contain bg-bottom bg-no-repeat flex justify-center items-center xl:bg-top md:bg-cover lg:h-[600px]"
+        className="w-full h-96 bg-contain bg-bottom bg-no-repeat flex justify-center items-center xl:bg-top xl:bg-cover lg:h-[600px]"
         style={{
           backgroundImage: `url(${IMAGES.homepage.heroBg})`,
         }}

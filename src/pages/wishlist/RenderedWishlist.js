@@ -56,7 +56,7 @@ function ProductContainer({ item, deleteItem, addToCart }) {
             className="outline-0 p-2"
             onClick={(e) => {
               e.stopPropagation();
-              deleteItem(item.product.id);
+              deleteItem(item.id);
             }}
           >
             <i className="bx bxs-trash text-[26px] xl:text-3xl text-green"></i>

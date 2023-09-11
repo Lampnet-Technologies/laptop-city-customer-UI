@@ -10,6 +10,7 @@ const accessToken = localStorage.getItem("token");
 function MyWishlists() {
   const [cartDep, setCartDep] = useContext(UserCartDependency);
   const [wishlists, setWishlists] = useState(null);
+  const [wishlistDep, setWishlistDep] = useState();
   const [deleteAlert, setDeleteAlert] = useState(false);
   const [toast, setToast] = useState({
     open: false,
@@ -36,7 +37,7 @@ function MyWishlists() {
       .catch((error) => {
         console.error();
       });
-  }, []);
+  }, [wishlistDep]);
 
   const handleCloseToast = () => {
     setToast({ ...toast, open: false });
@@ -98,6 +99,7 @@ function MyWishlists() {
             severity: "success",
             message: "product removed from wishlist",
           });
+          setWishlistDep(idRef.current);
         } else {
           setToast({
             ...toast,
@@ -127,6 +129,7 @@ function MyWishlists() {
         <DeleteButtonAlert
           setter={setDeleteAlert}
           deleteItem={handleDeleteItem}
+          location="wishlist"
         />
       )}
 

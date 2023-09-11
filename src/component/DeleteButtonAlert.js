@@ -11,7 +11,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function DeleteButtonAlert({ setter, deleteItem }) {
+export default function DeleteButtonAlert({ setter, deleteItem, location }) {
   const [open, setOpen] = React.useState(true);
 
   const handleClose = () => {
@@ -28,10 +28,10 @@ export default function DeleteButtonAlert({ setter, deleteItem }) {
         onClose={handleClose}
         aria-describedby="alert-dialog-slide-description"
       >
-        <DialogTitle>{"Remove from cart"}</DialogTitle>
+        <DialogTitle>{`Remove from ${location}`}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-slide-description">
-            Do you want to remove this item from cart?
+            Do you want to remove this item from {location}?
           </DialogContentText>
         </DialogContent>
         <DialogActions className="space-x-6 mb-2 mx-4">
@@ -60,7 +60,7 @@ export default function DeleteButtonAlert({ setter, deleteItem }) {
             }}
           >
             {" "}
-            <i className="bx bxs-trash text-[20px]"></i> Remove
+            <i className="bx bxs-trash text-[18px]"></i> Remove
           </Button>
         </DialogActions>
       </Dialog>

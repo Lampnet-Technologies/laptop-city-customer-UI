@@ -231,6 +231,7 @@ function Cart() {
         <DeleteButtonAlert
           setter={setDeleteAlert}
           deleteItem={handleDeleteItem}
+          location="cart"
         />
       )}
 
