@@ -42,7 +42,7 @@ function ProductContainer({ product, addToCart }) {
         >
           {product.category == "BRAND NEW" ? "new" : "used"}
         </div>
-        <button
+        {/* <button
           type="button"
           className="hidden lg:flex justify-center items-center text-dark-blue absolute bottom-2 right-2 z-10"
           onClick={(e) => {
@@ -52,12 +52,7 @@ function ProductContainer({ product, addToCart }) {
           }}
         >
           <i className="bx bx-cart-add bx-sm"></i>
-          {/* <img
-            src={IMAGES.icons.cartSmall}
-            alt="cart"
-            className="max-w-full w-full"
-          /> */}
-        </button>
+        </button> */}
       </div>
       <div className="flex flex-col gap-1 justify-between h-20 px-2 pb-3 lg:h-28 lg:pt-2">
         <p className="text-xs md:text-sm font-medium capitalize">
@@ -72,14 +67,14 @@ function ProductContainer({ product, addToCart }) {
 
           <button
             type="button"
-            className="bg-green text-white text-xs capitalize py-1 px-2 rounded flex justify-between items-center lg:hidden"
+            className="bg-green text-white text-xs capitalize py-1 px-2 rounded flex justify-between items-center md:gap-1 lg:px-4"
             onClick={(e) => {
               e.stopPropagation();
 
               addToCart(product);
             }}
           >
-            <i className="bx bx-cart-add"></i> add
+            <i className="bx bx-cart-add lg:text-base"></i> add
           </button>
         </div>
       </div>
