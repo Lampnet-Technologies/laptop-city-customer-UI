@@ -138,6 +138,30 @@ function ProductsListing() {
       });
   };
 
+  const viewAll = () => {
+    // const url = getFetchURL(0);
+
+    setIsLoading(true);
+    setBrandId("");
+    setCategoryId("");
+    setProductTypeId("");
+
+    fetch(
+      "https://apps-1.lampnets.com/ecommb-staging/products/pagination/active?pageNo=0&pageSize=12&sortBy=createdOn&sortDir=desc"
+    )
+      .then((res) => {
+        return res.json();
+      })
+      .then((result) => {
+        setProducts(result.content);
+        setTotalPages(result.totalPages);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error();
+      });
+  };
+
   const handleChangePage = (event, page) => {
     setCurrentPage(page - 1);
   };
@@ -224,12 +248,6 @@ function ProductsListing() {
             className="filterDesktop hidden lg:block w-80 max-h-[1300px] overflow-y-auto mr-20 bg-filter-green rounded"
             style={{ scrollBehavior: "smooth", scrollbarWidth: "none" }}
           >
-            {/* <div className="m-2 mt-3 text-right">
-              <IconButton onClick={handleFilter} title="click to send filter">
-                <i className="bx bxs-send text-green"></i>
-              </IconButton>
-            </div> */}
-
             <div className="pb-8 px-3 flex flex-col gap-10">
               <div className="mt-3 text-right">
                 <IconButton
@@ -280,12 +298,7 @@ function ProductsListing() {
               </div>
 
               <div className="flex justify-end items-center">
-                <button
-                  className="flex items-center text-sm"
-                  onClick={() => {
-                    navigate("/products");
-                  }}
-                >
+                <button className="flex items-center text-sm" onClick={viewAll}>
                   View all <i className="bx bx-chevron-right bx-sm"></i>
                 </button>
               </div>
@@ -334,7 +347,7 @@ function ProductsListing() {
                         type="button"
                         onClick={() => {
                           handleOpen();
-                          navigate("/products");
+                          viewAll();
                         }}
                         className="flex items-center text-sm"
                       >
