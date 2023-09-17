@@ -25,7 +25,7 @@ import StepConnector, {
   stepConnectorClasses,
 } from "@mui/material/StepConnector";
 
-// export const PlaceOrderContext = createContext();
+export const ChosenMethodContext = createContext();
 
 const QontoConnector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -141,7 +141,7 @@ function Payment() {
     useState("shipping-address");
   const [activeStep, setActiveStep] = useState(0);
 
-  // const [placeOrder, setPlaceOrder] = useState("");
+  const [chosenMethodPrice, setChosenMethodPrice] = useState();
 
   const navigate = useNavigate();
 
@@ -210,14 +210,16 @@ function Payment() {
 
       <CustomizedSteppers active={activeStep} />
 
-      {/* <PlaceOrderContext.Provider value={[placeOrder, setPlaceOrder]}> */}
-      <div
-        className="w-full px-4 py-6 rounded-3xl md:p-8 lg:p-10"
-        style={{ boxShadow: "0px 3px 6px 0px rgba(18, 29, 60, 0.15)" }}
+      <ChosenMethodContext.Provider
+        value={[chosenMethodPrice, setChosenMethodPrice]}
       >
-        {conditions}
-      </div>
-      {/* </PlaceOrderContext.Provider> */}
+        <div
+          className="w-full px-4 py-6 rounded-3xl md:p-8 lg:p-10"
+          style={{ boxShadow: "0px 3px 6px 0px rgba(18, 29, 60, 0.15)" }}
+        >
+          {conditions}
+        </div>
+      </ChosenMethodContext.Provider>
     </div>
   );
 }

@@ -2,29 +2,14 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import EmptyCart from "./EmptyCart";
 import RenderedCart from "./RenderedCart";
 import DeleteButtonAlert from "../../component/DeleteButtonAlert";
-import { PlaceOrderContext, UserCart, UserCartDependency } from "../../App";
+import {
+  CouponDiscount,
+  PlaceOrderContext,
+  UserCart,
+  UserCartDependency,
+} from "../../App";
 import CustomAlert from "../../component/CustomAlert";
-
-const localCart = [
-  {
-    name: "Macbook 13",
-    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Macbook_3_bwnzmy.png",
-    category: "used",
-    price: 350000,
-    brand:
-      "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764541/apple-logo_v1oqh1.png",
-    quantity: 1,
-  },
-  {
-    name: "Alienware-X15-R1-Gaming-Laptop",
-    img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Dell_Alienware_X15_R1_Gaming_Laptop_vliv4z.png",
-    category: "new",
-    price: 350000,
-    brand:
-      "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764541/Alienware-Logo_vvili4.png",
-    quantity: 1,
-  },
-];
+import CustomSnackbar from "../../component/CustomSnackbar";
 
 const activeStyles = ({ isActive }) => {
   if (isActive) {
@@ -42,6 +27,7 @@ function Cart() {
   const [cart, setCart] = useContext(UserCart);
   const [cartDep, setCartDep] = useContext(UserCartDependency);
   const [placeOrder, setPlaceOrder] = useContext(PlaceOrderContext);
+  const [discount, setDiscount] = useContext(CouponDiscount);
   const [deleteAlert, setDeleteAlert] = useState(false);
   const idRef = useRef();
 
@@ -51,6 +37,16 @@ function Cart() {
     message: "",
     title: "",
   });
+
+  const [toast, setToast] = useState({
+    open: false,
+    severity: "",
+    message: "",
+  });
+
+  const handleCloseToast = () => {
+    setToast({ ...toast, open: false });
+  };
 
   const handleCloseAlert = () => {
     setAlert({ ...alert, open: false });
@@ -198,27 +194,39 @@ function Cart() {
   const verifyCoupon = (code) => {
     const dataToSend = { couponCode: code };
 
-    console.log(dataToSend);
-
-    // const accessToken = localStorage.getItem("token");
-
-    // fetch("https://apps-1.lampnets.com/ecommb-staging/coupons/verify", {
-    //   method: "GET",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     Authorization: "Bearer " + accessToken,
-    //   },
-    //   body: JSON.stringify(dataToSend),
-    // })
-    //   .then((res) => {
-    //     return res.text();
-    //   })
-    //   .then((result) => {
-    //     console.log(result);
-    //   })
-    //   .catch((error) => {
-    //     console.error();
-    //   });
+    fetch("https://apps-1.lampnets.com/ecommb-staging/coupons/verify", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + accessToken,
+      },
+      body: JSON.stringify(dataToSend),
+    })
+      .then((res) => {
+        if (res.status !== 200) {
+          throw Error();
+        } else {
+          return res.json();
+        }
+      })
+      .then((result) => {
+        setPlaceOrder({ ...placeOrder, ...dataToSend });
+        setDiscount(result.discountValue);
+        setToast({
+          ...toast,
+          open: true,
+          severity: "success",
+          message: "Your coupon has been successfully added",
+        });
+      })
+      .catch((error) => {
+        setToast({
+          ...toast,
+          open: true,
+          severity: "warning",
+          message: "Invalid coupon code!",
+        });
+      });
   };
 
   return (
@@ -240,6 +248,14 @@ function Cart() {
           open={alert.open}
           details={alert}
           close={handleCloseAlert}
+        />
+      )}
+
+      {toast && toast.severity && (
+        <CustomSnackbar
+          open={toast.open}
+          close={handleCloseToast}
+          toast={toast}
         />
       )}
 

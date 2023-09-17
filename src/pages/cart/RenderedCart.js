@@ -11,7 +11,7 @@ function RenderedCart({
   verifyCoupon,
 }) {
   const [show, setShow] = useState(false);
-  const [couponCode, setCOuponCode] = useState("");
+  const [couponCode, setCouponCode] = useState("");
   const navigate = useNavigate();
 
   return (
@@ -22,7 +22,13 @@ function RenderedCart({
             add Coupon
           </h4>
 
-          <button type="button" onClick={() => setShow((prev) => !prev)}>
+          <button
+            type="button"
+            onClick={() => {
+              setShow((prev) => !prev);
+              setCouponCode("");
+            }}
+          >
             <i
               className={`bx bx-${
                 show ? "x-circle" : "plus-circle"
@@ -32,26 +38,33 @@ function RenderedCart({
         </div>
 
         {show && (
-          <div className="rounded-md flex justify-between items-center gap-4">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              verifyCoupon(couponCode);
+            }}
+            className="rounded-md flex justify-between items-center gap-4"
+          >
             <input
+              required
               type="text"
               value={couponCode}
               placeholder="input coupon code"
               className="bg-transparent w-full outline-0 py-2 px-4 placeholder:text-xs text-xs lg:placeholder:text-sm md:text-sm"
-              onChange={(e) => setCOuponCode(e.target.value)}
+              onChange={(e) => setCouponCode(e.target.value)}
             />
 
             <button
-              type="button"
+              type="submit"
               className="bg-green py-1 px-4 capitalize text-center text-sm lg:text-base text-white rounded outline-0"
-              onClick={() => {
-                verifyCoupon(couponCode);
-                // setShow(false);
-              }}
+              // onClick={() => {
+              //   verifyCoupon(couponCode);
+              //   // setShow(false);
+              // }}
             >
               add
             </button>
-          </div>
+          </form>
         )}
       </div>
 

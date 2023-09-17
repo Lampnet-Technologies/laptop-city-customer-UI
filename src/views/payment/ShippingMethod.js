@@ -1,58 +1,71 @@
 import React, { useContext, useEffect, useState } from "react";
 import NairaSymbol from "../../component/nairaSymbol";
 import { PlaceOrderContext } from "../../App";
+import { ChosenMethodContext } from "../../pages/payment";
 
-const deliveryMethods = [
-  {
-    radioValue: "company",
-    method: "GIG",
-    price: 2499.99,
-    tag: "GIG Express with Tracking",
-    time: "24 hours",
-  },
+// const deliveryMethods = [
+//   {
+//     id: 1,
+//     radioValue: "company",
+//     name: "GIG",
+//     price: 2499.99,
+//     description: "GIG Express with Tracking",
+//     timeRange: "24 hours",
+//   },
 
-  {
-    radioValue: "regular",
-    method: "Kwik",
-    price: 1099.99,
-    tag: "Kwik Premium with Tracking",
-    time: "1-2 days",
-  },
-];
+//   {
+//     id: 2,
+//     radioValue: "regular",
+//     name: "Kwik",
+//     price: 1099.99,
+//     description: "Kwik Premium with Tracking",
+//     timeRange: "1-2 days",
+//   },
+// ];
 
 function ShippingMethod({ goTo, back }) {
   const [placeOrder, setPlaceOrder] = useContext(PlaceOrderContext);
+  const [chosenMethodPrice, setChosenMethodPrice] =
+    useContext(ChosenMethodContext);
   const [methods, setMethods] = useState(null);
-  const [shippingMethod, setShippingMethod] = useState("company");
+  const [shippingMethod, setShippingMethod] = useState(0);
 
-  // ** Use below when there's an available shipping methods in the backend
-  // useEffect(() => {
-  //   const accessToken = localStorage.getItem("token");
+  useEffect(() => {
+    const accessToken = localStorage.getItem("token");
 
-  //   fetch("https://apps-1.lampnets.com/ecommb-staging/shipping-methods", {
-  //     headers: {
-  //       "content-type": "application/json",
-  //       Authorization: "Bearer " + accessToken,
-  //     },
-  //   })
-  //     .then((res) => {
-  //       return res.json();
-  //     })
-  //     .then((result) => {
-  //       console.log(result);
-  //       setMethods(result)
-  //     })
-  //     .catch((error) => {
-  //       console.error();
-  //     });
-  // }, []);
+    fetch("https://apps-1.lampnets.com/ecommb-staging/shipping-methods", {
+      headers: {
+        "content-type": "application/json",
+        Authorization: "Bearer " + accessToken,
+      },
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((result) => {
+        setMethods(result);
+        setShippingMethod(result[0].id);
+      })
+      .catch((error) => {
+        console.error();
+      });
+  }, []);
 
   const handleChange = (e) => {
-    setShippingMethod(e.target.value);
+    const id = parseInt(e.target.value, 10);
+    setShippingMethod(id);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    methods.forEach((method) => {
+      if (method.id == shippingMethod) {
+        setChosenMethodPrice(method.price);
+      }
+    });
+
+    setPlaceOrder({ ...placeOrder, shippingMethodId: shippingMethod });
 
     goTo("order-review");
   };
@@ -66,39 +79,42 @@ function ShippingMethod({ goTo, back }) {
         Shipping Method
       </h4>
 
-      {deliveryMethods.map((method, index) => {
-        return (
-          <div className="flex items-start gap-3" key={index}>
-            <div>
-              <input
-                className="accent-green"
-                type="radio"
-                name="shippingMethods"
-                value={method.radioValue}
-                id={method.radioValue}
-                checked={shippingMethod === method.radioValue}
-                onChange={handleChange}
-              />
-            </div>
-
-            <label htmlFor={method.radioValue}>
-              <div className="lg:space-y-2">
-                <p className="font-normal lg:text-lg">
-                  <span className="font-medium">
-                    <NairaSymbol />
-                    {method.price}
-                  </span>{" "}
-                  {method.method}{" "}
-                </p>
-                <p className="font-normal text-sm lg:text-base">{method.tag}</p>
-                <p className="font-normal text-sm lg:text-base capitalize">
-                  (Within {method.time})
-                </p>
+      {methods &&
+        methods.map((method) => {
+          return (
+            <div className="flex items-start gap-3" key={method.id}>
+              <div>
+                <input
+                  className="accent-green"
+                  type="radio"
+                  name="shippingMethods"
+                  value={method.id}
+                  id={method.name}
+                  checked={shippingMethod == method.id}
+                  onChange={handleChange}
+                />
               </div>
-            </label>
-          </div>
-        );
-      })}
+
+              <label htmlFor={method.name}>
+                <div className="lg:space-y-2">
+                  <p className="font-normal lg:text-lg">
+                    <span className="font-medium">
+                      <NairaSymbol />
+                      {method.price.toFixed(2)}
+                    </span>{" "}
+                    {method.name}{" "}
+                  </p>
+                  <p className="font-normal text-sm lg:text-base">
+                    {method.description}
+                  </p>
+                  <p className="font-normal text-sm lg:text-base capitalize">
+                    (Within {method.timeRange})
+                  </p>
+                </div>
+              </label>
+            </div>
+          );
+        })}
 
       <div
         className="flex justify-between gap-6 lg:gap-8 md:justify-around lg:justify-end"

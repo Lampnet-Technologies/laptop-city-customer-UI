@@ -1,9 +1,22 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import NairaSymbol from "../../component/nairaSymbol";
+import { CouponDiscount } from "../../App";
+import { ChosenMethodContext } from "../../pages/payment";
+
+const sumTotal = (a, b, c, d) => {
+  let sum = a + b + c + d;
+
+  return Number(sum.toFixed(2)).toLocaleString();
+};
 
 function OrderReview({ cart, back }) {
+  const [discount, setDiscount] = useContext(CouponDiscount);
+  const [chosenMethodPrice, setChosenMethodPrice] =
+    useContext(ChosenMethodContext);
   const navigate = useNavigate();
+
+  const VAT = 10;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -25,21 +38,10 @@ function OrderReview({ cart, back }) {
           </p>
           <p>
             <NairaSymbol />
-            {/* 350,000.00 */}
-            {cart.total}
+            {cart.total.toLocaleString()}
           </p>
         </div>
       </div>
-
-      {/* <div className="space-y-2 border border-solid border-gray-300 p-3 rounded-2xl lg:px-6 lg:py-4">
-        <div className="flex justify-between items-center">
-          <h4 className="font-medium text-lg text-gray-700 lg:text-xl">
-            Coupons
-          </h4>
-
-          <i className="bx bx-plus-circle text-gray-700"></i>
-        </div>
-      </div> */}
 
       <div className="space-y-2 border border-solid border-gray-300 p-3 rounded-2xl lg:px-6 lg:py-4">
         <h4 className="font-medium text-lg text-gray-700 lg:text-xl">
@@ -52,29 +54,28 @@ function OrderReview({ cart, back }) {
               <td>Subtotal</td>
               <td className="text-right">
                 <NairaSymbol />
-                {/* 350,000.00 */}
-                {cart.total}
+                {cart.total.toLocaleString()}
               </td>
             </tr>
             <tr>
               <td>Discount</td>
               <td className="text-right">
                 <NairaSymbol />
-                500.00
+                {discount.toLocaleString()}
               </td>
             </tr>
             <tr>
               <td>Shipping</td>
               <td className="text-right">
                 <NairaSymbol />
-                1400
+                {chosenMethodPrice.toLocaleString()}
               </td>
             </tr>
             <tr>
               <td>VAT</td>
               <td className="text-right">
                 <NairaSymbol />
-                10
+                {VAT.toLocaleString()}
               </td>
             </tr>
           </tbody>
@@ -86,7 +87,7 @@ function OrderReview({ cart, back }) {
               <td>Total</td>
               <td className="text-right">
                 <NairaSymbol />
-                350,910.00
+                {sumTotal(cart.total, discount, chosenMethodPrice, VAT)}
               </td>
             </tr>
           </tfoot>
@@ -100,7 +101,6 @@ function OrderReview({ cart, back }) {
         <button
           type="button"
           className="inline-block w-full bg-transparent border border-solid border-green p-2 rounded outline-0 font-semibold text-black text-sm"
-          // onClick={() => navigate(-1)}
           onClick={back}
         >
           {" "}
@@ -109,12 +109,11 @@ function OrderReview({ cart, back }) {
 
         <button
           type="submit"
-          // style={{ marginBlock: "2.5rem 1rem" }}
           className="inline-block w-full bg-green p-4 rounded-md outline-0 font-semibold text-white text-sm"
         >
           {" "}
           Pay <NairaSymbol />
-          350,910.00
+          {sumTotal(cart.total, discount, chosenMethodPrice, VAT)}
         </button>
       </div>
     </form>
