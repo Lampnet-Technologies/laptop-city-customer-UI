@@ -4,8 +4,8 @@ import NairaSymbol from "../../component/nairaSymbol";
 import { CouponDiscount } from "../../App";
 import { ChosenMethodContext } from "../../pages/payment";
 
-const sumTotal = (a, b, c, d) => {
-  let sum = a + b + c + d;
+const sumTotal = (a, b, c) => {
+  let sum = a - b + c;
 
   return Number(sum.toFixed(2)).toLocaleString();
 };
@@ -16,7 +16,7 @@ function OrderReview({ cart, back }) {
     useContext(ChosenMethodContext);
   const navigate = useNavigate();
 
-  const VAT = 10;
+  const VAT = "0.00%";
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -74,8 +74,8 @@ function OrderReview({ cart, back }) {
             <tr>
               <td>VAT</td>
               <td className="text-right">
-                <NairaSymbol />
-                {VAT.toLocaleString()}
+                {/* <NairaSymbol /> */}
+                {VAT}
               </td>
             </tr>
           </tbody>
@@ -87,7 +87,7 @@ function OrderReview({ cart, back }) {
               <td>Total</td>
               <td className="text-right">
                 <NairaSymbol />
-                {sumTotal(cart.total, discount, chosenMethodPrice, VAT)}
+                {sumTotal(cart.total, discount, chosenMethodPrice)}
               </td>
             </tr>
           </tfoot>
@@ -113,7 +113,7 @@ function OrderReview({ cart, back }) {
         >
           {" "}
           Pay <NairaSymbol />
-          {sumTotal(cart.total, discount, chosenMethodPrice, VAT)}
+          {sumTotal(cart.total, discount, chosenMethodPrice)}
         </button>
       </div>
     </form>
