@@ -97,8 +97,8 @@ function ShippingMethod({ goTo, back }) {
 
               <label htmlFor={method.name}>
                 <div className="lg:space-y-2">
-                  <p className="font-normal lg:text-lg">
-                    <span className="font-medium">
+                  <p className="font-medium lg:text-lg">
+                    <span className="font-semibold">
                       <NairaSymbol />
                       {method.price.toFixed(2)}
                     </span>{" "}
