@@ -38,12 +38,12 @@ function ProductContainer({ item, deleteItem, addToCart }) {
 
             {item.product.price}
           </p>
-          <StarRating rating={5} />
+          {/* <StarRating rating={5} /> */}
         </div>
         <div className="flex justify-between items-center gap-2">
           <button
             type="button"
-            className="text-sm lg:text-base font-semibold flex justify-center items-center gap-2 text-secondary-button border-2 border-secondary-button border-solid p-3 rounded"
+            className="text-sm lg:text-base font-semibold flex justify-center items-center gap-2 text-secondary-button border-2 border-secondary-button border-solid p-2 lg:p-3 rounded"
             onClick={(e) => {
               e.stopPropagation();
               addToCart(item.product.id, item.quantity);

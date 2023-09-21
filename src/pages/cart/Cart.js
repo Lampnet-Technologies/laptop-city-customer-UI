@@ -212,11 +212,12 @@ function Cart() {
       .then((result) => {
         setPlaceOrder({ ...placeOrder, ...dataToSend });
         setDiscount(result.discountValue);
-        setToast({
-          ...toast,
+        setAlert({
+          ...alert,
           open: true,
           severity: "success",
-          message: "Your coupon has been successfully added",
+          title: "Your coupon has been successfully added",
+          message: `Coupon with discount value: ₦${result.discountValue}`,
         });
       })
       .catch((error) => {
