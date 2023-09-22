@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { UserProfileContext } from "../../App";
+import { UserCartDependency, UserProfileContext } from "../../App";
+import CustomAlert from "../../component/CustomAlert";
 
 const getProfile =
   "https://apps-1.lampnets.com/ecommb-staging/profiles/my-profile";
@@ -10,6 +11,7 @@ const accessToken = () => localStorage.getItem("token");
 
 function ContactInfo() {
   const [profile, setProfile] = useContext(UserProfileContext);
+  const [cartDep, setCartDep] = useContext(UserCartDependency);
   const [values, setValues] = useState({
     address: "",
     city: "",
@@ -19,6 +21,16 @@ function ContactInfo() {
 
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
+
+  const [alert, setAlert] = useState({
+    open: false,
+    severity: "",
+    message: "",
+    title: "",
+  });
+  const handleCloseAlert = () => {
+    setAlert({ ...alert, open: false });
+  };
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -56,7 +68,7 @@ function ContactInfo() {
       .catch((error) => {
         alert(error.message);
       });
-  }, [location.pathname]);
+  }, [location.pathname, cartDep]);
 
   useEffect(() => {
     if (values.state) {
@@ -84,109 +96,135 @@ function ContactInfo() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    const dataToSend = { ...profile, ...values };
+
     fetch(updateProfile, {
-      method: "POST",
+      method: "PUT",
       headers: {
         "content-type": "application/json",
         Authorization: "Bearer " + accessToken(),
       },
-      body: JSON.stringify(values),
+      body: JSON.stringify(dataToSend),
     })
       .then((res) => {
-        alert("Profile Updated Successfully");
-        window.location.reload();
+        if (res.status == 200) {
+          setAlert({
+            ...alert,
+            open: true,
+            severity: "success",
+            title: "Profile Updated Successfully",
+          });
+
+          setCartDep(2);
+        }
       })
       .catch((error) => {
-        alert("Failed to update profile", error.message);
+        setAlert({
+          ...alert,
+          open: true,
+          severity: "error",
+          title: "Failed to update profile",
+          message: error.message,
+        });
       });
   };
 
   return (
-    <form className="px-4 py-8 md:px-10 lg:px-[120px] md:py-4">
-      <div className="flex flex-col gap-3 mb-6 lg:gap-4 lg:mb-5">
-        <label className="text-sm font-medium" htmlFor="shippingAddress">
-          Shipping Address
-        </label>
-        <textarea
-          rows={3}
-          name="shippingAddress"
-          value={values.address}
-          onChange={handleChange("address")}
-          className="w-full rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-lg resize-none"
-        ></textarea>
-      </div>
-
-      <div className="flex justify-between gap-8 mb-6">
-        <div className="flex flex-col gap-3 w-full lg:gap-4">
-          <label className="text-sm font-medium" htmlFor="state">
-            State
-          </label>
-          <select
-            name="state"
-            value={values.state}
-            onChange={handleChange("state")}
-            className="w-full h-11 lg:h-14 lg:w-64 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-lg"
-          >
-            <option value="">None</option>
-            {states.length > 0 &&
-              states.map((state, i) => {
-                return (
-                  <option key={i} value={state.name}>
-                    {state.name}
-                  </option>
-                );
-              })}
-          </select>
-        </div>
-
-        <div className="flex flex-col gap-3 w-full lg:gap-4">
-          <label className="text-sm font-medium" htmlFor="city">
-            City
-          </label>
-
-          <select
-            name="city"
-            value={values.city}
-            onChange={handleChange("city")}
-            className="w-full h-11 lg:h-14 lg:w-64 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-lg"
-          >
-            <option value="">None</option>
-            {cities.length > 0 &&
-              cities.map((city, i) => {
-                return (
-                  <option key={i} value={city}>
-                    {city}
-                  </option>
-                );
-              })}
-          </select>
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-3 mb-6 lg:gap-4">
-        <label className="text-sm font-medium" htmlFor="phoneNumber">
-          Phone Number
-        </label>
-        <input
-          name="phoneNumber"
-          type="tel"
-          value={values.phoneNumber}
-          onChange={handleChange("phoneNumber")}
-          className="w-full h-11 lg:h-14 lg:w-64 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-lg"
+    <>
+      {alert && alert.severity && (
+        <CustomAlert
+          open={alert.open}
+          details={alert}
+          close={handleCloseAlert}
         />
-      </div>
+      )}
 
-      <div className="text-center my-8">
-        <button
-          type="button"
-          className="bg-transparent outline-0 font-semibold text-green tracking-tight underline lg:text-lg"
-          onClick={handleSubmit}
-        >
-          {" "}
-          Save changes
-        </button>
-      </div>
-    </form>
+      <form className="px-4 py-8 md:px-10 lg:px-[120px] md:py-4">
+        <div className="flex flex-col gap-3 mb-6 lg:gap-4 lg:mb-5">
+          <label className="text-sm font-medium" htmlFor="shippingAddress">
+            Shipping Address
+          </label>
+          <textarea
+            rows={3}
+            name="shippingAddress"
+            value={values.address}
+            onChange={handleChange("address")}
+            className="w-full rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-base resize-none"
+          ></textarea>
+        </div>
+
+        <div className="flex justify-between gap-8 mb-6">
+          <div className="flex flex-col gap-3 w-full lg:gap-4">
+            <label className="text-sm font-medium" htmlFor="state">
+              State
+            </label>
+            <select
+              name="state"
+              value={values.state}
+              onChange={handleChange("state")}
+              className="w-full h-11 lg:h-14 lg:w-64 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-base"
+            >
+              <option value="">None</option>
+              {states.length > 0 &&
+                states.map((state, i) => {
+                  return (
+                    <option key={i} value={state.name}>
+                      {state.name}
+                    </option>
+                  );
+                })}
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-3 w-full lg:gap-4">
+            <label className="text-sm font-medium" htmlFor="city">
+              City
+            </label>
+
+            <select
+              name="city"
+              value={values.city}
+              onChange={handleChange("city")}
+              className="w-full h-11 lg:h-14 lg:w-64 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-base"
+            >
+              <option value="">None</option>
+              {cities.length > 0 &&
+                cities.map((city, i) => {
+                  return (
+                    <option key={i} value={city}>
+                      {city}
+                    </option>
+                  );
+                })}
+            </select>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3 mb-6 lg:gap-4">
+          <label className="text-sm font-medium" htmlFor="phoneNumber">
+            Phone Number
+          </label>
+          <input
+            name="phoneNumber"
+            type="tel"
+            value={values.phoneNumber}
+            onChange={handleChange("phoneNumber")}
+            className="w-full h-11 lg:h-14 lg:w-64 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-base"
+          />
+        </div>
+
+        <div className="text-center my-8">
+          <button
+            type="button"
+            className="bg-transparent outline-0 font-semibold text-green tracking-tight underline lg:text-lg"
+            onClick={handleSubmit}
+          >
+            {" "}
+            Save changes
+          </button>
+        </div>
+      </form>
+    </>
   );
 }
 

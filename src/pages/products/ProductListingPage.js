@@ -164,6 +164,10 @@ function ProductsListing() {
 
   const handleChangePage = (event, page) => {
     setCurrentPage(page - 1);
+    window.scroll({
+      top: 400,
+      behavior: "smooth",
+    });
   };
 
   const handleOpen = () => {
@@ -172,6 +176,7 @@ function ProductsListing() {
 
   const handleAddToCart = (product) => {
     const dataToSend = { productId: product.id, quantity: 1 };
+    console.log(dataToSend);
 
     const accessToken = localStorage.getItem("token");
 
@@ -200,7 +205,6 @@ function ProductsListing() {
               title: "1 item added to cart",
               message: `${product.name} is added to cart`,
             });
-            // alert(`${product.name} is added to cart`);
           } else {
             setAlert({
               ...alert,
@@ -208,7 +212,6 @@ function ProductsListing() {
               severity: "info",
               title: "Item was not added to cart",
             });
-            // alert("Item was not added to cart");
           }
         })
         .catch((error) => {
@@ -219,7 +222,6 @@ function ProductsListing() {
             title: "Failed to add item to cart",
             message: error.message,
           });
-          // alert("Failed to add to cart" + error.message);
         });
     }
   };

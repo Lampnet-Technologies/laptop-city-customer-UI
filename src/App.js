@@ -20,19 +20,12 @@ import { About, PrivacyPolicy, TermsOfUse } from "./views/company";
 import PageNotFound from "./pages/404";
 import { Cart } from "./pages/cart";
 import { MyOrders } from "./pages/orders";
-import Loading from "./component/loading";
 import OrderDetails from "./pages/orders/OrderDetails";
 
 import Homepage from "./pages/Homepage";
 import ProductsListing from "./pages/products/ProductListingPage";
 import ProductDesc from "./pages/products/ProductDescPage";
 import { MyWishlists } from "./pages/wishlist";
-
-// const Homepage = lazy(() => import("./pages/Homepage"));
-// const ProductsListing = lazy(() =>
-//   import("./pages/products/ProductListingPage")
-// );
-// const ProductDesc = lazy(() => import("./pages/products/ProductDescPage"));
 
 export const LoginContext = createContext();
 export const UserProfileContext = createContext();
@@ -79,7 +72,7 @@ function App() {
           console.log(error);
         });
     }
-  }, [loggedIn]);
+  }, [loggedIn, cartDep]);
 
   useEffect(() => {
     const accessToken = localStorage.getItem("token");
@@ -115,12 +108,10 @@ function App() {
             <PlaceOrderContext.Provider value={[placeOrder, setPlaceOrder]}>
               <CouponDiscount.Provider value={[discount, setDiscount]}>
                 <Router>
-                  {/* <Suspense fallback={<Loading />}> */}
                   <div className="w-full max-w-[1600px] mx-auto">
                     <ScrollToTop />
                     <Nav />
 
-                    {/* <Suspense fallback={null}> */}
                     <div className="pb-10 w-full">
                       <Routes>
                         <Route path="/" element={<Homepage />} />
@@ -185,11 +176,9 @@ function App() {
                         <Route path="*" element={<PageNotFound />} />
                       </Routes>
                     </div>
-                    {/* </Suspense> */}
 
                     <Footer />
                   </div>
-                  {/* </Suspense> */}
                 </Router>
               </CouponDiscount.Provider>
             </PlaceOrderContext.Provider>
