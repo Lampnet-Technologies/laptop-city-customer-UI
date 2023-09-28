@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import EmptyCart from "./EmptyCart";
 import RenderedCart from "./RenderedCart";
 import DeleteButtonAlert from "../../component/DeleteButtonAlert";
@@ -10,16 +10,6 @@ import {
 } from "../../App";
 import CustomAlert from "../../component/CustomAlert";
 import CustomSnackbar from "../../component/CustomSnackbar";
-
-const activeStyles = ({ isActive }) => {
-  if (isActive) {
-    return {
-      color: "#FFFFFF",
-      fontWeight: 600,
-      backgroundColor: "#009F7F",
-    };
-  }
-};
 
 const accessToken = localStorage.getItem("token");
 
