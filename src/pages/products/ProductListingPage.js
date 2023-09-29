@@ -356,7 +356,6 @@ function ProductsListing() {
                         View all <i className="bx bx-chevron-right bx-sm"></i>
                       </button>
                     </div>
-                    {/* </div> */}
 
                     <div className="text-center mt-3 mb-5 sticky bottom-0 bg-filter-green py-4">
                       <LaptopCityButton
