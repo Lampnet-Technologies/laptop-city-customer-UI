@@ -3,20 +3,85 @@ import { useNavigate } from "react-router-dom";
 import NairaSymbol from "../../component/nairaSymbol";
 import { CouponDiscount } from "../../App";
 import { ChosenMethodContext } from "../../pages/payment";
+import { PlaceOrderContext } from "../../App";
+import { PaystackButton, usePaystackPayment } from "react-paystack";
 
-const sumTotal = (a, b, c) => {
-  let sum = a - b + c;
+// const sumTotal = (a, b, c) => {
+//   let sum = a - b + c;
 
-  return Number(sum.toFixed(2)).toLocaleString();
-};
+//   return Number(sum.toFixed(2));
+// };
 
 function OrderReview({ cart, back }) {
+  const [placeOrder, setPlaceOrder] = useContext(PlaceOrderContext);
   const [discount, setDiscount] = useContext(CouponDiscount);
   const [chosenMethodPrice, setChosenMethodPrice] =
     useContext(ChosenMethodContext);
   const navigate = useNavigate();
 
-  const VAT = "0.00%";
+  const VAT = "0.00";
+
+  const sumTotal = () => {
+    let sum = cart.total - discount + chosenMethodPrice;
+
+    return Number(sum.toFixed(2));
+  };
+
+  // const componentProps = {
+  //   email: placeOrder.email,
+  //   amount: sumTotal * 100,
+  //   metadata: {
+  //     name: `${placeOrder.firstName} ${placeOrder.lastName}`,
+  //     phone: placeOrder.phoneNumber,
+  //   },
+  //   publicKey: "pk_test_dsdfghuytfd2345678gvxxxxxxxxxx",
+  //   text: "Pay Now",
+  //   onSuccess: () =>
+  //     alert("Thanks for doing business with us! Come back soon!!"),
+  //   onClose: () => alert("Wait! Don't leave :("),
+  // };
+
+  const config = {
+    reference: new Date().getTime().toString(),
+    email: placeOrder.email,
+    amount: sumTotal() * 100,
+    metadata: {
+      name: `${placeOrder.firstName} ${placeOrder.lastName}`,
+      phone: placeOrder.phoneNumber,
+    },
+    publicKey: "pk_test_e6c202d825e2bbcb0bc287f5d3c0816201b169de",
+  };
+
+  const onSuccess = (reference) => {
+    console.log(reference);
+
+    navigate("/payment/successful", {
+      state: {
+        cartAmount: cart.cartItems.length,
+        cartTotal: cart.total,
+        id: reference.transaction,
+      },
+    });
+  };
+
+  const onClose = () => {
+    console.log("closed");
+  };
+
+  const PaystackHookExample = () => {
+    const initializePayment = usePaystackPayment(config);
+    return (
+      <button
+        className="inline-block w-full bg-green p-4 rounded-md outline-0 font-semibold text-white text-sm"
+        onClick={() => {
+          initializePayment(onSuccess, onClose);
+        }}
+      >
+        Pay <NairaSymbol />
+        {sumTotal().toLocaleString()}
+      </button>
+    );
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -25,7 +90,8 @@ function OrderReview({ cart, back }) {
   };
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit}>
+    // <form className="space-y-4" onSubmit={handleSubmit}>
+    <div className="space-y-4">
       <div className="space-y-2 border border-solid border-gray-300 p-3 rounded-2xl lg:px-6 lg:py-4">
         <h4 className="font-medium text-lg text-gray-700 lg:text-xl">
           Order Review
@@ -74,7 +140,7 @@ function OrderReview({ cart, back }) {
             <tr>
               <td>VAT</td>
               <td className="text-right">
-                {/* <NairaSymbol /> */}
+                <NairaSymbol />
                 {VAT}
               </td>
             </tr>
@@ -87,7 +153,7 @@ function OrderReview({ cart, back }) {
               <td>Total</td>
               <td className="text-right">
                 <NairaSymbol />
-                {sumTotal(cart.total, discount, chosenMethodPrice)}
+                {sumTotal().toLocaleString()}
               </td>
             </tr>
           </tfoot>
@@ -99,7 +165,6 @@ function OrderReview({ cart, back }) {
         style={{ marginBlock: "2.5rem 1rem" }}
       >
         <button
-          type="button"
           className="inline-block w-full bg-transparent border border-solid border-green p-2 rounded outline-0 font-semibold text-black text-sm"
           onClick={back}
         >
@@ -107,16 +172,19 @@ function OrderReview({ cart, back }) {
           Back
         </button>
 
-        <button
+        {/* <button
           type="submit"
           className="inline-block w-full bg-green p-4 rounded-md outline-0 font-semibold text-white text-sm"
         >
           {" "}
           Pay <NairaSymbol />
-          {sumTotal(cart.total, discount, chosenMethodPrice)}
-        </button>
+          {sumTotal(cart.total, discount, chosenMethodPrice).toLocaleString()}
+        </button> */}
+        {/* <PaystackButton {...componentProps} /> */}
+        <PaystackHookExample />
       </div>
-    </form>
+    </div>
+    // </form>
   );
 }
 

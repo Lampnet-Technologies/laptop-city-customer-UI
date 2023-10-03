@@ -1,19 +1,36 @@
 import React, { useState, useEffect, useContext } from "react";
 import IMAGES from "../../assets";
 import NairaSymbol from "../../component/nairaSymbol";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LoginContext } from "../../App";
 
 function OrderSuccessful() {
   const [loggedIn, setLoggedIn] = useContext(LoginContext);
+  const [values, setValues] = useState({
+    cartAmount: "",
+    cartTotal: "",
+    id: "",
+  });
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     if (!loggedIn) {
       navigate("/login");
     }
-  });
+
+    if (location.state == null) {
+      navigate("/shopping-cart");
+    } else {
+      setValues({
+        ...values,
+        cartAmount: location.state.cartAmount,
+        cartTotal: location.state.cartTotal,
+        id: location.state.id,
+      });
+    }
+  }, []);
 
   return (
     <div className="my-20 p-6 md:w-3/4 lg:w-1/2 md:mx-auto">
@@ -34,13 +51,13 @@ function OrderSuccessful() {
         </h4>
 
         <p className="font-normal lg:w-11/12 lg:mx-auto lg:text-lg">
-          Your Laptop order{" "}
+          Your Order{" "}
           <Link to="/my-orders" className="underline text-green">
-            LCT9876
+            {/* LCT9876 */}
+            {values.id}
           </Link>{" "}
           has successfully been placed. You will receive a shipping confirmation
-          email as soon as your order ships. You can get store credit coupons
-          after referral.
+          email as soon as your order ships. Please check your email for more.
         </p>
 
         <div className="space-y-2 border border-solid border-gray-300 p-3 rounded-2xl self-start w-full text-left lg:px-6 lg:py-4">
@@ -49,10 +66,14 @@ function OrderSuccessful() {
           </h4>
 
           <div className="flex justify-between items-center gap-2 text-sm font-normal lg:text-base">
-            <p>1 item in Cart</p>
+            {/* <p>1 item in Cart</p> */}
+            <p>
+              {values.cartAmount} Item{values.cartAmount > 1 && "s"} in Cart{" "}
+            </p>
             <p>
               <NairaSymbol />
-              350,000.00
+              {/* 350,000.00 */}
+              {values.cartTotal.toLocaleString()}
             </p>
           </div>
         </div>
