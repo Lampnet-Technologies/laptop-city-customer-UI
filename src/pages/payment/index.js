@@ -144,12 +144,16 @@ function Payment() {
   const [chosenMethodPrice, setChosenMethodPrice] = useState();
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     if (!loggedIn) {
       navigate("/login");
     }
-  });
+    if (!location.state && location.state?.previousURL != "/shopping-cart") {
+      navigate("/shopping-cart");
+    }
+  }, []);
 
   const nextPage = (text) => {
     setComponentToRender(text);

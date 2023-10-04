@@ -68,7 +68,7 @@ function OrderSuccessful() {
           <div className="flex justify-between items-center gap-2 text-sm font-normal lg:text-base">
             {/* <p>1 item in Cart</p> */}
             <p>
-              {values.cartAmount} Item{values.cartAmount > 1 && "s"} in Cart{" "}
+              {values.cartAmount} Item{values.cartAmount > 1 && "s"} in Order{" "}
             </p>
             <p>
               <NairaSymbol />

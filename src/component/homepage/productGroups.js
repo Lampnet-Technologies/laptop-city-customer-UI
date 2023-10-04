@@ -95,7 +95,7 @@ export function Groups({ heading, products, seeMore }) {
         </h1>
       )}
 
-      <div className="mt-8 lg:mt-14 flex flex-wrap justify-between gap-x-2 gap-y-6 md:justify-start md:gap-x-6">
+      <div className="mt-8 lg:mt-14 flex flex-wrap justify-around gap-x-2 gap-y-6 md:justify-start md:gap-x-6">
         {products &&
           products.map((product, index) => {
             return <ProductContainer key={index} product={product} />;

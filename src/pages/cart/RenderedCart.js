@@ -57,10 +57,6 @@ function RenderedCart({
             <button
               type="submit"
               className="bg-green py-1 px-4 capitalize text-center text-sm lg:text-base text-white rounded outline-0"
-              // onClick={() => {
-              //   verifyCoupon(couponCode);
-              //   // setShow(false);
-              // }}
             >
               add
             </button>
@@ -149,7 +145,13 @@ function RenderedCart({
       <div className="text-center" style={{ marginTop: "60px" }}>
         <button
           className="capitalize font-medium text-white text-sm lg:text-base md:font-semibold md:px-6 lg:py-4 lg:px-20 rounded lg:rounded-md bg-green py-[11px] px-5 hover:bg-dark-green"
-          onClick={() => navigate("/payment")}
+          onClick={() =>
+            navigate("/payment", {
+              state: {
+                previousURL: "/shopping-cart",
+              },
+            })
+          }
         >
           checkout{" "}
           <span className="ml-2">
