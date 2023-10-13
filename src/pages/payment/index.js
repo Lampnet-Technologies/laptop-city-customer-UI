@@ -26,6 +26,7 @@ import StepConnector, {
 } from "@mui/material/StepConnector";
 
 export const ChosenMethodContext = createContext();
+export const PlaceOrderResponseContext = createContext();
 
 const QontoConnector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -102,7 +103,7 @@ QontoStepIcon.propTypes = {
   completed: PropTypes.bool,
 };
 
-const steps = ["Welcome", "Shipping method", "Order"];
+const steps = ["Welcome", "Shipping method", "Order review", "Payment method"];
 
 function CustomizedSteppers({ active }) {
   return (
@@ -142,6 +143,7 @@ function Payment() {
   const [activeStep, setActiveStep] = useState(0);
 
   const [chosenMethodPrice, setChosenMethodPrice] = useState();
+  const [responseData, setResponseData] = useState(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -160,13 +162,18 @@ function Payment() {
   };
 
   const goBack = () => {
-    if (
-      componentToRender !== "shipping-method" &&
-      componentToRender !== "shipping-address"
-    ) {
+    // if (
+    //   componentToRender !== "shipping-method" &&
+    //   componentToRender !== "shipping-address"
+    // ) {
+    //   return setComponentToRender("shipping-method");
+    // }
+    if (componentToRender === "order-review") {
       return setComponentToRender("shipping-method");
     } else if (componentToRender === "shipping-method") {
       return setComponentToRender("shipping-address");
+    } else {
+      return setComponentToRender("order-review");
     }
   };
 
@@ -175,10 +182,10 @@ function Payment() {
       setActiveStep(0);
     } else if (componentToRender === "shipping-method") {
       setActiveStep(1);
-      // } else if (componentToRender === "payment-method") {
-      //   setActiveStep(2);
-    } else {
+    } else if (componentToRender === "order-review") {
       setActiveStep(2);
+    } else {
+      setActiveStep(3);
     }
   }, [componentToRender]);
 
@@ -187,10 +194,10 @@ function Payment() {
       return <ShippingAddress goTo={nextPage} />;
     } else if (componentToRender === "shipping-method") {
       return <ShippingMethod goTo={nextPage} back={goBack} />;
-      // } else if (componentToRender === "payment-method") {
-      //   return <PaymentMethod goTo={nextPage} back={goBack} />;
+    } else if (componentToRender === "order-review") {
+      return <OrderReview cart={cart} goTo={nextPage} back={goBack} />;
     } else {
-      return <OrderReview cart={cart} back={goBack} />;
+      return <PaymentMethod cart={cart} back={goBack} />;
     }
   }, [componentToRender]);
 
@@ -199,10 +206,10 @@ function Payment() {
       return "Where should we send the order?";
     } else if (componentToRender === "shipping-method") {
       return "How should we send the order?";
-      // } else if (componentToRender === "payment-method") {
-      //   return "Make payment for the order?";
-    } else {
+    } else if (componentToRender === "order-review") {
       return "Confirm and enjoy your order";
+    } else {
+      return "Second your payment method";
     }
   }, [componentToRender]);
 
@@ -217,12 +224,16 @@ function Payment() {
       <ChosenMethodContext.Provider
         value={[chosenMethodPrice, setChosenMethodPrice]}
       >
-        <div
-          className="w-full px-4 py-6 rounded-3xl md:p-8 lg:p-10"
-          style={{ boxShadow: "0px 3px 6px 0px rgba(18, 29, 60, 0.15)" }}
+        <PlaceOrderResponseContext.Provider
+          value={[responseData, setResponseData]}
         >
-          {conditions}
-        </div>
+          <div
+            className="w-full px-4 py-6 rounded-3xl md:p-8 lg:p-10"
+            style={{ boxShadow: "0px 3px 6px 0px rgba(18, 29, 60, 0.15)" }}
+          >
+            {conditions}
+          </div>
+        </PlaceOrderResponseContext.Provider>
       </ChosenMethodContext.Provider>
     </div>
   );

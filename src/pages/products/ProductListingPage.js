@@ -176,7 +176,6 @@ function ProductsListing() {
 
   const handleAddToCart = (product) => {
     const dataToSend = { productId: product.id, quantity: 1 };
-    console.log(dataToSend);
 
     const accessToken = localStorage.getItem("token");
 

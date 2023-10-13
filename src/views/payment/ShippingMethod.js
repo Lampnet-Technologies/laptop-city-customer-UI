@@ -3,26 +3,6 @@ import NairaSymbol from "../../component/nairaSymbol";
 import { PlaceOrderContext } from "../../App";
 import { ChosenMethodContext } from "../../pages/payment";
 
-// const deliveryMethods = [
-//   {
-//     id: 1,
-//     radioValue: "company",
-//     name: "GIG",
-//     price: 2499.99,
-//     description: "GIG Express with Tracking",
-//     timeRange: "24 hours",
-//   },
-
-//   {
-//     id: 2,
-//     radioValue: "regular",
-//     name: "Kwik",
-//     price: 1099.99,
-//     description: "Kwik Premium with Tracking",
-//     timeRange: "1-2 days",
-//   },
-// ];
-
 function ShippingMethod({ goTo, back }) {
   const [placeOrder, setPlaceOrder] = useContext(PlaceOrderContext);
   const [chosenMethodPrice, setChosenMethodPrice] =
@@ -82,10 +62,10 @@ function ShippingMethod({ goTo, back }) {
       {methods &&
         methods.map((method) => {
           return (
-            <div className="flex items-start gap-3" key={method.id}>
-              <div>
+            <div className="flex items-start gap-4 lg:gap-6" key={method.id}>
+              <div className="mt-0.5 md:mt-1">
                 <input
-                  className="accent-green"
+                  className="accent-green md:w-5 md:h-5"
                   type="radio"
                   name="shippingMethods"
                   value={method.id}

@@ -1,23 +1,21 @@
-import React, { useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useContext, useState } from "react";
 import NairaSymbol from "../../component/nairaSymbol";
 import { CouponDiscount } from "../../App";
-import { ChosenMethodContext } from "../../pages/payment";
+import {
+  ChosenMethodContext,
+  PlaceOrderResponseContext,
+} from "../../pages/payment";
 import { PlaceOrderContext } from "../../App";
-import { PaystackButton, usePaystackPayment } from "react-paystack";
 
-// const sumTotal = (a, b, c) => {
-//   let sum = a - b + c;
+const accessToken = localStorage.getItem("token");
 
-//   return Number(sum.toFixed(2));
-// };
-
-function OrderReview({ cart, back }) {
+function OrderReview({ cart, back, goTo }) {
   const [placeOrder, setPlaceOrder] = useContext(PlaceOrderContext);
   const [discount, setDiscount] = useContext(CouponDiscount);
   const [chosenMethodPrice, setChosenMethodPrice] =
     useContext(ChosenMethodContext);
-  const navigate = useNavigate();
+  const [responseData, setResponseData] = useContext(PlaceOrderResponseContext); // State variable to store response data
+  const [isLoading, setIsLoading] = useState(false);
 
   const VAT = "0.00";
 
@@ -27,70 +25,37 @@ function OrderReview({ cart, back }) {
     return Number(sum.toFixed(2));
   };
 
-  // const componentProps = {
-  //   email: placeOrder.email,
-  //   amount: sumTotal * 100,
-  //   metadata: {
-  //     name: `${placeOrder.firstName} ${placeOrder.lastName}`,
-  //     phone: placeOrder.phoneNumber,
-  //   },
-  //   publicKey: "pk_test_dsdfghuytfd2345678gvxxxxxxxxxx",
-  //   text: "Pay Now",
-  //   onSuccess: () =>
-  //     alert("Thanks for doing business with us! Come back soon!!"),
-  //   onClose: () => alert("Wait! Don't leave :("),
-  // };
-
-  const config = {
-    reference: new Date().getTime().toString(),
-    email: placeOrder.email,
-    amount: sumTotal() * 100,
-    metadata: {
-      name: `${placeOrder.firstName} ${placeOrder.lastName}`,
-      phone: placeOrder.phoneNumber,
-    },
-    publicKey: "pk_test_e6c202d825e2bbcb0bc287f5d3c0816201b169de",
-  };
-
-  const onSuccess = (reference) => {
-    console.log(reference);
-
-    navigate("/payment/successful", {
-      state: {
-        cartAmount: cart.cartItems.length,
-        cartTotal: cart.total,
-        id: reference.transaction,
-      },
-    });
-  };
-
-  const onClose = () => {
-    console.log("closed");
-  };
-
-  const PaystackHookExample = () => {
-    const initializePayment = usePaystackPayment(config);
-    return (
-      <button
-        className="inline-block w-full bg-green p-4 rounded-md outline-0 font-semibold text-white text-sm"
-        onClick={() => {
-          initializePayment(onSuccess, onClose);
-        }}
-      >
-        Pay <NairaSymbol />
-        {sumTotal().toLocaleString()}
-      </button>
-    );
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
-    navigate("/payment/successful");
+    try {
+      const response = await fetch(
+        "https://apps-1.lampnets.com/ecommb-staging/orders/place-order",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + accessToken,
+          },
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setResponseData(data);
+        setPlaceOrder({ ...placeOrder, amountToPay: sumTotal() });
+        goTo("payment-method");
+      } else {
+        console.error("Fetch request failed");
+      }
+    } catch (error) {
+      console.error("Error occurred during fetch request:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    // <form className="space-y-4" onSubmit={handleSubmit}>
     <div className="space-y-4">
       <div className="space-y-2 border border-solid border-gray-300 p-3 rounded-2xl lg:px-6 lg:py-4">
         <h4 className="font-medium text-lg text-gray-700 lg:text-xl">
@@ -127,7 +92,7 @@ function OrderReview({ cart, back }) {
               <td>Discount</td>
               <td className="text-right">
                 <NairaSymbol />
-                {discount.toLocaleString()}
+                {discount.toFixed(2).toLocaleString()}
               </td>
             </tr>
             <tr>
@@ -167,24 +132,23 @@ function OrderReview({ cart, back }) {
         <button
           className="inline-block w-full bg-transparent border border-solid border-green p-2 rounded outline-0 font-semibold text-black text-sm"
           onClick={back}
+          disabled={isLoading}
         >
           {" "}
           Back
         </button>
 
-        {/* <button
+        <button
           type="submit"
           className="inline-block w-full bg-green p-4 rounded-md outline-0 font-semibold text-white text-sm"
+          onClick={handleSubmit}
+          disabled={isLoading}
         >
-          {" "}
           Pay <NairaSymbol />
-          {sumTotal(cart.total, discount, chosenMethodPrice).toLocaleString()}
-        </button> */}
-        {/* <PaystackButton {...componentProps} /> */}
-        <PaystackHookExample />
+          {sumTotal().toLocaleString()}
+        </button>
       </div>
     </div>
-    // </form>
   );
 }
 

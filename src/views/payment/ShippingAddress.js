@@ -11,7 +11,7 @@ function ShippingAddress({ goTo }) {
     streetAddress: "",
     state: "",
     city: "",
-    postal: "",
+    zipCode: "",
     phoneNumber: "",
   });
 
@@ -177,11 +177,11 @@ function ShippingAddress({ goTo }) {
       <div className="flex justify-between gap-6  md:gap-11 lg:gap-20">
         <input
           placeholder="Zip/Postal Code"
-          name="postal"
+          name="zipCode"
           type="text"
-          id="postal"
-          value={values.postal}
-          onChange={handleChange("postal")}
+          id="zipCode"
+          value={values.zipCode}
+          onChange={handleChange("zipCode")}
           className="w-full h-11 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
         />
 

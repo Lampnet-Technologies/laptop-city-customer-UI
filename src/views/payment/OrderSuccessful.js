@@ -9,7 +9,7 @@ function OrderSuccessful() {
   const [values, setValues] = useState({
     cartAmount: "",
     cartTotal: "",
-    id: "",
+    orderNo: "",
   });
 
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ function OrderSuccessful() {
         ...values,
         cartAmount: location.state.cartAmount,
         cartTotal: location.state.cartTotal,
-        id: location.state.id,
+        orderNo: location.state.orderNo,
       });
     }
   }, []);
@@ -54,7 +54,7 @@ function OrderSuccessful() {
           Your Order{" "}
           <Link to="/my-orders" className="underline text-green">
             {/* LCT9876 */}
-            {values.id}
+            {values.orderNo}
           </Link>{" "}
           has successfully been placed. You will receive a shipping confirmation
           email as soon as your order ships. Please check your email for more.
