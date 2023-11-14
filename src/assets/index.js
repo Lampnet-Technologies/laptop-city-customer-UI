@@ -1,4 +1,5 @@
 const IMAGES = {
+  user: require("./user.png"),
   logoMobile: require("./logo-mobile.png"),
   logoDesktop: require("./logo-desktop.png"),
   homepage: {

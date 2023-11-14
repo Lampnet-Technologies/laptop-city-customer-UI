@@ -139,7 +139,7 @@ function ContactInfo() {
         />
       )}
 
-      <form className="px-4 py-8 md:px-10 lg:px-[120px] md:py-4">
+      <form className="px-4 py-8 md:px-10 lg:px-[100px] xl:px-[120px] md:py-4">
         <div className="flex flex-col gap-3 mb-6 lg:gap-4 lg:mb-5">
           <label className="text-sm font-medium" htmlFor="shippingAddress">
             Shipping Address
@@ -153,7 +153,7 @@ function ContactInfo() {
           ></textarea>
         </div>
 
-        <div className="flex justify-between gap-8 mb-6">
+        <div className="flex justify-between gap-6 mb-6 w-full">
           <div className="flex flex-col gap-3 w-full lg:gap-4">
             <label className="text-sm font-medium" htmlFor="state">
               State
@@ -162,7 +162,7 @@ function ContactInfo() {
               name="state"
               value={values.state}
               onChange={handleChange("state")}
-              className="w-full h-11 lg:h-14 lg:w-64 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-base"
+              className="w-full h-11 lg:h-14 xl:w-64 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-base"
             >
               <option value="">None</option>
               {states.length > 0 &&
@@ -185,7 +185,7 @@ function ContactInfo() {
               name="city"
               value={values.city}
               onChange={handleChange("city")}
-              className="w-full h-11 lg:h-14 lg:w-64 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-base"
+              className="w-full h-11 lg:h-14 xl:w-64 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-base"
             >
               <option value="">None</option>
               {cities.length > 0 &&
