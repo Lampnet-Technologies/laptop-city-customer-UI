@@ -1,142 +1,175 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import IMAGES from "../../assets";
+import { usePaystackPayment } from "react-paystack";
+import { PlaceOrderContext, UserCartDependency } from "../../App";
+import { PlaceOrderResponseContext } from "../../pages/payment";
 
-function PaymentMethod({ goTo, back }) {
-  const [paymentType, setPaymentType] = useState("withCard");
+const methods = [
+  {
+    name: "pay on delivery",
+    logo: `${IMAGES.payment.payOnDelivery}`,
+    disabled: true,
+  },
+  { name: "paystack", logo: `${IMAGES.payment.paystack}`, disabled: false },
+  {
+    name: "flutterwave",
+    logo: `${IMAGES.payment.flutterwave}`,
+    disabled: true,
+  },
+];
 
-  const [values, setValues] = useState({
-    cardNumber: "",
-    expiry: "",
-    cvv: "",
-  });
+const accessToken = localStorage.getItem("token");
+
+function PaymentMethod({ cart, goTo, back }) {
+  const [placeOrder, setPlaceOrder] = useContext(PlaceOrderContext);
+  const [responseData, setResponseData] = useContext(PlaceOrderResponseContext); // State variable to store response data
+  const [cartDep, setCartDep] = useContext(UserCartDependency);
+  const [paymentType, setPaymentType] = useState("paystack");
 
   const navigate = useNavigate();
 
-  const expiryFormat = (value) => {
-    const expDate = value;
-    const expDateFormatter =
-      expDate.replace(/\//g, "").substring(0, 2) +
-      (expDate.length > 2 ? "/" : "") +
-      expDate.replace(/\//g, "").substring(2, 4);
-
-    return expDateFormatter;
+  const config = {
+    reference: responseData.transactionId,
+    email: placeOrder.email,
+    amount: placeOrder.amountToPay * 100,
+    metadata: {
+      name: `${placeOrder.firstName} ${placeOrder.lastName}`,
+      phone: placeOrder.phoneNumber,
+    },
+    publicKey: "pk_test_e6c202d825e2bbcb0bc287f5d3c0816201b169de",
   };
 
-  const handleChange = (prop) => (event) => {
-    setValues({ ...values, [prop]: event.target.value });
-  };
-
-  const handleRadioChange = (e) => {
+  const handleChange = (e) => {
     setPaymentType(e.target.value);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const onSuccess = (reference) => {
+    const dataToSend = {
+      ...placeOrder,
+      transactionId: responseData.transactionId,
+      orderNumber: responseData.orderNumber,
+      message: reference.message,
+      paymentStatus: reference.status,
+      reference: reference.reference,
+    };
+
+    fetch("https://apps-1.lampnets.com/ecommb-staging/orders/payment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + accessToken,
+      },
+      body: JSON.stringify(dataToSend),
+    })
+      .then((response) => {
+        if (response.ok) {
+          navigate("/payment/successful", {
+            state: {
+              cartAmount: cart.cartItems.length,
+              cartTotal: cart.total,
+              orderNo: responseData.orderNumber,
+            },
+          });
+          setResponseData(null);
+          setCartDep(responseData.orderNumber);
+        } else {
+          throw new Error("Network response was failed.");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const onClose = () => {
+    console.log("closed");
+  };
+
+  const PaystackHookExample = () => {
+    const initializePayment = usePaystackPayment(config);
+    return (
+      <div className="w-full md:w-auto">
+        <button
+          className="inline-block w-full md:w-48 bg-green p-2 rounded outline-0 font-semibold text-white text-sm capitalize"
+          onClick={() => {
+            initializePayment(onSuccess, onClose);
+          }}
+        >
+          complete payment
+        </button>
+      </div>
+    );
   };
 
   return (
-    <form
-      className="space-y-4 md:space-y-4 lg:space-y-6"
-      onSubmit={handleSubmit}
-    >
-      <h4 className="font-medium text-lg text-dark-blue md:text-xl lg:text-2xl">
+    <div className="space-y-4 md:space-y-4 lg:space-y-6">
+      <h4 className="mb:5 font-medium text-lg text-dark-blue md:text-xl lg:text-2xl lg:mb-10">
         Payment Method
       </h4>
 
-      <div className="flex item-center gap-3">
-        <input
-          className="accent-green"
-          type="radio"
-          name="payment"
-          value="withCard"
-          id="withCard"
-          checked={paymentType === "withCard"}
-          onChange={handleChange}
-        />
+      {methods &&
+        methods.map((method, index) => {
+          return (
+            <div className="flex items-start gap-5 lg:gap-8" key={index}>
+              <div className="mt-0.5 md:mt-1">
+                <input
+                  className="accent-green md:w-5 md:h-5"
+                  type="radio"
+                  name="paymentMethod"
+                  value={method.name}
+                  id={method.name}
+                  checked={paymentType == method.name}
+                  onChange={handleChange}
+                  disabled={method.disabled}
+                />
+              </div>
 
-        <label htmlFor="withCard">Pay with Card</label>
-      </div>
+              <div className={`${method.disabled && "opacity-25"}`}>
+                <label htmlFor={method.name}>
+                  <div className="lg:space-y-2">
+                    <p className="font-medium lg:text-lg capitalize">
+                      {method.name}{" "}
+                    </p>
 
-      <div className="flex flex-col gap-1">
-        <label htmlFor="cardNumber" className="font-normal text-sm lg:text-lg">
-          Card Number
-        </label>
-        <input
-          placeholder="0000 0000 0000 0000"
-          name="cardNumber"
-          type="number"
-          id="cardNumber"
-          value={values.cardNumber}
-          onChange={handleChange("cardNumber")}
-          className="w-full h-8 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
-        />
-      </div>
-
-      <div className="flex justify-between gap-6 md:gap-11 lg:gap-20">
-        <div className="flex flex-col gap-1 w-full">
-          <label htmlFor="expiry" className="font-normal text-sm lg:text-lg">
-            Expiry
-          </label>
-          <input
-            placeholder="MM/YY"
-            name="expiry"
-            type="text"
-            id="expiry"
-            value={expiryFormat(values.expiry)}
-            onChange={handleChange("expiry")}
-            className="w-full h-8 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
-          />
-        </div>
-
-        <div className="flex flex-col gap-1 w-full">
-          <label htmlFor="cvv" className="font-normal text-sm lg:text-lg">
-            CVV
-          </label>
-          <input
-            placeholder="***"
-            name="cvv"
-            type="number"
-            id="cvv"
-            value={values.cvv}
-            onChange={handleChange("cvv")}
-            className="w-full h-8 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
-          />
-        </div>
-      </div>
+                    <div className="max-w-[100px] h-10 lg:max-w-[200px] lg:h-12 flex justify-center items-center">
+                      <img
+                        src={method.logo}
+                        alt={`${method.name} logo`}
+                        className="max-w-full w-full max-h-full"
+                      />
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+          );
+        })}
 
       <p
         className="text-sm font-normal lg:text-lg"
         style={{ marginTop: "2rem" }}
       >
-        By Clicking *<span className="font-medium">Confirm Payment</span>* I
+        By Clicking *<span className="font-medium">Complete Payment</span>* I
         agree to company terms of services
       </p>
 
       <div
-        className="flex justify-between gap-6 lg:gap-8 md:justify-around lg:justify-end"
+        className="flex justify-between gap-6 lg:gap-8 md:justify-end"
         style={{ marginBlock: "2.5rem 1rem" }}
       >
         <button
           type="button"
           className="inline-block w-full md:w-48 bg-transparent border border-solid border-green p-2 rounded outline-0 font-semibold text-black text-sm"
-          // onClick={() => navigate(-1)}
           onClick={back}
         >
           {" "}
           Back
         </button>
 
-        <button
-          type="button"
-          className="inline-block w-full md:w-48 bg-green p-2 rounded outline-0 font-semibold text-white text-sm"
-          // onClick={() => navigate("/payment/review-order")}
-          onClick={() => goTo("order-review")}
-        >
-          {" "}
-          Confirm Payment
-        </button>
+        <PaystackHookExample />
       </div>
-    </form>
+    </div>
   );
 }
 

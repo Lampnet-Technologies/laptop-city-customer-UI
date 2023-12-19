@@ -24,7 +24,7 @@ function StatusColor({ status }) {
 
 function RenderedOrders({ orders, viewDetails }) {
   return (
-    <div className="overflow-x-auto mt-12 mb-24">
+    <div className="overflow-x-auto pb-3 mt-12 mb-24">
       <table className="w-full whitespace-nowrap border-collapse">
         <thead>
           <tr style={{ borderBlock: "0.5px solid #7f98ae" }}>

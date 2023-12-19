@@ -48,15 +48,12 @@ function ProfileInfo() {
         </div>
       </div>
 
-      <div
-        className="hidden lg:block w-full space-y-14"
-        // style={{ border: "3px solid blue" }}
-      >
+      <div className="hidden lg:block w-full space-y-14">
         <div className="border border-solid border-green rounded">
           <div className="border-b border-b-solid border-b-gray-400 text-center font-semibold capitalize text-2xl py-6 px-[75px] md:p-8 lg:text-[27px]">
             account details
           </div>
-          <div className="flex justify-between items-center gap-4 py-8 px-[120px]">
+          <div className="flex justify-between items-center gap-4 py-8 px-[100px] xl:px-[120px]">
             <h3 className="capitalize lg:text-xl">personal information</h3>
           </div>
 
@@ -64,7 +61,7 @@ function ProfileInfo() {
         </div>
 
         <div className="w-full border border-solid border-green rounded">
-          <div className="flex justify-between items-center gap-4 py-8 px-[120px]">
+          <div className="flex justify-between items-center gap-4 py-8 px-[100px] xl:px-[120px]">
             <h3 className="capitalize lg:text-xl">contact information</h3>
           </div>
 

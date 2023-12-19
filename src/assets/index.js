@@ -1,4 +1,5 @@
 const IMAGES = {
+  user: require("./user.png"),
   logoMobile: require("./logo-mobile.png"),
   logoDesktop: require("./logo-desktop.png"),
   homepage: {
@@ -62,6 +63,11 @@ const IMAGES = {
     aboutMobile: require("./about/about-1.jpg"),
     about: require("./about/about.webp"),
     ourMission: require("./about/our-mission.jpg"),
+  },
+  payment: {
+    paystack: require("./payment/paystack-logo.png"),
+    flutterwave: require("./payment/flutterwave-logo.png"),
+    payOnDelivery: require("./payment/delivery-van.png"),
   },
   err: {
     404: require("./error/404-1.png"),

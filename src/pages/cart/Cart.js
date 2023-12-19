@@ -69,6 +69,7 @@ function Cart() {
               open: true,
               severity: "success",
               title: "Cart has been updated",
+              message: "",
             });
           } else if (res.status == 401) {
             setAlert({
@@ -118,6 +119,7 @@ function Cart() {
               open: true,
               severity: "success",
               title: "Cart has been updated",
+              message: "",
             });
           } else if (res.status == 401) {
             setAlert({

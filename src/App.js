@@ -48,7 +48,7 @@ function App() {
     streetAddress: "",
     state: "",
     city: "",
-    postal: "",
+    zipCode: "",
     phoneNumber: "",
     shippingMethodId: "",
   });
