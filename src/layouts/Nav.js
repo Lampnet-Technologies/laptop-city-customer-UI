@@ -214,24 +214,6 @@ function Nav() {
                 )}
               </NavLink>
 
-              {/* <IconButton
-                className="hover:text-green active:text-green focus:text-green"
-                sx={{ pl: 0, py: "2px", my: 1, position: "relative" }}
-                onClick={() => {
-                  handleCloseNav();
-                  navigate("/shopping-cart");
-                }}
-              >
-                {cart.cartItems && (
-                  <div className="absolute top-0 right-0 bg-green text-white font-semibold rounded-full w-4 h-4 p-[2px] text-[10px] flex justify-center items-center">
-                    {cart.cartItems.length}
-                  </div>
-                )}
-                <i className="bx bx-cart-add text-3xl text-[#111] transition ease-in-out duration-200 hover:text-green"></i>
-              </IconButton> */}
-
-              {/* <div className="h-px w-4/5 border border-black"></div> */}
-
               <CustomLink onClick={handleCloseNav} to="/">
                 Home
               </CustomLink>
@@ -242,18 +224,18 @@ function Nav() {
               >
                 categories <i className="bx bx-chevron-down bx-sm"></i>
               </CustomLink>
-              {/* <CustomLink onClick={handleCloseNav} to="/my-orders">
-                track orders
-              </CustomLink>
-              <CustomLink onClick={handleCloseNav} to="/coupons">
-                coupons
-              </CustomLink> */}
 
               <CustomLink onClick={handleCloseNav} to="/blog">
                 Blog
               </CustomLink>
               <CustomLink onClick={handleCloseNav} to="/about">
                 about
+              </CustomLink>
+              <CustomLink onClick={handleCloseNav} to="/blog">
+                Book repair
+              </CustomLink>
+              <CustomLink onClick={handleCloseNav} to="/blog">
+                Training
               </CustomLink>
 
               <button
@@ -276,9 +258,7 @@ function Nav() {
               className={clicked ? "#mobileNav activeMenu" : "#mobileNav"}
               // className="flex items-center justify-between gap-4 list-none"
             >
-              {/* <button className="mb-4 self-end mr-5" onClick={handleCloseNav}>
-                <i className="bx bx-x bx-md"></i>
-              </button> */}
+             
 
               <CustomLink onClick={handleCloseNav} to="/">
                 Home
@@ -290,16 +270,20 @@ function Nav() {
               >
                 categories <i className="bx bx-chevron-down bx-sm"></i>
               </CustomLink>
-              {/* <CustomLink onClick={handleCloseNav} to="/login">
-                track orders
-              </CustomLink> */}
+              
               <CustomLink onClick={handleCloseNav} to="/blog">
                 Blog
+              </CustomLink>
+              <CustomLink onClick={handleCloseNav} to="/blog">
+                Book repair
+              </CustomLink>
+              <CustomLink onClick={handleCloseNav} to="/blog">
+                Training
               </CustomLink>
               <CustomLink onClick={handleCloseNav} to="/about">
                 about
               </CustomLink>
-
+              
               <div className="mt-4 flex flex-col items-start gap-8 whitespace-nowrap">
                 <button onClick={handleCloseNav}>
                   <NavLink
@@ -375,10 +359,11 @@ function Nav() {
               <CustomLink subMenu={categoriesSubMenu}>
                 categories <i className="bx bx-chevron-down bx-sm"></i>
               </CustomLink>
-              {/* <CustomLink to="/coupons">coupons</CustomLink>
-              <CustomLink to="/my-orders">track orders</CustomLink> */}
+             
               <CustomLink to="/blog">Blog</CustomLink>
-              <CustomLink to="/about">about</CustomLink>
+              <CustomLink to="/about">About</CustomLink>
+              <CustomLink to="/about">Book repair</CustomLink>
+              <CustomLink to="/about">Training</CustomLink>
             </ul>
 
             <ul className="flex items-center justify-between gap-4 lg:gap-4 list-none whitespace-nowrap">
