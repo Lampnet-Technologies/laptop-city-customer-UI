@@ -53,7 +53,7 @@ export default function Blog() {
             </p>
           </div>
           {posts.map((post) => (
-            <div key={post._id}>
+            <div key={post._id} className="my-10">
               {post.mainImage?.asset?.url && (
                 <img
                   src={post.mainImage.asset.url}
@@ -79,7 +79,12 @@ export default function Blog() {
               <div className="my-7">
                 <PortableText value={post.body} />
               </div>
-              <a className='rounded w-[200px] border border-blue-500 p-2 ' href='/'>Read more</a>
+              <a
+                className="rounded w-[200px] border border-blue-500 p-2 "
+                href="/"
+              >
+                Read more
+              </a>
             </div>
           ))}
         </div>
