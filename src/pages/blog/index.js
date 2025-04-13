@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Loading from "../../component/loading";
 import client from "../../sanityClient";
 import { PortableText } from "@portabletext/react";
+import { Link } from "react-router-dom";
 
 export default function Blog() {
   const [isLoading, setIsLoading] = useState(false);
@@ -79,12 +80,12 @@ export default function Blog() {
               <div className="my-7">
                 <PortableText value={post.body} />
               </div>
-              <a
-                className="rounded w-[200px] border border-blue-500 p-2 "
-                href="/"
+              <Link
+                to={`/blog/${post._id}`}
+                className="rounded w-[200px] border border-blue-500 p-2 block text-center"
               >
                 Read more
-              </a>
+              </Link>
             </div>
           ))}
         </div>

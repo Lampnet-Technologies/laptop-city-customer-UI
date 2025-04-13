@@ -231,10 +231,10 @@ function Nav() {
               <CustomLink onClick={handleCloseNav} to="/about">
                 about
               </CustomLink>
-              <CustomLink onClick={handleCloseNav} to="/blog">
+              <CustomLink onClick={handleCloseNav} to="/repair">
                 Book repair
               </CustomLink>
-              <CustomLink onClick={handleCloseNav} to="/blog">
+              <CustomLink onClick={handleCloseNav} to="/training">
                 Training
               </CustomLink>
 
@@ -274,10 +274,10 @@ function Nav() {
               <CustomLink onClick={handleCloseNav} to="/blog">
                 Blog
               </CustomLink>
-              <CustomLink onClick={handleCloseNav} to="/blog">
+              <CustomLink onClick={handleCloseNav} to="/repair">
                 Book repair
               </CustomLink>
-              <CustomLink onClick={handleCloseNav} to="/blog">
+              <CustomLink onClick={handleCloseNav} to="/training">
                 Training
               </CustomLink>
               <CustomLink onClick={handleCloseNav} to="/about">
@@ -362,8 +362,8 @@ function Nav() {
              
               <CustomLink to="/blog">Blog</CustomLink>
               <CustomLink to="/about">About</CustomLink>
-              <CustomLink to="/about">Book repair</CustomLink>
-              <CustomLink to="/about">Training</CustomLink>
+              <CustomLink to="/repair">Book repair</CustomLink>
+              <CustomLink to="/training">Training</CustomLink>
             </ul>
 
             <ul className="flex items-center justify-between gap-4 lg:gap-4 list-none whitespace-nowrap">
@@ -440,6 +440,8 @@ function Nav() {
               {/* <CustomLink to="/login">track orders</CustomLink> */}
               <CustomLink to="/blog">Blog</CustomLink>
               <CustomLink to="/about">about</CustomLink>
+              <CustomLink to="/repair">Book repair</CustomLink>
+              <CustomLink to="/training">Training</CustomLink>
             </ul>
 
             <div className="flex justify-end items-center gap-6 whitespace-nowrap">

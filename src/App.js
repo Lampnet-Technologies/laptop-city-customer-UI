@@ -26,6 +26,7 @@ import Homepage from "./pages/Homepage";
 import ProductsListing from "./pages/products/ProductListingPage";
 import ProductDesc from "./pages/products/ProductDescPage";
 import { MyWishlists } from "./pages/wishlist";
+import BlogDetails from "./component/blogDetails";
 
 export const LoginContext = createContext();
 export const UserProfileContext = createContext();
@@ -121,10 +122,12 @@ function App() {
                           element={<ProductDesc />}
                         />
                         <Route path="/blog" element={<Blog />} />
-                        <Route
+                        <Route path="/blog/:id" element={<BlogDetails />} />
+                        {/* <Route
                           path="/blog/:slug"
                           element={<SingleBlogPost />}
-                        />
+                        /> */}
+
                         <Route path="/login" element={<Login />} />
                         <Route path="/signup" element={<SignUp />} />
                         <Route element={<Profile />}>
