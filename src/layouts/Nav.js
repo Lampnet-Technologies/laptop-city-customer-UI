@@ -225,9 +225,6 @@ function Nav() {
                 categories <i className="bx bx-chevron-down bx-sm"></i>
               </CustomLink>
 
-              <CustomLink onClick={handleCloseNav} to="/blog">
-                Blog
-              </CustomLink>
               <CustomLink onClick={handleCloseNav} to="/about">
                 about
               </CustomLink>
@@ -237,7 +234,9 @@ function Nav() {
               <CustomLink onClick={handleCloseNav} to="/training">
                 Training
               </CustomLink>
-
+              <CustomLink onClick={handleCloseNav} to="/blog">
+                Blog
+              </CustomLink>
               <button
                 type="button"
                 className="text-secondary-button border border-solid border-secondary-button rounded-md outline-0 flex justify-center items-center gap-2 font-semibold p-2 my-4"
@@ -258,8 +257,6 @@ function Nav() {
               className={clicked ? "#mobileNav activeMenu" : "#mobileNav"}
               // className="flex items-center justify-between gap-4 list-none"
             >
-             
-
               <CustomLink onClick={handleCloseNav} to="/">
                 Home
               </CustomLink>
@@ -268,22 +265,22 @@ function Nav() {
                 to="/categories"
                 subMenu={categoriesSubMenu}
               >
+                <CustomLink onClick={handleCloseNav} to="/about">
+                  about
+                </CustomLink>
                 categories <i className="bx bx-chevron-down bx-sm"></i>
               </CustomLink>
-              
-              <CustomLink onClick={handleCloseNav} to="/blog">
-                Blog
-              </CustomLink>
+
               <CustomLink onClick={handleCloseNav} to="/repair">
                 Book repair
               </CustomLink>
               <CustomLink onClick={handleCloseNav} to="/training">
                 Training
               </CustomLink>
-              <CustomLink onClick={handleCloseNav} to="/about">
-                about
+              <CustomLink onClick={handleCloseNav} to="/blog">
+                Blog
               </CustomLink>
-              
+
               <div className="mt-4 flex flex-col items-start gap-8 whitespace-nowrap">
                 <button onClick={handleCloseNav}>
                   <NavLink
@@ -359,11 +356,11 @@ function Nav() {
               <CustomLink subMenu={categoriesSubMenu}>
                 categories <i className="bx bx-chevron-down bx-sm"></i>
               </CustomLink>
-             
-              <CustomLink to="/blog">Blog</CustomLink>
+
               <CustomLink to="/about">About</CustomLink>
               <CustomLink to="/repair">Book repair</CustomLink>
               <CustomLink to="/training">Training</CustomLink>
+              <CustomLink to="/blog">Blog</CustomLink>
             </ul>
 
             <ul className="flex items-center justify-between gap-4 lg:gap-4 list-none whitespace-nowrap">
