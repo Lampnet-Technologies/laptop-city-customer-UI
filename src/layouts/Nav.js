@@ -435,10 +435,10 @@ function Nav() {
                 categories <i className="bx bx-chevron-down bx-sm"></i>
               </CustomLink>
               {/* <CustomLink to="/login">track orders</CustomLink> */}
-              <CustomLink to="/blog">Blog</CustomLink>
               <CustomLink to="/about">about</CustomLink>
               <CustomLink to="/repair">Book repair</CustomLink>
               <CustomLink to="/training">Training</CustomLink>
+              <CustomLink to="/blog">Blog</CustomLink>
             </ul>
 
             <div className="flex justify-end items-center gap-6 whitespace-nowrap">
