@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Banner } from "../../component/homepage";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import LaptopCityButton from "../../component/button";
+// import LaptopCityButton from "../../component/button";
 import { LoginContext } from "../../App";
 import CustomAlert from "../../component/CustomAlert";
 
@@ -39,52 +39,86 @@ function Login() {
     setShowPassword((prev) => !prev);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
     setLoading(true);
+    setAlert({ ...alert, open: false }); // close any existing alert
 
-    fetch(loginAPI, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(values),
-    })
-      .then((res) => {
-        if (res.status != 200) {
-          // throw Error(res.statusText);
-          setAlert({
-            ...alert,
-            open: true,
-            severity: "info",
-            title: res.statusText,
-          });
-        } else {
-          return res.json();
-        }
-      })
-      .then((result) => {
-        localStorage.setItem("token", result.accessToken);
-        setLoggedIn(true);
-        navigate(
-          location?.state?.previousUrl
-            ? location.state.previousUrl
-            : "/products"
-        );
-      })
-      .catch((error) => {
-        console.log(error);
-        // alert("Wrong credentials input");
-        setAlert({
-          ...alert,
-          open: true,
-          severity: "error",
-          title: "Wrong credentials input",
-          message: error.message,
-        });
-        setLoading(false);
-        setValues({ ...values, usernameOrEmail: "", password: "" });
+    try {
+      const res = await fetch(loginAPI, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
       });
+
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Login failed");
+      }
+
+      const result = await res.json();
+      localStorage.setItem("token", result.accessToken);
+      setLoggedIn(true);
+      navigate(location?.state?.previousUrl || "/products");
+    } catch (error) {
+      setAlert({
+        open: true,
+        severity: "error",
+        title: "Login Failed",
+        message: error.message,
+      });
+      setValues({ usernameOrEmail: "", password: "" });
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+
+  //   setLoading(true);
+  //   console.log("Login route", loginAPI);
+  //   fetch(loginAPI, {
+  //     method: "POST",
+  //     headers: { "content-type": "application/json" },
+  //     body: JSON.stringify(values),
+  //   })
+  //     .then((res) => {
+  //       if (res.status != 200) {
+  //         // throw Error(res.statusText);
+  //         setAlert({
+  //           ...alert,
+  //           open: true,
+  //           severity: "info",
+  //           title: res.statusText,
+  //         });
+  //       } else {
+  //         return res.json();
+  //       }
+  //     })
+  //     .then((result) => {
+  //       localStorage.setItem("token", result.accessToken);
+  //       setLoggedIn(true);
+  //       navigate(
+  //         location?.state?.previousUrl
+  //           ? location.state.previousUrl
+  //           : "/products"
+  //       );
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //       // alert("Wrong credentials input");
+  //       setAlert({
+  //         ...alert,
+  //         open: true,
+  //         severity: "error",
+  //         title: "Wrong credentials input",
+  //         message: error.message,
+  //       });
+  //       setLoading(false);
+  //       setValues({ ...values, usernameOrEmail: "", password: "" });
+  //     });
+  // };
 
   return (
     <div className="my-10 md:my-16 lg:my-20">
@@ -167,9 +201,9 @@ function Login() {
             <button
               disabled={loading}
               className="capitalize font-semibold text-white text-sm lg:text-base md:px-16 lg:py-4 lg:px-[86px] rounded bg-green py-[11px] px-12 hover:bg-dark-green"
-              onClick={handleSubmit}
+              type="submit"
             >
-              Login
+              {loading ? "Logging in..." : "Login"}
             </button>
 
             <p>
