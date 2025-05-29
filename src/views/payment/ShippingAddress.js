@@ -8,11 +8,12 @@ function ShippingAddress({ goTo }) {
     firstName: "",
     lastName: "",
     email: "",
-    streetAddress: "",
+    address: "",
     state: "",
     city: "",
     zipCode: "",
-    phoneNumber: "",
+    phone: "",
+    countryCode: "+234",
   });
 
   const [states, setStates] = useState([]);
@@ -20,40 +21,56 @@ function ShippingAddress({ goTo }) {
 
   const navigate = useNavigate();
   const location = useLocation();
+  const [isLoadingStates, setIsLoadingStates] = useState(false);
+  const [isLoadingCities, setIsLoadingCities] = useState(false);
 
   useEffect(() => {
+    setIsLoadingStates(true);
     fetch("https://countriesnow.space/api/v0.1/countries/states", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ country: "Nigeria" }),
     })
-      .then((res) => {
-        return res.json();
-      })
+      .then((res) => res.json())
       .then((result) => {
-        setStates(result.data.states);
+        if (result.data && Array.isArray(result.data.states)) {
+          const rawStates = result.data.states.map((state) => state.name);
+          setStates(rawStates);
+        } else {
+          console.error("States data missing or malformed:", result);
+        }
       })
+
       .catch((error) => {
         console.log(error.message);
-      });
+      })
+      .finally(() => setIsLoadingStates(false));
   }, [location.pathname]);
 
   useEffect(() => {
-    if (values.state) {
+    if (values.state && states.includes(values.state)) {
+      setIsLoadingCities(true);
+      setCities([]);
+      setValues((prev) => ({ ...prev, city: "" })); // Reset city selection
+
       fetch("https://countriesnow.space/api/v0.1/countries/state/cities", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ country: "Nigeria", state: values.state }),
       })
-        .then((res) => {
-          return res.json();
-        })
+        .then((res) => res.json())
         .then((result) => {
-          setCities(result.data);
+          if (result.data && Array.isArray(result.data)) {
+            setCities(result.data);
+          } else {
+            setCities([]);
+            console.warn("Cities data missing or malformed:", result);
+          }
         })
         .catch((error) => {
           console.log(error.message);
-        });
+        })
+        .finally(() => setIsLoadingCities(false));
     }
   }, [values.state]);
 
@@ -63,8 +80,31 @@ function ShippingAddress({ goTo }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log("Submitting shipping address:", values);
+    console.log("Payload for placeOrder:", {
+      firstName: values.firstName,
+      lastName: values.lastName,
+      email: values.email,
+      address: values.address,
+      state: values.state.replace(" State", ""),
+      city: values.city,
+      zipCode: values.zipCode,
+      phone: `${values.countryCode}${values.phone}`,
+    });
 
-    setPlaceOrder({ ...placeOrder, ...values });
+    setPlaceOrder({
+      ...placeOrder,
+      shippingAddress: {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        address: values.address,
+        state: values.state,
+        city: values.city,
+        zipCode: values.zipCode,
+        phone: `${values.countryCode}${values.phone}`,
+      },
+    });
 
     goTo("shipping-method");
   };
@@ -119,19 +159,18 @@ function ShippingAddress({ goTo }) {
         <input
           required
           placeholder="Street Address"
-          name="streetAddress"
+          name="address"
           type="text"
-          id="streetAddress"
-          value={values.streetAddress}
-          onChange={handleChange("streetAddress")}
+          id="address"
+          value={values.address}
+          onChange={handleChange("address")}
           className="w-full h-11 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
         />
       </div>
 
       <div className="flex justify-between gap-6  md:gap-11 lg:gap-20">
-        <select
+        {/* <select
           required
-          placeholder="State"
           name="state"
           id="state"
           value={values.state}
@@ -139,21 +178,34 @@ function ShippingAddress({ goTo }) {
           className="w-full h-11 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
         >
           <option value="" disabled>
-            State
+            {isLoadingStates ? "Loading states..." : "State"}
           </option>
-          {states.length > 0 &&
-            states.map((state, i) => {
-              return (
-                <option key={i} value={state.name}>
-                  {state.name}
-                </option>
-              );
-            })}
+          {states.map((state, i) => (
+            <option key={i} value={state}>
+              {state.replace(" State", "")}
+            </option>
+          ))}
+        </select> */}
+        <select
+          required
+          name="state"
+          id="state"
+          value={values.state}
+          onChange={handleChange("state")}
+          className="..."
+        >
+          <option value="" disabled>
+            {isLoadingStates ? "Loading states..." : "State"}
+          </option>
+          {states.map((state, i) => (
+            <option key={i} value={state}>
+              {state.replace(" State", "")}
+            </option>
+          ))}
         </select>
 
         <select
           required
-          placeholder="City"
           name="city"
           id="city"
           value={values.city}
@@ -161,16 +213,13 @@ function ShippingAddress({ goTo }) {
           className="w-full h-11 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
         >
           <option value="" disabled>
-            City
+            {isLoadingCities ? "Loading cities..." : "City"}
           </option>
-          {cities.length > 0 &&
-            cities.map((city, i) => {
-              return (
-                <option key={i} value={city}>
-                  {city}
-                </option>
-              );
-            })}
+          {cities.map((city, i) => (
+            <option key={i} value={city}>
+              {city}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -185,16 +234,30 @@ function ShippingAddress({ goTo }) {
           className="w-full h-11 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
         />
 
-        <input
-          required
-          placeholder="Phone Number"
-          name="phoneNumber"
-          type="tel"
-          id="phoneNumber"
-          value={values.phoneNumber}
-          onChange={handleChange("phoneNumber")}
-          className="w-full h-11 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
-        />
+        <div className="w-full flex gap-2">
+          <select
+            name="countryCode"
+            value={values.countryCode}
+            onChange={handleChange("countryCode")}
+            className="w-1/3 h-11 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
+          >
+            <option value="+234">🇳🇬 +234</option>
+            <option value="+44">🇬🇧 +44</option>
+            <option value="+1">🇺🇸 +1</option>
+            {/* Add more country codes as needed */}
+          </select>
+
+          <input
+            required
+            placeholder="Phone Number"
+            name="phone"
+            type="tel"
+            id="phone"
+            value={values.phone}
+            onChange={handleChange("phone")}
+            className="w-2/3 h-11 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
+          />
+        </div>
       </div>
 
       <button
