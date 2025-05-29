@@ -192,7 +192,7 @@ function ShippingAddress({ goTo }) {
           id="state"
           value={values.state}
           onChange={handleChange("state")}
-          className="..."
+          className="w-full h-11 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
         >
           <option value="" disabled>
             {isLoadingStates ? "Loading states..." : "State"}
@@ -235,18 +235,6 @@ function ShippingAddress({ goTo }) {
         />
 
         <div className="w-full flex gap-2">
-          <select
-            name="countryCode"
-            value={values.countryCode}
-            onChange={handleChange("countryCode")}
-            className="w-1/3 h-11 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
-          >
-            <option value="+234">🇳🇬 +234</option>
-            <option value="+44">🇬🇧 +44</option>
-            <option value="+1">🇺🇸 +1</option>
-            {/* Add more country codes as needed */}
-          </select>
-
           <input
             required
             placeholder="Phone Number"
