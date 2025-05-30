@@ -73,52 +73,6 @@ function Login() {
     }
   };
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-
-  //   setLoading(true);
-  //   console.log("Login route", loginAPI);
-  //   fetch(loginAPI, {
-  //     method: "POST",
-  //     headers: { "content-type": "application/json" },
-  //     body: JSON.stringify(values),
-  //   })
-  //     .then((res) => {
-  //       if (res.status != 200) {
-  //         // throw Error(res.statusText);
-  //         setAlert({
-  //           ...alert,
-  //           open: true,
-  //           severity: "info",
-  //           title: res.statusText,
-  //         });
-  //       } else {
-  //         return res.json();
-  //       }
-  //     })
-  //     .then((result) => {
-  //       localStorage.setItem("token", result.accessToken);
-  //       setLoggedIn(true);
-  //       navigate(
-  //         location?.state?.previousUrl
-  //           ? location.state.previousUrl
-  //           : "/products"
-  //       );
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //       // alert("Wrong credentials input");
-  //       setAlert({
-  //         ...alert,
-  //         open: true,
-  //         severity: "error",
-  //         title: "Wrong credentials input",
-  //         message: error.message,
-  //       });
-  //       setLoading(false);
-  //       setValues({ ...values, usernameOrEmail: "", password: "" });
-  //     });
-  // };
 
   return (
     <div className="my-10 md:my-16 lg:my-20">
@@ -142,15 +96,15 @@ function Login() {
           className="border border-green border-solid rounded-md px-4 py-14 md:px-36 md:py-24"
         >
           <div className="flex flex-col gap-3 mb-4 md:gap-5 md:mb-8">
-            <label className="text-sm font-medium md:text-lg" htmlFor="email">
-              Email address *
+            <label className="text-sm font-medium md:text-lg" htmlFor="usernameOrEmail">
+              Email address or Username *
             </label>
             <input
               required
               autoFocus
-              name="email"
-              type="email"
-              id="email"
+              name="usernameOrEmail"
+              type="text"
+              id="usernameOrEmail"
               value={values.usernameOrEmail}
               onChange={handleChange("usernameOrEmail")}
               className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 outline-0 font-light text-sm"
