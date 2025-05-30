@@ -17,8 +17,9 @@ function SignUp() {
     phoneNumber: "",
     password: "",
     confirmPassword: "",
+    refCode: "",
   });
-
+  const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
@@ -31,6 +32,22 @@ function SignUp() {
   });
   const handleCloseAlert = () => {
     setAlert({ ...alert, open: false });
+  };
+
+  const handleRefChange = (prop) => (event) => {
+    const val = event.target.value;
+    setValues((prev) => ({ ...prev, [prop]: val }));
+
+    // Validate Reference Code only if not empty (since optional)
+    if (prop === "refCode") {
+      if (val === "" || /^[A-Za-z]{2}-\d{4}$/.test(val)) {
+        setError("");
+      } else {
+        setError(
+          "Reference code must be in format XX-XXXX (2 letters, dash, 4 digits)"
+        );
+      }
+    }
   };
 
   useEffect(() => {
@@ -48,7 +65,12 @@ function SignUp() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+    if (error) {
+      alert("Please use the right ref format.");
+      return;
+    }
+    // Proceed with submit logic...
+    console.log("Submitted refCode:", values.refCode);
     if (values.password !== values.confirmPassword) {
       // alert("Confirm your password!!!");
       setAlert({
@@ -71,7 +93,7 @@ function SignUp() {
             open: true,
             severity: "success",
             title: "Welcome!!",
-            message: `Welcome onboard ${values.userName} 🎊🎉`,
+            message: `Welcome Onboard ${values.userName} 🎊🎉`,
           });
           navigate("/login");
         })
@@ -242,6 +264,7 @@ function SignUp() {
                 onChange={handleChange("confirmPassword")}
                 className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 pr-12 outline-0 font-light text-sm"
               />
+
               <button
                 type="button"
                 onClick={handleShowPassword}
@@ -254,6 +277,19 @@ function SignUp() {
                 )}
               </button>
             </div>
+            <label className="text-sm font-medium md:text-lg" htmlFor="refCode">
+              Reference Code (optional)
+              <input
+                name="refCode"
+                id="refCode"
+                type="text"
+                value={values.refCode}
+                onChange={handleRefChange("refCode")}
+                className="w-full h-11 md:h-14 md:rounded mt-3 rounded-sm bg-[#ECF3F9] p-3 pr-12 outline-0 font-light text-sm"
+                placeholder="Enter reference code if you have one eg. XX-XXXX"
+              />
+            </label>
+            {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
           </div>
 
           <div className="mt-14 flex flex-col items-center gap-10 text-sm font-normal md:text-base md:gap-12 lg:gap-16">
