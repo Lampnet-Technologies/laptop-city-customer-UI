@@ -74,48 +74,6 @@ BATTERY
 Type: Li-Po 5000 mAh, non-removable
 Charging: Fast Charging 33W`;
 
-// const featuredProducts = [
-//   {
-//     name: "razer-ornata-v3-base",
-//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1686146167/razer-ornata-v3-base_l7g65h.png",
-//     category: "used",
-//     price: "350,000",
-//   },
-//   {
-//     name: "Alienware-X15-R1-Gaming-Laptop",
-//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Dell_Alienware_X15_R1_Gaming_Laptop_vliv4z.png",
-//     category: "used",
-//     price: "350,000",
-//   },
-//   {
-//     name: "Macbook 13",
-//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Macbook_3_bwnzmy.png",
-//     category: "used",
-//     price: "350,000",
-//   },
-//   {
-//     name: "Iphone 14 pro max",
-//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1683740253/avgro2nmfefnd998cuuc.png",
-//     category: "new",
-//     price: "350,000",
-//   },
-// ];
-
-// const recentlyViewed = [
-//   {
-//     name: "Macbook 13",
-//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764831/Products/Macbook_3_bwnzmy.png",
-//     category: "used",
-//     price: "350,000",
-//   },
-//   {
-//     name: "razer-ornata-v3-base",
-//     img: "https://res.cloudinary.com/dikleyjwz/image/upload/v1686146167/razer-ornata-v3-base_l7g65h.png",
-//     category: "used",
-//     price: "350,000",
-//   },
-// ];
-
 function ImagesPreviews({ files }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -168,11 +126,6 @@ function ImagesPreviews({ files }) {
                   className="max-w-full max-h-full object-fill"
                 />
               )}
-              {/* <img
-                src={images[0].image}
-                alt="image-1"
-                className="max-w-full max-h-full"
-              /> */}
             </div>
           </div>
 
@@ -199,28 +152,6 @@ function ImagesPreviews({ files }) {
                   </div>
                 );
               })}
-
-            {/* {images.map((image, index) => {
-              return (
-                <div
-                  key={index}
-                  className="h-24 w-28 rounded py-4 flex justify-center items-center lg:w-32 lg:h-28"
-                  style={{
-                    border: `${
-                      currentIndex === index ? "1.5px solid #009F7F" : "none"
-                    }`,
-                    // transition: "0.5s ease",
-                  }}
-                  onClick={() => setCurrentIndex(index)}
-                >
-                  <img
-                    src={image.image}
-                    alt={`image-${index + 1}`}
-                    className="max-w-full max-h-full"
-                  />
-                </div>
-              );
-            })} */}
           </div>
         </div>
 
@@ -374,15 +305,10 @@ function AboutProduct({ product }) {
   return (
     <div className="p-4 flex flex-col gap-6">
       <div className="flex flex-col gap-6">
-        <h2 className="text-2xl font-semibold lg:text-3xl">
-          {/* HP Pavilion Laptop 14-dv0189nia (2X4V1EA) */}
-          {product.name}
-        </h2>
+        <h2 className="text-2xl font-semibold lg:text-3xl">{product.name}</h2>
         <div className="my-5 flex justify-start items-start gap-10 md:gap-20">
           <div className="text-sm flex flex-col gap-4 lg:gap-8 font-normal lg:text-base">
-            <p>
-              Product id :{/* #56789 */} {product.id}
-            </p>
+            <p>Product id :{product.id}</p>
             <p>Brand : {product.brand}</p>
             <div className="flex justify-between items-center gap-4 md:gap-10">
               <p>Quantity</p>
@@ -408,6 +334,17 @@ function AboutProduct({ product }) {
           <div className="self-end lg:self-start py-1 px-4 rounded border-2 border-solid border-secondary-button text-secondary-button font-semibold">
             {product.stock} in stock
           </div>
+        </div>
+        <div className="flex flex-col gap-2">
+          <lable htmlFor="refCode" className="text-base font-semibold">
+            Reference code
+          </lable>
+          <input
+            className="mt-3 outline-none p-3 w-[40%] transition-transform duration-200 focus:border-1 focus:border-solid focus:border-green rounded border-2 border-solid border-gray-300 text-sm font-light"
+            id="refCode"
+            type="text"
+            placeholder="reference code Eg. XX-XXXX"
+          />
         </div>
         <div className="flex justify-between items-center gap-1 md:justify-start md:gap-20">
           <h2 className="text-2xl font-semibold lg:text-3xl">
