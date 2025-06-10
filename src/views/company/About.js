@@ -31,12 +31,12 @@ function About() {
       <section className="space-y-6 mb-16 md:space-y-8 lg:space-y-10">
         <div className="h-[600px] w-full object-contain md:h-auto">
           <img
-            src={IMAGES.about.about}
+            src={IMAGES.showroom2.about}
             alt="about us"
             className="hidden md:inline-block max-w-full w-full max-h-full"
           />
           <img
-            src={IMAGES.about.aboutMobile}
+            src={IMAGES.showroom2.aboutMobile}
             alt="about us"
             className="max-w-full w-full h-full max-h-full md:hidden"
           />
@@ -64,7 +64,7 @@ function About() {
         <div className="space-y-6 lg:flex lg:justify-between lg:gap-20 lg:items-start">
           <div className="h-[600px] w-full object-contain">
             <img
-              src={IMAGES.about.ourMission}
+              src={IMAGES.showroom.ourMission}
               alt="our mission"
               className="max-w-full w-full max-h-full"
             />
