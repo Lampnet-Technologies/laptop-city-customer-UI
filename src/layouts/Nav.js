@@ -231,9 +231,9 @@ function Nav() {
               <CustomLink onClick={handleCloseNav} to="https://calendly.com/info-laptopcityonline/repair-schedule" target='_blank' rel="noopener noreferrer">
                 Book repair
               </CustomLink>
-              <CustomLink onClick={handleCloseNav} to="/training">
+              {/* <CustomLink onClick={handleCloseNav} to="/training">
                 Training
-              </CustomLink>
+              </CustomLink> */}
               <CustomLink onClick={handleCloseNav} to="/blog">
                 Blog
               </CustomLink>
@@ -274,9 +274,9 @@ function Nav() {
               <CustomLink onClick={handleCloseNav} to="https://calendly.com/info-laptopcityonline/repair-schedule" target='_blank' rel="noopener noreferrer">
                 Book repair
               </CustomLink>
-              <CustomLink onClick={handleCloseNav} to="/training">
+              {/* <CustomLink onClick={handleCloseNav} to="/training">
                 Training
-              </CustomLink>
+              </CustomLink> */}
               <CustomLink onClick={handleCloseNav} to="/blog">
                 Blog
               </CustomLink>
