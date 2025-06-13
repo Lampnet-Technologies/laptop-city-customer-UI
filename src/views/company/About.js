@@ -31,12 +31,12 @@ function About() {
       <section className="space-y-6 mb-16 md:space-y-8 lg:space-y-10">
         <div className="h-[600px] w-full object-contain md:h-auto">
           <img
-            src={IMAGES.about.about}
+            src="https://res.cloudinary.com/dn4hkronr/image/upload/v1749812105/Showroom_djco4q.png"
             alt="about us"
             className="hidden md:inline-block max-w-full w-full max-h-full object-cover"
           />
           <img
-            src={IMAGES.about.aboutMobile}
+            src="https://res.cloudinary.com/dn4hkronr/image/upload/v1749812105/Showroom_djco4q.png"
             alt="about us"
             className="max-w-full w-full h-full max-h-full md:hidden"
           />
@@ -64,7 +64,7 @@ function About() {
         <div className="space-y-6 lg:flex lg:justify-between lg:gap-20 lg:items-start">
           <div className="h-[600px] w-full object-contain">
             <img
-              src={IMAGES.about.ourMission}
+              src="https://res.cloudinary.com/dn4hkronr/image/upload/v1749812101/Showroom2_t7gutb.jpg"
               alt="our mission"
               className="max-w-full w-full max-h-full"
             />
