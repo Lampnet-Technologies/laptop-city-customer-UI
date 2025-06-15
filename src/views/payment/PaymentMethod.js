@@ -31,13 +31,13 @@ function PaymentMethod({ cart, goTo, back }) {
 
   const config = {
     reference: responseData.transactionId,
-    email: placeOrder.email,
+    email: placeOrder.shippingAddress?.email || "",
     amount: placeOrder.amountToPay * 100,
     metadata: {
       name: `${placeOrder.firstName} ${placeOrder.lastName}`,
       phone: placeOrder.phoneNumber,
     },
-    publicKey: "pk_test_e6c202d825e2bbcb0bc287f5d3c0816201b169de",
+    publicKey: process.env.REACT_APP_PAYSTACK_PUBLIC_KEY,
   };
 
   const handleChange = (e) => {
