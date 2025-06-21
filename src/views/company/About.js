@@ -1,5 +1,8 @@
 import React from "react";
-import IMAGES from "../../assets";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/autoplay";
+import { Autoplay } from "swiper/modules";
 
 function About() {
   return (
@@ -92,6 +95,63 @@ function About() {
             </p>
           </div>
         </div>
+      </section>
+      <section className="mt-16 px-4 lg:px-0">
+        <h3 className="text-2xl font-bold text-dark-blue mb-4">
+          Laptop City Gallery
+        </h3>
+        <Swiper
+          modules={[Autoplay]}
+          autoplay={{ delay: 3000, disableOnInteraction: false }}
+          loop={true}
+          spaceBetween={20}
+          slidesPerView={1}
+          className="w-full h-[400px]"
+        >
+          <SwiperSlide>
+            <img
+              src="https://res.cloudinary.com/dn4hkronr/image/upload/v1749812100/d_fn8g3i.jpg"
+              alt="Showroom 1"
+              className="w-full h-full object-cover rounded-xl"
+            />
+          </SwiperSlide>
+          <SwiperSlide>
+            <img
+              src="https://res.cloudinary.com/dn4hkronr/image/upload/v1749812100/b_pzjisk.jpg"
+              alt="Showroom 2"
+              className="w-full h-full object-cover rounded-xl"
+            />
+          </SwiperSlide>
+          <SwiperSlide>
+            <img
+              src="https://res.cloudinary.com/dn4hkronr/image/upload/v1749812100/c_cuxghd.jpg"
+              alt="Showroom 3"
+              className="w-full h-full object-cover rounded-xl"
+            />
+          </SwiperSlide>
+          <SwiperSlide>
+            <img
+              src="https://res.cloudinary.com/dn4hkronr/image/upload/v1749812099/h_lzcoyx.jpg"
+              alt="Showroom 4"
+              className="w-full h-full object-cover rounded-xl"
+            />
+          </SwiperSlide>
+          <SwiperSlide>
+            <img
+              src="https://res.cloudinary.com/dn4hkronr/image/upload/v1749812099/aboutoffice_bjdkmk.jpg"
+              alt="Showroom 5"
+              className="w-full h-full object-cover rounded-xl"
+            />
+          </SwiperSlide>
+
+          <SwiperSlide>
+            <img
+              src="https://res.cloudinary.com/dn4hkronr/image/upload/v1749812099/a_kpmkzx.jpg"
+              alt="Showroom 6"
+              className="w-full h-full object-cover rounded-xl"
+            />
+          </SwiperSlide>
+        </Swiper>
       </section>
     </div>
   );
