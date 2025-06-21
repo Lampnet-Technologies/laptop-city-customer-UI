@@ -106,7 +106,7 @@ function About() {
           loop={true}
           spaceBetween={20}
           slidesPerView={1}
-          className="w-full h-[400px]"
+          className="w-full h-[500px]"
         >
           <SwiperSlide>
             <img
