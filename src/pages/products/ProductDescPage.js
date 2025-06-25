@@ -336,15 +336,16 @@ function AboutProduct({ product }) {
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <lable htmlFor="refCode" className="text-base font-semibold">
-            Reference code
-          </lable>
-          <input
-            className="mt-3 outline-none p-3 w-[40%] transition-transform duration-200 focus:border-1 focus:border-solid focus:border-green rounded border-2 border-solid border-gray-300 text-sm font-light"
-            id="refCode"
-            type="text"
-            placeholder="reference code Eg. XX-XXXX"
-          />
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-light lg:text-base">
+              Product code:
+            </span>
+            <p className="text-sm font-light lg:text-base">
+              {product.refCode || (
+                <span className="text-gray-500">ABC-1234</span>
+              )}
+            </p>
+          </div>
         </div>
         <div className="flex justify-between items-center gap-1 md:justify-start md:gap-20">
           <h2 className="text-2xl font-semibold lg:text-3xl">
