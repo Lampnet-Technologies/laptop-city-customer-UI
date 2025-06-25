@@ -55,23 +55,24 @@ function ProductsListing() {
   const navigate = useNavigate();
 
   const myFilter = new URLSearchParams(location.search).get("filter");
-
+// https://apps-1.lampnets.com/ecommb-prod
+// https://apps-1.lampnets.com/ecommb-prod
   const getFetchURL = (page) => {
     if (myFilter == "new_products") {
-      return `https://apps-1.lampnets.com/ecommb-staging/products/customers/category/1/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+      return `https://apps-1.lampnets.com/ecommb-prod/customers/category/1/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
     } else if (myFilter == "used_products") {
-      return `https://apps-1.lampnets.com/ecommb-staging/products/customers/category/2/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+      return `https://apps-1.lampnets.com/ecommb-prod/customers/category/2/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
     } else if (myFilter == "new arrivals") {
-      return `https://apps-1.lampnets.com/ecommb-staging/products/pagination/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+      return `https://apps-1.lampnets.com/ecommb-prod/pagination/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
     } else if (myFilter == "best selling products") {
-      return `https://apps-1.lampnets.com/ecommb-staging/products/best-selling?pageNo=${page}&pageSize=12`;
+      return `https://apps-1.lampnets.com/ecommb-prod/best-selling?pageNo=${page}&pageSize=12`;
     } else if (myFilter == "recently viewed") {
-      return `https://apps-1.lampnets.com/ecommb-staging/products/reviewed?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+      return `https://apps-1.lampnets.com/ecommb-prod/reviewed?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
     } else if (myFilter) {
       const encoded = encodeURI(myFilter);
-      return `https://apps-1.lampnets.com/ecommb-staging/products/search?pageNo=${page}&pageSize=12&query=${encoded}&sortBy=id&sortDir=asc`;
+      return `https://apps-1.lampnets.com/ecommb-prod/search?pageNo=${page}&pageSize=12&query=${encoded}&sortBy=id&sortDir=asc`;
     } else if (myFilter === null) {
-      return `https://apps-1.lampnets.com/ecommb-staging/products/pagination/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+      return `https://apps-1.lampnets.com/ecommb-prod/pagination/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
     }
   };
 
@@ -101,7 +102,7 @@ function ProductsListing() {
     const encoded = encodeURI(searchTerm);
 
     fetch(
-      `https://apps-1.lampnets.com/ecommb-staging/products/search?pageNo=0&pageSize=12&query=${encoded}&sortBy=id&sortDir=asc`
+      `https://apps-1.lampnets.com/ecommb-prod/search?pageNo=0&pageSize=12&query=${encoded}&sortBy=id&sortDir=asc`
     )
       .then((res) => {
         return res.json();
@@ -119,7 +120,7 @@ function ProductsListing() {
 
   const handleFilter = () => {
     fetch(
-      `https://apps-1.lampnets.com/ecommb-staging/products/filter-products?${
+      `https://apps-1.lampnets.com/ecommb-prod/filter-products?${
         brandId && `brandId=${brandId}`
       }${categoryId && `&categoryId=${categoryId}`}&pageNo=0&pageSize=12${
         productTypeId && `&productTypeId=${productTypeId}`
@@ -147,7 +148,7 @@ function ProductsListing() {
     setProductTypeId("");
 
     fetch(
-      "https://apps-1.lampnets.com/ecommb-staging/products/pagination/active?pageNo=0&pageSize=12&sortBy=createdOn&sortDir=desc"
+      "https://apps-1.lampnets.com/ecommb-prod/pagination/active?pageNo=0&pageSize=12&sortBy=createdOn&sortDir=desc"
     )
       .then((res) => {
         return res.json();
@@ -343,7 +344,7 @@ function ProductsListing() {
                       setter={setProductTypeId}
                     />
 
-                    <div className="flex justify-end items-center">
+                    <div className="flex justify-end  items-center">
                       <button
                         type="button"
                         onClick={() => {

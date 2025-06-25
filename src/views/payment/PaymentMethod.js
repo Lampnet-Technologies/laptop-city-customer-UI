@@ -37,7 +37,7 @@ function PaymentMethod({ cart, goTo, back }) {
       name: `${placeOrder.firstName} ${placeOrder.lastName}`,
       phone: placeOrder.phoneNumber,
     },
-    publicKey: process.env.REACT_APP_PAYSTACK_PUBLIC_KEY,
+    publicKey: process.env.REACT_APP_PAYSTACK_PUBLIC_KEY
   };
 
   const handleChange = (e) => {
