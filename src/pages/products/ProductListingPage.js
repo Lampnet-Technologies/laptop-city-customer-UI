@@ -344,7 +344,7 @@ function ProductsListing() {
                       setter={setProductTypeId}
                     />
 
-                    <div className="flex justify-end items-center">
+                    <div className="flex justify-end  items-center">
                       <button
                         type="button"
                         onClick={() => {
