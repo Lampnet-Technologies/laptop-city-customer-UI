@@ -55,24 +55,24 @@ function ProductsListing() {
   const navigate = useNavigate();
 
   const myFilter = new URLSearchParams(location.search).get("filter");
-// https://apps-1.lampnets.com/ecommb-prod
-// https://apps-1.lampnets.com/ecommb-prod
+  // https://apps-1.lampnets.com/ecommb-prod/products
+  // https://apps-1.lampnets.com/ecommb-prod/products
   const getFetchURL = (page) => {
     if (myFilter == "new_products") {
-      return `https://apps-1.lampnets.com/ecommb-prod/customers/category/1/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+      return `https://apps-1.lampnets.com/ecommb-prod/products/customers/category/1/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
     } else if (myFilter == "used_products") {
-      return `https://apps-1.lampnets.com/ecommb-prod/customers/category/2/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+      return `https://apps-1.lampnets.com/ecommb-prod/products/customers/category/2/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
     } else if (myFilter == "new arrivals") {
-      return `https://apps-1.lampnets.com/ecommb-prod/pagination/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+      return `https://apps-1.lampnets.com/ecommb-prod/products/pagination/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
     } else if (myFilter == "best selling products") {
-      return `https://apps-1.lampnets.com/ecommb-prod/best-selling?pageNo=${page}&pageSize=12`;
+      return `https://apps-1.lampnets.com/ecommb-prod/products/best-selling?pageNo=${page}&pageSize=12`;
     } else if (myFilter == "recently viewed") {
-      return `https://apps-1.lampnets.com/ecommb-prod/reviewed?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+      return `https://apps-1.lampnets.com/ecommb-prod/products/reviewed?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
     } else if (myFilter) {
       const encoded = encodeURI(myFilter);
-      return `https://apps-1.lampnets.com/ecommb-prod/search?pageNo=${page}&pageSize=12&query=${encoded}&sortBy=id&sortDir=asc`;
+      return `https://apps-1.lampnets.com/ecommb-prod/products/search?pageNo=${page}&pageSize=12&query=${encoded}&sortBy=id&sortDir=asc`;
     } else if (myFilter === null) {
-      return `https://apps-1.lampnets.com/ecommb-prod/pagination/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+      return `https://apps-1.lampnets.com/ecommb-prod/products/pagination/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
     }
   };
 
@@ -87,6 +87,7 @@ function ProductsListing() {
       })
       .then((result) => {
         // window.scrollTo(0, 0);
+        // console.log("API Result:", result);
         setProducts(result.content);
         setTotalPages(result.totalPages);
         setIsLoading(false);
@@ -102,7 +103,7 @@ function ProductsListing() {
     const encoded = encodeURI(searchTerm);
 
     fetch(
-      `https://apps-1.lampnets.com/ecommb-prod/search?pageNo=0&pageSize=12&query=${encoded}&sortBy=id&sortDir=asc`
+      `https://apps-1.lampnets.com/ecommb-prod/products/search?pageNo=0&pageSize=12&query=${encoded}&sortBy=id&sortDir=asc`
     )
       .then((res) => {
         return res.json();
@@ -120,7 +121,7 @@ function ProductsListing() {
 
   const handleFilter = () => {
     fetch(
-      `https://apps-1.lampnets.com/ecommb-prod/filter-products?${
+      `https://apps-1.lampnets.com/ecommb-prod/products/filter-products?${
         brandId && `brandId=${brandId}`
       }${categoryId && `&categoryId=${categoryId}`}&pageNo=0&pageSize=12${
         productTypeId && `&productTypeId=${productTypeId}`
@@ -148,7 +149,7 @@ function ProductsListing() {
     setProductTypeId("");
 
     fetch(
-      "https://apps-1.lampnets.com/ecommb-prod/pagination/active?pageNo=0&pageSize=12&sortBy=createdOn&sortDir=desc"
+      "https://apps-1.lampnets.com/ecommb-prod/products/pagination/active?pageNo=0&pageSize=12&sortBy=createdOn&sortDir=desc"
     )
       .then((res) => {
         return res.json();
@@ -187,7 +188,7 @@ function ProductsListing() {
         },
       });
     } else {
-      fetch("https://apps-1.lampnets.com/ecommb-staging/cart-items/add", {
+      fetch("https://apps-1.lampnets.com/ecommb-prod/cart-items/add", {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -260,7 +261,7 @@ function ProductsListing() {
                   <i className="bx bxs-send text-green"></i>
                 </IconButton>
                 <ProductFilter
-                  fetchUrl="https://apps-1.lampnets.com/ecommb-staging/categories"
+                  fetchUrl="https://apps-1.lampnets.com/ecommb-prod/categories"
                   title="category"
                   checked={categoryId}
                   setter={setCategoryId}
@@ -276,7 +277,7 @@ function ProductsListing() {
                   <i className="bx bxs-send text-green"></i>
                 </IconButton>
                 <ProductFilter
-                  fetchUrl="https://apps-1.lampnets.com/ecommb-staging/brands"
+                  fetchUrl="https://apps-1.lampnets.com/ecommb-prod/brands"
                   title="brands"
                   checked={brandId}
                   setter={setBrandId}
@@ -292,7 +293,7 @@ function ProductsListing() {
                   <i className="bx bxs-send text-green"></i>
                 </IconButton>
                 <ProductFilter
-                  fetchUrl="https://apps-1.lampnets.com/ecommb-staging/product-types"
+                  fetchUrl="https://apps-1.lampnets.com/ecommb-prod/product-types"
                   title="product"
                   checked={productTypeId}
                   setter={setProductTypeId}
@@ -326,19 +327,19 @@ function ProductsListing() {
                     }
                   >
                     <ProductFilter
-                      fetchUrl="https://apps-1.lampnets.com/ecommb-staging/categories"
+                      fetchUrl="https://apps-1.lampnets.com/ecommb-prod/categories"
                       title="category"
                       checked={categoryId}
                       setter={setCategoryId}
                     />
                     <ProductFilter
-                      fetchUrl="https://apps-1.lampnets.com/ecommb-staging/brands"
+                      fetchUrl="https://apps-1.lampnets.com/ecommb-prod/brands"
                       title="brands"
                       checked={brandId}
                       setter={setBrandId}
                     />
                     <ProductFilter
-                      fetchUrl="https://apps-1.lampnets.com/ecommb-staging/product-types"
+                      fetchUrl="https://apps-1.lampnets.com/ecommb-prod/product-types"
                       title="product"
                       checked={productTypeId}
                       setter={setProductTypeId}
@@ -385,10 +386,13 @@ function ProductsListing() {
                     ></div>
                   </div>
                 </div>
+              ) : !products || products.length === 0 ? (
+                <div className="text-center text-gray-500 text-lg">
+                  No products found for this category.
+                </div>
               ) : (
                 <MainGroups addToCart={handleAddToCart} products={products} />
               )}
-              {/* <MainGroups products={products} /> */}
             </div>
           </div>
         </div>

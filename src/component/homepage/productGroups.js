@@ -140,7 +140,7 @@ function ProductGroups() {
 
   useEffect(() => {
     fetch(
-      `https://apps-1.lampnets.com/ecommb-staging/products/pagination/active?pageNo=0&pageSize=${checkScreenSize()}&sortBy=createdOn&sortDir=desc`
+      `https://apps-1.lampnets.com/ecommb-prod/products/pagination/active?pageNo=0&pageSize=${checkScreenSize()}&sortBy=createdOn&sortDir=desc`
     )
       .then((res) => {
         return res.json();
@@ -155,7 +155,7 @@ function ProductGroups() {
 
   useEffect(() => {
     fetch(
-      `https://apps-1.lampnets.com/ecommb-staging/products/best-selling?pageNo=0&pageSize=${checkScreenSize()}`
+      `https://apps-1.lampnets.com/ecommb-prod/products/best-selling?pageNo=0&pageSize=${checkScreenSize()}`
     )
       .then((res) => {
         return res.json();
@@ -167,10 +167,12 @@ function ProductGroups() {
         console.error();
       });
   }, []);
+// https://apps-1.lampnets.com/ecommb-staging/products
 
+// https://apps-1.lampnets.com/ecommb-prod/products/
   useEffect(() => {
     fetch(
-      `https://apps-1.lampnets.com/ecommb-staging/products/reviewed?pageNo=0&pageSize=${checkScreenSize()}&sortBy=createdOn&sortDir=desc`
+      `https://apps-1.lampnets.com/ecommb-prod/products/reviewed?pageNo=0&pageSize=${checkScreenSize()}&sortBy=createdOn&sortDir=desc`
     )
       .then((res) => {
         return res.json();
