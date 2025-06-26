@@ -59,7 +59,7 @@ function ProductsListing() {
   // https://apps-1.lampnets.com/ecommb-prod/products
   const getFetchURL = (page) => {
     if (myFilter == "new_products") {
-      return `https://apps-1.lampnets.com/ecommb-prod/products/customers/category/2/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+      return `https://apps-1.lampnets.com/ecommb-prod/products/customers/category/1/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
     } else if (myFilter == "used_products") {
       return `https://apps-1.lampnets.com/ecommb-prod/products/customers/category/2/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
     } else if (myFilter == "new arrivals") {
