@@ -55,8 +55,8 @@ function ProductsListing() {
   const navigate = useNavigate();
 
   const myFilter = new URLSearchParams(location.search).get("filter");
-// https://apps-1.lampnets.com/ecommb-prod/products
-// https://apps-1.lampnets.com/ecommb-prod/products
+  // https://apps-1.lampnets.com/ecommb-prod/products
+  // https://apps-1.lampnets.com/ecommb-prod/products
   const getFetchURL = (page) => {
     if (myFilter == "new_products") {
       return `https://apps-1.lampnets.com/ecommb-prod/products/customers/category/1/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
@@ -87,6 +87,7 @@ function ProductsListing() {
       })
       .then((result) => {
         // window.scrollTo(0, 0);
+        // console.log("API Result:", result);
         setProducts(result.content);
         setTotalPages(result.totalPages);
         setIsLoading(false);
@@ -385,10 +386,13 @@ function ProductsListing() {
                     ></div>
                   </div>
                 </div>
+              ) : !products || products.length === 0 ? (
+                <div className="text-center text-gray-500 text-lg">
+                  No products found for this category.
+                </div>
               ) : (
                 <MainGroups addToCart={handleAddToCart} products={products} />
               )}
-              {/* <MainGroups products={products} /> */}
             </div>
           </div>
         </div>
