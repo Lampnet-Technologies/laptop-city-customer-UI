@@ -45,18 +45,6 @@ function ProductContainer({ product }) {
           {product.category == "BRAND NEW" ? "new" : "used"}
           {/* {product.category} */}
         </div>
-        {/* <button
-          type="button"
-          className="hidden lg:flex justify-center items-center text-dark-blue absolute bottom-2 right-2 z-10"
-          onClick={(e) => {
-            e.stopPropagation();
-
-            addToCart(product);
-          }}
-        >
-          <i className="bx bx-cart-add bx-sm"></i>
-          
-        </button> */}
       </div>
       <div className="flex flex-col gap-1 justify-between h-20 px-2 pb-3 lg:h-28 lg:pt-2">
         <p className="text-xs font-medium capitalize md:text-sm lg:text-base whitespace-break-spaces">
@@ -68,18 +56,6 @@ function ProductContainer({ product }) {
             <NairaSymbol />
             {product.price}
           </p>
-
-          {/* <button
-            type="button"
-            className="bg-green text-white text-xs capitalize py-1 px-2 rounded flex justify-between items-center lg:hidden"
-            onClick={(e) => {
-              e.stopPropagation();
-
-              addToCart(product);
-            }}
-          >
-            <i className="bx bx-cart-add"></i> add
-          </button> */}
         </div>
       </div>
     </div>
@@ -126,70 +102,133 @@ export function Groups({ heading, products, seeMore }) {
 }
 
 function ProductGroups() {
-  const [newArrivals, setNewArrivals] = useState([]);
-  const [bestSelling, setBestSelling] = useState([]);
-  const [recentlyViewed, setRecentlyViewed] = useState([]);
+  //   const [newArrivals, setNewArrivals] = useState([]);
+  //   const [bestSelling, setBestSelling] = useState([]);
+  //   const [recentlyViewed, setRecentlyViewed] = useState([]);
 
-  const checkScreenSize = () => {
-    if (window.innerWidth >= 1500) {
-      return 5;
-    } else {
-      return 4;
-    }
-  };
+  //   const checkScreenSize = () => {
+  //     if (window.innerWidth >= 1500) {
+  //       return 5;
+  //     } else {
+  //       return 4;
+  //     }
+  //   };
 
+  //   useEffect(() => {
+  //     fetch(
+  //       `https://apps-1.lampnets.com/ecommb-prod/products/pagination/active?pageNo=0&pageSize=${checkScreenSize()}&sortBy=createdOn&sortDir=desc`
+  //     )
+  //       .then((res) => {
+  //         return res.json();
+  //       })
+  //       .then((result) => {
+  //         setNewArrivals(result.content);
+  //       })
+  //       .catch((error) => {
+  //         console.error();
+  //       });
+  //   }, []);
+
+  //   useEffect(() => {
+  //     fetch(
+  //       `https://apps-1.lampnets.com/ecommb-prod/products/best-selling?pageNo=0&pageSize=${checkScreenSize()}`
+  //     )
+  //       .then((res) => {
+  //         return res.json();
+  //       })
+  //       .then((result) => {
+  //         setBestSelling(result.content);
+  //       })
+  //       .catch((error) => {
+  //         console.error();
+  //       });
+  //   }, []);
+
+  //   useEffect(() => {
+  //     fetch(
+  //       `https://apps-1.lampnets.com/ecommb-prod/products/reviewed?pageNo=0&pageSize=${checkScreenSize()}&sortBy=createdOn&sortDir=desc`
+  //     )
+  //       .then((res) => {
+  //         return res.json();
+  //       })
+  //       .then((result) => {
+  //         setRecentlyViewed(result.content);
+  //       })
+  //       .catch((error) => {
+  //         console.error();
+  //       });
+  //   }, []);
+
+  //   return (
+  //     <div className="my-10 px-4 flex flex-col justify-between gap-10 md:gap-12 md:px-12 lg:px-24">
+  //       <Groups heading="new arrivals" products={newArrivals} seeMore />
+  //       <Groups heading="best selling products" products={bestSelling} seeMore />
+  //       <Groups heading="recently viewed" products={recentlyViewed} seeMore />
+  //     </div>
+  //   );
+  const [products, setProducts] = useState([]);
+  const navigate = useNavigate();
+  // https://apps-1.lampnets.com/ecommb-prod/products
   useEffect(() => {
     fetch(
-      `https://apps-1.lampnets.com/ecommb-prod/products/pagination/active?pageNo=0&pageSize=${checkScreenSize()}&sortBy=createdOn&sortDir=desc`
+      "https://apps-1.lampnets.com/ecommb-prod/products"
     )
-      .then((res) => {
-        return res.json();
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Fetched products data:", JSON.stringify(data, null, 2));
+        setProducts(data);
       })
-      .then((result) => {
-        setNewArrivals(result.content);
-      })
-      .catch((error) => {
-        console.error();
-      });
+      .catch((err) => console.log(err));
   }, []);
 
-  useEffect(() => {
-    fetch(
-      `https://apps-1.lampnets.com/ecommb-prod/products/best-selling?pageNo=0&pageSize=${checkScreenSize()}`
-    )
-      .then((res) => {
-        return res.json();
-      })
-      .then((result) => {
-        setBestSelling(result.content);
-      })
-      .catch((error) => {
-        console.error();
-      });
-  }, []);
-// https://apps-1.lampnets.com/ecommb-staging/products
+  const ProductCard = ({ product }) => (
+    <div className="border rounded-lg p-2 shadow hover:shadow-lg transition">
+      <img
+        src={product.images[0]?.image}
+        alt={product.name}
+        className="w-full h-48 object-cover rounded"
+      />
+      <h3 className="mt-2 font-semibold">{product.name}</h3>
+      <p className="text-gray-600">₦{product.price.toLocaleString()}</p>
+      <p className="text-sm text-gray-500">{product.brand}</p>
+    </div>
+  );
 
-// https://apps-1.lampnets.com/ecommb-prod/products/
-  useEffect(() => {
-    fetch(
-      `https://apps-1.lampnets.com/ecommb-prod/products/reviewed?pageNo=0&pageSize=${checkScreenSize()}&sortBy=createdOn&sortDir=desc`
-    )
-      .then((res) => {
-        return res.json();
-      })
-      .then((result) => {
-        setRecentlyViewed(result.content);
-      })
-      .catch((error) => {
-        console.error();
-      });
-  }, []);
+  const laptops = products.slice(0, 6);
+  const phones = products.slice(0, 6);
+  const otherGadgets = products.slice(0, 6);
+
+  const Section = ({ title, items }) => (
+    <section className="my-8">
+      <h2 className="text-xl font-bold mb-4">{title}</h2>
+
+      {items.length > 0 ? (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {items.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
+          <div className="flex justify-end mt-2">
+            <button
+              onClick={() => navigate("/products")}
+              className="text-blue-600 hover:underline"
+            >
+              See more &gt;
+            </button>
+          </div>
+        </>
+      ) : (
+        <p className="text-gray-500">No products available.</p>
+      )}
+    </section>
+  );
 
   return (
-    <div className="my-10 px-4 flex flex-col justify-between gap-10 md:gap-12 md:px-12 lg:px-24">
-      <Groups heading="new arrivals" products={newArrivals} seeMore />
-      <Groups heading="best selling products" products={bestSelling} seeMore />
-      <Groups heading="recently viewed" products={recentlyViewed} seeMore />
+    <div className="container mx-auto px-4 py-8">
+      <Section title="Laptops" items={laptops} />
+      <Section title="Phones" items={phones} />
+      <Section title="Other Gadgets" items={otherGadgets} />
     </div>
   );
 }

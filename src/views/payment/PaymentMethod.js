@@ -6,17 +6,17 @@ import { PlaceOrderContext, UserCartDependency } from "../../App";
 import { PlaceOrderResponseContext } from "../../pages/payment";
 
 const methods = [
-  {
-    name: "pay on delivery",
-    logo: `${IMAGES.payment.payOnDelivery}`,
-    disabled: true,
-  },
+  // {
+  //   name: "pay on delivery",
+  //   logo: `${IMAGES.payment.payOnDelivery}`,
+  //   disabled: true,
+  // },
   { name: "paystack", logo: `${IMAGES.payment.paystack}`, disabled: false },
-  {
-    name: "flutterwave",
-    logo: `${IMAGES.payment.flutterwave}`,
-    disabled: true,
-  },
+  // {
+  //   name: "flutterwave",
+  //   logo: `${IMAGES.payment.flutterwave}`,
+  //   disabled: true,
+  // },
 ];
 
 const accessToken = localStorage.getItem("token");
@@ -30,15 +30,18 @@ function PaymentMethod({ cart, goTo, back }) {
   const navigate = useNavigate();
 
   const config = {
-    reference: responseData.transactionId,
-    email: placeOrder.shippingAddress?.email || "",
-    amount: placeOrder.amountToPay * 100,
-    metadata: {
-      name: `${placeOrder.firstName} ${placeOrder.lastName}`,
-      phone: placeOrder.phoneNumber,
-    },
-    publicKey: process.env.REACT_APP_PAYSTACK_PUBLIC_KEY
-  };
+  reference: responseData.transactionId,
+  email: placeOrder.shippingAddress?.email || "",
+  amount: placeOrder.amountToPay * 100,
+  metadata: {
+    name: `${placeOrder.firstName} ${placeOrder.lastName}`,
+    phone: placeOrder.phoneNumber,
+  },
+  publicKey: process.env.REACT_APP_PAYSTACK_PUBLIC_KEY
+};
+
+console.log("PAYSTACK KEY", process.env.REACT_APP_PAYSTACK_PUBLIC_KEY);
+
 
   const handleChange = (e) => {
     setPaymentType(e.target.value);

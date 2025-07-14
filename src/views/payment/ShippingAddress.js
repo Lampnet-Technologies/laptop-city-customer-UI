@@ -80,17 +80,7 @@ function ShippingAddress({ goTo }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Submitting shipping address:", values);
-    console.log("Payload for placeOrder:", {
-      firstName: values.firstName,
-      lastName: values.lastName,
-      email: values.email,
-      address: values.address,
-      state: values.state.replace(" State", ""),
-      city: values.city,
-      zipCode: values.zipCode,
-      phone: `${values.countryCode}${values.phone}`,
-    });
+   
 
     setPlaceOrder({
       ...placeOrder,
@@ -121,7 +111,7 @@ function ShippingAddress({ goTo }) {
       <div className="flex justify-between gap-6 md:gap-11 lg:gap-20">
         <input
           required
-          placeholder="First Name"
+          placeholder="First Name *"
           name="firstName"
           type="text"
           id="firstName"
@@ -132,7 +122,7 @@ function ShippingAddress({ goTo }) {
 
         <input
           required
-          placeholder="Last Name"
+          placeholder="Last Name *"
           name="lastName"
           type="text"
           id="lastName"
@@ -144,7 +134,7 @@ function ShippingAddress({ goTo }) {
 
       <div className="">
         <input
-          required
+          // required
           placeholder="Email"
           name="email"
           type="email"
@@ -224,7 +214,7 @@ function ShippingAddress({ goTo }) {
       </div>
 
       <div className="flex justify-between gap-6  md:gap-11 lg:gap-20">
-        <input
+        {/* <input
           placeholder="Zip/Postal Code"
           name="zipCode"
           type="text"
@@ -232,7 +222,7 @@ function ShippingAddress({ goTo }) {
           value={values.zipCode}
           onChange={handleChange("zipCode")}
           className="w-full h-11 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
-        />
+        /> */}
 
         <div className="w-full flex gap-2">
           <input
