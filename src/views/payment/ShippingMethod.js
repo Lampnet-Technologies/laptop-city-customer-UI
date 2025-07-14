@@ -20,16 +20,7 @@ function ShippingMethod({ goTo, back }) {
       setLoading(false);
       return;
     }
-    // console.log("Sending shipping method payload:", {
-    //   address: placeOrder.shippingAddress.address,
-    //   city: placeOrder.shippingAddress.city,
-    //   email: placeOrder.shippingAddress.email,
-    //   firstName: placeOrder.shippingAddress.firstName,
-    //   lastName: placeOrder.shippingAddress.lastName,
-    //   phone: placeOrder.shippingAddress.phone,
-    //   state: placeOrder.shippingAddress.state.replace(" State", ""),
-    //   zipCode: placeOrder.shippingAddress.zipCode,
-    // });
+    
 
     fetch("https://apps-1.lampnets.com/ecommb-staging/shipping/rate", {
       method: "POST",

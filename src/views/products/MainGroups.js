@@ -42,17 +42,7 @@ function ProductContainer({ product, addToCart }) {
         >
           {product.category == "BRAND NEW" ? "new" : "used"}
         </div>
-        {/* <button
-          type="button"
-          className="hidden lg:flex justify-center items-center text-dark-blue absolute bottom-2 right-2 z-10"
-          onClick={(e) => {
-            e.stopPropagation();
-
-            addToCart(product);
-          }}
-        >
-          <i className="bx bx-cart-add bx-sm"></i>
-        </button> */}
+        
       </div>
       <div className="flex flex-col gap-1 justify-between h-20 px-2 pb-3 lg:h-28 lg:pt-2">
         <p className="text-xs md:text-sm font-medium capitalize">

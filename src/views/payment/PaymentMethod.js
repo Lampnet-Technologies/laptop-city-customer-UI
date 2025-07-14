@@ -6,17 +6,17 @@ import { PlaceOrderContext, UserCartDependency } from "../../App";
 import { PlaceOrderResponseContext } from "../../pages/payment";
 
 const methods = [
-  {
-    name: "pay on delivery",
-    logo: `${IMAGES.payment.payOnDelivery}`,
-    disabled: true,
-  },
+  // {
+  //   name: "pay on delivery",
+  //   logo: `${IMAGES.payment.payOnDelivery}`,
+  //   disabled: true,
+  // },
   { name: "paystack", logo: `${IMAGES.payment.paystack}`, disabled: false },
-  {
-    name: "flutterwave",
-    logo: `${IMAGES.payment.flutterwave}`,
-    disabled: true,
-  },
+  // {
+  //   name: "flutterwave",
+  //   logo: `${IMAGES.payment.flutterwave}`,
+  //   disabled: true,
+  // },
 ];
 
 const accessToken = localStorage.getItem("token");
