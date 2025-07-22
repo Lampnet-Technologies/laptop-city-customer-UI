@@ -6,6 +6,8 @@ import { LoginContext, UserCart, UserProfileContext } from "../App";
 import { IconButton } from "@mui/material";
 import ProfileDropdown from "../component/ProfileDropdown";
 import SignOutAlert from "../component/SignOutAlert";
+import ProductTypes from "../pages/products/ProductType";
+import { ModalContext } from "./ModalContext";
 
 const activeStyles = ({ isActive }) => {
   if (isActive) {
@@ -28,6 +30,8 @@ const categoriesSubMenu = [
 ];
 
 function NavDropdown({ submenus, dropdown, closeDropdown, closeNav }) {
+  const { openModal } = useContext(ModalContext);
+
   return (
     <ul
       className={`${
@@ -50,6 +54,7 @@ function NavDropdown({ submenus, dropdown, closeDropdown, closeNav }) {
               pathname: "/products",
               search: `?filter=${submenu.param}`,
             }}
+            // onClick={openModal}
           >
             {submenu.title}
           </Link>
@@ -133,6 +138,7 @@ function Nav() {
   const [cart, setCart] = useContext(UserCart);
   const [clicked, setClicked] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
+  const [showCategoryMenu, setShowCategoryMenu] = useState(false);
 
   const navigate = useNavigate();
 
@@ -217,18 +223,55 @@ function Nav() {
               <CustomLink onClick={handleCloseNav} to="/">
                 Home
               </CustomLink>
-              <CustomLink
+              {/* <CustomLink
                 onClick={handleCloseNav}
                 to="/categories"
                 subMenu={categoriesSubMenu}
               >
                 categories <i className="bx bx-chevron-down bx-sm"></i>
-              </CustomLink>
+              </CustomLink> */}
+              {/* Mobile  */}
+              <div>
+                <button
+                  onClick={() => setShowCategoryMenu(!showCategoryMenu)}
+                  className="flex items-center gap-1 hover:text-[#20AA8F] transition-all "
+                >
+                  Category <i className="bx bx-chevron-down bx-sm"></i>
+                </button>
+
+                {showCategoryMenu && (
+                  <ul className="bg-white shadow p-3 rounded mt-2">
+                    <li
+                      onClick={() => {
+                        setShowCategoryMenu(false);
+                        navigate("/products?filter=new_products");
+                      }}
+                      className="cursor-pointer text-sm hover:bg-gray-300 transition-all p-2"
+                    >
+                      New Products
+                    </li>
+                    <li
+                      onClick={() => {
+                        setShowCategoryMenu(false);
+                        navigate("/products?filter=used");
+                      }}
+                      className="cursor-pointer text-sm hover:bg-gray-300 transition-all p-2"
+                    >
+                      Used Products
+                    </li>
+                  </ul>
+                )}
+              </div>
 
               <CustomLink onClick={handleCloseNav} to="/about">
                 About
               </CustomLink>
-              <CustomLink onClick={handleCloseNav} to="https://calendly.com/info-laptopcityonline/repair-schedule" target='_blank' rel="noopener noreferrer">
+              <CustomLink
+                onClick={handleCloseNav}
+                to="https://calendly.com/info-laptopcityonline/repair-schedule"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Book repair
               </CustomLink>
               {/* <CustomLink onClick={handleCloseNav} to="/training">
@@ -260,7 +303,7 @@ function Nav() {
               <CustomLink onClick={handleCloseNav} to="/">
                 Home
               </CustomLink>
-              <CustomLink
+              {/* <CustomLink
                 onClick={handleCloseNav}
                 to="/categories"
                 subMenu={categoriesSubMenu}
@@ -269,9 +312,14 @@ function Nav() {
                   about
                 </CustomLink>
                 categories <i className="bx bx-chevron-down bx-sm"></i>
-              </CustomLink>
+              </CustomLink> */}
 
-              <CustomLink onClick={handleCloseNav} to="https://calendly.com/info-laptopcityonline/repair-schedule" target='_blank' rel="noopener noreferrer">
+              <CustomLink
+                onClick={handleCloseNav}
+                to="https://calendly.com/info-laptopcityonline/repair-schedule"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Book repair
               </CustomLink>
               {/* <CustomLink onClick={handleCloseNav} to="/training">
@@ -353,12 +401,50 @@ function Nav() {
 
             <ul className="flex items-center justify-between gap-4 lg:gap-8 list-none whitespace-nowrap">
               <CustomLink to="/">Home</CustomLink>
-              <CustomLink subMenu={categoriesSubMenu}>
+              {/*<CustomLink subMenu={categoriesSubMenu}>
                 categories <i className="bx bx-chevron-down bx-sm"></i>
-              </CustomLink>
+              </CustomLink> */}
+              {/* Desktop  */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowCategoryMenu(!showCategoryMenu)}
+                  className="flex hover:text-[#20AA8F] transition-all items-center gap-1"
+                >
+                  Category <i className="bx bx-chevron-down bx-sm"></i>
+                </button>
+
+                {showCategoryMenu && (
+                  <ul className="bg-white shadow p-3 rounded mt-2 absolute ">
+                    <li
+                      onClick={() => {
+                        setShowCategoryMenu(false);
+                        navigate("/products?filter=new_products");
+                      }}
+                      className="cursor-pointer text-sm hover:bg-gray-300 transition-all p-2"
+                    >
+                      New Product
+                    </li>
+                    <li
+                      onClick={() => {
+                        setShowCategoryMenu(false);
+                        navigate("/products?filter=used_products");
+                      }}
+                      className="cursor-pointer text-sm hover:bg-gray-300 transition-all p-2"
+                    >
+                      Used Product
+                    </li>
+                  </ul>
+                )}
+              </div>
 
               <CustomLink to="/about">About</CustomLink>
-              <CustomLink to="https://calendly.com/info-laptopcityonline/repair-schedule" target='_blank' rel="noopener noreferrer">Book repair</CustomLink>
+              <CustomLink
+                to="https://calendly.com/info-laptopcityonline/repair-schedule"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Book repair
+              </CustomLink>
               {/* <CustomLink to="/training">Training</CustomLink> */}
               <CustomLink to="/blog">Blog</CustomLink>
             </ul>
@@ -431,12 +517,32 @@ function Nav() {
 
             <ul className="flex items-center justify-between gap-4 lg:gap-8 list-none whitespace-nowrap">
               <CustomLink to="/">Home</CustomLink>
-              <CustomLink subMenu={categoriesSubMenu}>
+              {/* <CustomLink subMenu={categoriesSubMenu}>
                 categories <i className="bx bx-chevron-down bx-sm"></i>
-              </CustomLink>
+              </CustomLink> */}
+              {/* <div>
+                <button className="flex items-center gap-1 mb-3">
+                  Category <i className="bx bx-chevron-down bx-sm"></i>
+                </button>
+
+                {
+                  <ul className="bg-white shadow p-3">
+                    <li className="cursor-pointer text-sm hover:bg-gray-300 transition-all">
+                      New Product
+                    </li>
+                    <li>Used Product</li>
+                  </ul>
+                }
+              </div> */}
               {/* <CustomLink to="/login">track orders</CustomLink> */}
               <CustomLink to="/about">about</CustomLink>
-              <CustomLink to="https://calendly.com/info-laptopcityonline/repair-schedule" target='_blank' rel="noopener noreferrer">Book repair</CustomLink>
+              <CustomLink
+                to="https://calendly.com/info-laptopcityonline/repair-schedule"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Book repair
+              </CustomLink>
               {/* <CustomLink to="/training">Training</CustomLink> */}
               <CustomLink to="/blog">Blog</CustomLink>
             </ul>
@@ -459,6 +565,9 @@ function Nav() {
           </div>
         </nav>
       )}
+      {/* {showProductType && (
+    <ProductTypes onClose={() => setShowProductType(false)} />
+  )} */}
     </>
   );
 }
