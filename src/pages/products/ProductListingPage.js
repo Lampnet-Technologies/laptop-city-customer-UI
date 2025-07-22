@@ -11,6 +11,8 @@ import LaptopCityButton from "../../component/button";
 import ScrollToTop from "../../utils/ScrollToTop";
 import { LoginContext, UserCartDependency } from "../../App";
 import CustomAlert from "../../component/CustomAlert";
+import ProductTypes from "./ProductType";
+import BrandsGrid from "./Brands";
 
 const AdSlider = lazy(() => import("../../component/adSlider"));
 const Banner = lazy(() => import("../../component/homepage/banner"));
@@ -38,7 +40,7 @@ function ProductsListing() {
   const [brandId, setBrandId] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [productTypeId, setProductTypeId] = useState("");
-
+  const [showProductType, setShowProductType] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
 
   const [alert, setAlert] = useState({
@@ -47,16 +49,17 @@ function ProductsListing() {
     message: "",
     title: "",
   });
+
   const handleCloseAlert = () => {
     setAlert({ ...alert, open: false });
   };
 
   const location = useLocation();
   const navigate = useNavigate();
+  const brandQuery = new URLSearchParams(location.search).get("brand");
 
   const myFilter = new URLSearchParams(location.search).get("filter");
-// https://apps-1.lampnets.com/ecommb-prod/products
-// https://apps-1.lampnets.com/ecommb-prod/products
+
   const getFetchURL = (page) => {
     if (myFilter == "new_products") {
       return `https://apps-1.lampnets.com/ecommb-prod/products/customers/category/1/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
@@ -86,15 +89,47 @@ function ProductsListing() {
         return res.json();
       })
       .then((result) => {
-        // window.scrollTo(0, 0);
-        setProducts(result.content);
-        setTotalPages(result.totalPages);
-        setIsLoading(false);
+        let filteredProducts = result.content;
+
+        //  FILTER BY BRAND QUERY IF PRESENT
+        if (brandQuery) {
+          filteredProducts = filteredProducts.filter(
+            (product) =>
+              (product.brand &&
+                product.brand
+                  .toLowerCase()
+                  .includes(brandQuery.toLowerCase())) ||
+              (product.name &&
+                product.name.toLowerCase().includes(brandQuery.toLowerCase()))
+          );
+        }
+
+        //  IF BRAND HAS NO PRODUCTS, FETCH ALL PRODUCTS INSTEAD
+        if (brandQuery && filteredProducts.length === 0) {
+          fetch(
+            "https://apps-1.lampnets.com/ecommb-prod/products/pagination/active?pageNo=0&pageSize=12&sortBy=createdOn&sortDir=desc"
+          )
+            .then((res) => res.json())
+            .then((allProducts) => {
+              setProducts(allProducts.content);
+              setTotalPages(allProducts.totalPages);
+              setIsLoading(false);
+            })
+            .catch((error) => {
+              console.error();
+              setIsLoading(false);
+            });
+        } else {
+          setProducts(filteredProducts);
+          setTotalPages(result.totalPages);
+          setIsLoading(false);
+        }
       })
       .catch((error) => {
         console.error();
+        setIsLoading(false);
       });
-  }, [currentPage, myFilter]);
+  }, [currentPage, myFilter, brandQuery]);
 
   const handleSearch = (searchTerm) => {
     setIsLoading(true);
@@ -140,8 +175,6 @@ function ProductsListing() {
   };
 
   const viewAll = () => {
-    // const url = getFetchURL(0);
-
     setIsLoading(true);
     setBrandId("");
     setCategoryId("");
@@ -246,11 +279,13 @@ function ProductsListing() {
         <Banner />
 
         <div className="flex items-start justify-between lg:px-8 lg:mt-6 mb-8">
+          {/* Side bar for product filter */}
           <div
             className="filterDesktop hidden lg:block w-80 max-h-[1300px] overflow-y-auto mr-20 bg-filter-green rounded"
             style={{ scrollBehavior: "smooth", scrollbarWidth: "none" }}
           >
             <div className="pb-8 px-3 flex flex-col gap-10">
+              {/* Filter Sections */}
               <div className="mt-3 text-right">
                 <IconButton
                   sx={{ p: 0 }}
@@ -313,6 +348,7 @@ function ProductsListing() {
             </div>
           </div>
 
+          {/* Product cards displayed */}
           <div className="w-full md:pl-4 lg:pl-0">
             <div className="sticky top-[9%] z-20 bg-filter-green md:relative md:bg-transparent">
               <SearchBox show={handleOpen} search={handleSearch} />
@@ -372,8 +408,6 @@ function ProductsListing() {
               ) : null}
             </div>
 
-            {/* {isLoading && <Loading />} */}
-
             <div className="my-5 px-2 flex flex-col justify-between gap-10 md:px-6 lg:px-0">
               {isLoading ? (
                 <div className="lg:h-screen flex justify-center items-center">
@@ -385,18 +419,23 @@ function ProductsListing() {
                     ></div>
                   </div>
                 </div>
+              ) : !products || products.length === 0 ? (
+                <div className="text-center text-gray-500 text-lg">
+                  No products found for this category.
+                </div>
               ) : (
                 <MainGroups addToCart={handleAddToCart} products={products} />
               )}
-              {/* <MainGroups products={products} /> */}
             </div>
+            {showProductType && (
+              <ProductTypes onClose={() => setShowProductType(false)} />
+            )}
           </div>
         </div>
 
         <div className="w-full flex justify-center items-center">
           <ThemeProvider theme={theme}>
             <Pagination
-              // sx={{ backgroundColor: "red" }}
               count={totalPages}
               shape="rounded"
               color="primary"
