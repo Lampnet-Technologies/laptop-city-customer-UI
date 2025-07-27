@@ -13,7 +13,7 @@ function Homepage() {
       {/* <Suspense fallback={null}> */}
       <Hero />
       <Banner />
-      <Categories />
+      {/* <Categories /> */}
       <ProductGroups />
       {/* </Suspense> */}
     </div>

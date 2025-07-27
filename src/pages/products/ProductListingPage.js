@@ -427,9 +427,9 @@ function ProductsListing() {
                 <MainGroups addToCart={handleAddToCart} products={products} />
               )}
             </div>
-            {showProductType && (
+            {/* {showProductType && (
               <ProductTypes onClose={() => setShowProductType(false)} />
-            )}
+            )} */}
           </div>
         </div>
 

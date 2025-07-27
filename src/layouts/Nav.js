@@ -244,18 +244,20 @@ function Nav() {
                     <li
                       onClick={() => {
                         setShowCategoryMenu(false);
-                        navigate("/products?filter=new_products");
+                        navigate("/product-type");
+                        // s?filter=new_product
                       }}
-                      className="cursor-pointer text-sm hover:bg-gray-300 transition-all p-2"
+                      className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all p-2"
                     >
                       New Products
                     </li>
                     <li
                       onClick={() => {
                         setShowCategoryMenu(false);
-                        navigate("/products?filter=used");
+                        navigate("/product-type");
+                        // s?filter=used_products
                       }}
-                      className="cursor-pointer text-sm hover:bg-gray-300 transition-all p-2"
+                      className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all p-2"
                     >
                       Used Products
                     </li>
@@ -418,18 +420,20 @@ function Nav() {
                     <li
                       onClick={() => {
                         setShowCategoryMenu(false);
-                        navigate("/products?filter=new_products");
+                        navigate("/product-type");
+                        // s?filter=new_products
                       }}
-                      className="cursor-pointer text-sm hover:bg-gray-300 transition-all p-2"
+                      className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all p-2"
                     >
                       New Product
                     </li>
                     <li
                       onClick={() => {
                         setShowCategoryMenu(false);
-                        navigate("/products?filter=used_products");
+                        navigate("/product-type");
+                        // ?filter=used_products
                       }}
-                      className="cursor-pointer text-sm hover:bg-gray-300 transition-all p-2"
+                      className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all p-2"
                     >
                       Used Product
                     </li>
@@ -527,7 +531,7 @@ function Nav() {
 
                 {
                   <ul className="bg-white shadow p-3">
-                    <li className="cursor-pointer text-sm hover:bg-gray-300 transition-all">
+                    <li className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all">
                       New Product
                     </li>
                     <li>Used Product</li>

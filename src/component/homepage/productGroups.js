@@ -101,78 +101,14 @@ export function Groups({ heading, products, seeMore }) {
   );
 }
 
+// Main groups I'm working with.
+
 function ProductGroups() {
-  //   const [newArrivals, setNewArrivals] = useState([]);
-  //   const [bestSelling, setBestSelling] = useState([]);
-  //   const [recentlyViewed, setRecentlyViewed] = useState([]);
-
-  //   const checkScreenSize = () => {
-  //     if (window.innerWidth >= 1500) {
-  //       return 5;
-  //     } else {
-  //       return 4;
-  //     }
-  //   };
-
-  //   useEffect(() => {
-  //     fetch(
-  //       `https://apps-1.lampnets.com/ecommb-prod/products/pagination/active?pageNo=0&pageSize=${checkScreenSize()}&sortBy=createdOn&sortDir=desc`
-  //     )
-  //       .then((res) => {
-  //         return res.json();
-  //       })
-  //       .then((result) => {
-  //         setNewArrivals(result.content);
-  //       })
-  //       .catch((error) => {
-  //         console.error();
-  //       });
-  //   }, []);
-
-  //   useEffect(() => {
-  //     fetch(
-  //       `https://apps-1.lampnets.com/ecommb-prod/products/best-selling?pageNo=0&pageSize=${checkScreenSize()}`
-  //     )
-  //       .then((res) => {
-  //         return res.json();
-  //       })
-  //       .then((result) => {
-  //         setBestSelling(result.content);
-  //       })
-  //       .catch((error) => {
-  //         console.error();
-  //       });
-  //   }, []);
-
-  //   useEffect(() => {
-  //     fetch(
-  //       `https://apps-1.lampnets.com/ecommb-prod/products/reviewed?pageNo=0&pageSize=${checkScreenSize()}&sortBy=createdOn&sortDir=desc`
-  //     )
-  //       .then((res) => {
-  //         return res.json();
-  //       })
-  //       .then((result) => {
-  //         setRecentlyViewed(result.content);
-  //       })
-  //       .catch((error) => {
-  //         console.error();
-  //       });
-  //   }, []);
-
-  //   return (
-  //     <div className="my-10 px-4 flex flex-col justify-between gap-10 md:gap-12 md:px-12 lg:px-24">
-  //       <Groups heading="new arrivals" products={newArrivals} seeMore />
-  //       <Groups heading="best selling products" products={bestSelling} seeMore />
-  //       <Groups heading="recently viewed" products={recentlyViewed} seeMore />
-  //     </div>
-  //   );
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
-  // https://apps-1.lampnets.com/ecommb-prod/products
+
   useEffect(() => {
-    fetch(
-      "https://apps-1.lampnets.com/ecommb-prod/products"
-    )
+    fetch("https://apps-1.lampnets.com/ecommb-prod/products")
       .then((res) => res.json())
       .then((data) => {
         console.log("Fetched products data:", JSON.stringify(data, null, 2));
@@ -194,14 +130,23 @@ function ProductGroups() {
     </div>
   );
 
-  const laptops = products.slice(0, 6);
-  const phones = products.slice(0, 6);
-  const otherGadgets = products.slice(0, 6);
+  // Filtering
+  const laptops = products
+    .filter((p) => p.category?.toLowerCase() === "laptops")
+    .slice(0, 6);
+  const phones = products
+    .filter((p) => p.category?.toLowerCase() === "smartphones")
+    .slice(0, 6);
+  const otherGadgets = products
+    .filter((p) => {
+      const category = p.category?.toLowerCase();
+      return category !== "smartphones" && category !== "laptops";
+    })
+    .slice(0, 6);
 
   const Section = ({ title, items }) => (
     <section className="my-8">
       <h2 className="text-xl font-bold mb-4">{title}</h2>
-
       {items.length > 0 ? (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -211,7 +156,7 @@ function ProductGroups() {
           </div>
           <div className="flex justify-end mt-2">
             <button
-              onClick={() => navigate("/products")}
+              onClick={() => navigate("/product-type")}
               className="text-blue-600 hover:underline"
             >
               See more &gt;
@@ -234,3 +179,68 @@ function ProductGroups() {
 }
 
 export default ProductGroups;
+
+//   const [newArrivals, setNewArrivals] = useState([]);
+//   const [bestSelling, setBestSelling] = useState([]);
+//   const [recentlyViewed, setRecentlyViewed] = useState([]);
+
+//   const checkScreenSize = () => {
+//     if (window.innerWidth >= 1500) {
+//       return 5;
+//     } else {
+//       return 4;
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetch(
+//       `https://apps-1.lampnets.com/ecommb-prod/products/pagination/active?pageNo=0&pageSize=${checkScreenSize()}&sortBy=createdOn&sortDir=desc`
+//     )
+//       .then((res) => {
+//         return res.json();
+//       })
+//       .then((result) => {
+//         setNewArrivals(result.content);
+//       })
+//       .catch((error) => {
+//         console.error();
+//       });
+//   }, []);
+
+//   useEffect(() => {
+//     fetch(
+//       `https://apps-1.lampnets.com/ecommb-prod/products/best-selling?pageNo=0&pageSize=${checkScreenSize()}`
+//     )
+//       .then((res) => {
+//         return res.json();
+//       })
+//       .then((result) => {
+//         setBestSelling(result.content);
+//       })
+//       .catch((error) => {
+//         console.error();
+//       });
+//   }, []);
+
+//   useEffect(() => {
+//     fetch(
+//       `https://apps-1.lampnets.com/ecommb-prod/products/reviewed?pageNo=0&pageSize=${checkScreenSize()}&sortBy=createdOn&sortDir=desc`
+//     )
+//       .then((res) => {
+//         return res.json();
+//       })
+//       .then((result) => {
+//         setRecentlyViewed(result.content);
+//       })
+//       .catch((error) => {
+//         console.error();
+//       });
+//   }, []);
+
+//   return (
+//     <div className="my-10 px-4 flex flex-col justify-between gap-10 md:gap-12 md:px-12 lg:px-24">
+//       <Groups heading="new arrivals" products={newArrivals} seeMore />
+//       <Groups heading="best selling products" products={bestSelling} seeMore />
+//       <Groups heading="recently viewed" products={recentlyViewed} seeMore />
+//     </div>
+//   );

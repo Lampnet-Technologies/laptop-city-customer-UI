@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const BrandsGrid = ({ onClose }) => {
+const BrandsGrid = () => {
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const handleBrandClick = (brandName) => {
     navigate(`/products?brand=${encodeURIComponent(brandName)}`);
-    if (onClose) onClose(); 
+    
   };
 
   useEffect(() => {
@@ -35,23 +34,23 @@ const BrandsGrid = ({ onClose }) => {
   }
 
   return (
-    <div className="bg-white rounded shadow-sm w-full left-0 top-[100%] z-30 py-5 absolute px-10 h-fit">
+    <div className="">
       <div>
         <h2 className="text-2xl text-center font-bold mb-4">
           Choose <span className="text-[#047D65]">Brand</span> of product
         </h2>
-        <span
+        {/* <span
           onClick={onClose}
           className="absolute right-10 top-4 cursor-pointer"
         >
           <X size={25} color="#047d65" />
-        </span>
+        </span> */}
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4 pb-[150px]">
         {brands.map((brand) => (
           <div
             key={brand.id}
-            className="flex flex-col items-center border rounded-lg shadow-sm p-4 bg-white cursor-pointer"
+            className="flex flex-col justify-center items-center border rounded-lg h-[250px] shadow-sm p-4 bg-white cursor-pointer"
             onClick={() => handleBrandClick(brand.name)}
           >
             <img
