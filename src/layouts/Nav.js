@@ -305,16 +305,39 @@ function Nav() {
               <CustomLink onClick={handleCloseNav} to="/">
                 Home
               </CustomLink>
-              {/* <CustomLink
-                onClick={handleCloseNav}
-                to="/categories"
-                subMenu={categoriesSubMenu}
-              >
-                <CustomLink onClick={handleCloseNav} to="/about">
-                  about
-                </CustomLink>
-                categories <i className="bx bx-chevron-down bx-sm"></i>
-              </CustomLink> */}
+             <div className="relative">
+                <button
+                  onClick={() => setShowCategoryMenu(!showCategoryMenu)}
+                  className="flex hover:text-[#20AA8F] transition-all items-center gap-1"
+                >
+                  Category <i className="bx bx-chevron-down bx-sm"></i>
+                </button>
+
+                {showCategoryMenu && (
+                  <ul className="bg-white shadow py-3 rounded mt-2 absolute left-[60px] w-[120px] z-50">
+                    <li
+                      onClick={() => {
+                        setShowCategoryMenu(false);
+                        navigate("/product-type");
+                        // s?filter=new_products
+                      }}
+                      className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all p-2"
+                    >
+                      New Product
+                    </li>
+                    <li
+                      onClick={() => {
+                        setShowCategoryMenu(false);
+                        navigate("/product-type");
+                        // ?filter=used_products
+                      }}
+                      className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all p-2"
+                    >
+                      Used Product
+                    </li>
+                  </ul>
+                )}
+              </div>
 
               <CustomLink
                 onClick={handleCloseNav}
@@ -521,23 +544,39 @@ function Nav() {
 
             <ul className="flex items-center justify-between gap-4 lg:gap-8 list-none whitespace-nowrap">
               <CustomLink to="/">Home</CustomLink>
-              {/* <CustomLink subMenu={categoriesSubMenu}>
-                categories <i className="bx bx-chevron-down bx-sm"></i>
-              </CustomLink> */}
-              {/* <div>
-                <button className="flex items-center gap-1 mb-3">
+             <div className="relative">
+                <button
+                  onClick={() => setShowCategoryMenu(!showCategoryMenu)}
+                  className="flex hover:text-[#20AA8F] transition-all items-center gap-1"
+                >
                   Category <i className="bx bx-chevron-down bx-sm"></i>
                 </button>
 
-                {
-                  <ul className="bg-white shadow p-3">
-                    <li className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all">
+                {showCategoryMenu && (
+                  <ul className="bg-white shadow p-3 rounded mt-2 absolute ">
+                    <li
+                      onClick={() => {
+                        setShowCategoryMenu(false);
+                        navigate("/product-type");
+                        // s?filter=new_products
+                      }}
+                      className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all p-2"
+                    >
                       New Product
                     </li>
-                    <li>Used Product</li>
+                    <li
+                      onClick={() => {
+                        setShowCategoryMenu(false);
+                        navigate("/product-type");
+                        // ?filter=used_products
+                      }}
+                      className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all p-2"
+                    >
+                      Used Product
+                    </li>
                   </ul>
-                }
-              </div> */}
+                )}
+              </div>
               {/* <CustomLink to="/login">track orders</CustomLink> */}
               <CustomLink to="/about">about</CustomLink>
               <CustomLink

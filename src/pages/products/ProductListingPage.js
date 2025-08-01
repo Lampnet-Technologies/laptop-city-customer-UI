@@ -79,19 +79,68 @@ function ProductsListing() {
     }
   };
 
+  // useEffect(() => {
+  //   const url = getFetchURL(currentPage);
+
+  //   setIsLoading(true);
+
+  //   fetch(url)
+  //     .then((res) => {
+  //       return res.json();
+  //     })
+  //     .then((result) => {
+  //       let filteredProducts = result.content;
+
+  //       //  FILTER BY BRAND QUERY IF PRESENT
+  //       if (brandQuery) {
+  //         filteredProducts = filteredProducts.filter(
+  //           (product) =>
+  //             (product.brand &&
+  //               product.brand
+  //                 .toLowerCase()
+  //                 .includes(brandQuery.toLowerCase())) ||
+  //             (product.name &&
+  //               product.name.toLowerCase().includes(brandQuery.toLowerCase()))
+  //         );
+  //       }
+
+  //       //  IF BRAND HAS NO PRODUCTS, FETCH ALL PRODUCTS INSTEAD
+  //       if (brandQuery && filteredProducts.length === 0) {
+  //         fetch(
+  //           "https://apps-1.lampnets.com/ecommb-prod/products/pagination/active?pageNo=0&pageSize=12&sortBy=createdOn&sortDir=desc"
+  //         )
+  //           .then((res) => res.json())
+  //           .then((allProducts) => {
+  //             setProducts(allProducts.content);
+  //             setTotalPages(allProducts.totalPages);
+  //             setIsLoading(false);
+  //           })
+  //           .catch((error) => {
+  //             console.error();
+  //             setIsLoading(false);
+  //           });
+  //       } else {
+  //         setProducts(filteredProducts);
+  //         setTotalPages(result.totalPages);
+  //         setIsLoading(false);
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error();
+  //       setIsLoading(false);
+  //     });
+  // }, [currentPage, myFilter, brandQuery]);
+
   useEffect(() => {
     const url = getFetchURL(currentPage);
 
     setIsLoading(true);
 
     fetch(url)
-      .then((res) => {
-        return res.json();
-      })
+      .then((res) => res.json())
       .then((result) => {
         let filteredProducts = result.content;
 
-        //  FILTER BY BRAND QUERY IF PRESENT
         if (brandQuery) {
           filteredProducts = filteredProducts.filter(
             (product) =>
@@ -104,29 +153,12 @@ function ProductsListing() {
           );
         }
 
-        //  IF BRAND HAS NO PRODUCTS, FETCH ALL PRODUCTS INSTEAD
-        if (brandQuery && filteredProducts.length === 0) {
-          fetch(
-            "https://apps-1.lampnets.com/ecommb-prod/products/pagination/active?pageNo=0&pageSize=12&sortBy=createdOn&sortDir=desc"
-          )
-            .then((res) => res.json())
-            .then((allProducts) => {
-              setProducts(allProducts.content);
-              setTotalPages(allProducts.totalPages);
-              setIsLoading(false);
-            })
-            .catch((error) => {
-              console.error();
-              setIsLoading(false);
-            });
-        } else {
-          setProducts(filteredProducts);
-          setTotalPages(result.totalPages);
-          setIsLoading(false);
-        }
+        setProducts(filteredProducts);
+        setTotalPages(result.totalPages);
+        setIsLoading(false);
       })
       .catch((error) => {
-        console.error();
+        console.error(error);
         setIsLoading(false);
       });
   }, [currentPage, myFilter, brandQuery]);
@@ -287,51 +319,29 @@ function ProductsListing() {
             <div className="pb-8 px-3 flex flex-col gap-10">
               {/* Filter Sections */}
               <div className="mt-3 text-right">
-                <IconButton
-                  sx={{ p: 0 }}
-                  onClick={handleFilter}
-                  title="click to send filter"
-                >
-                  <i className="bx bxs-send text-green"></i>
-                </IconButton>
                 <ProductFilter
                   fetchUrl="https://apps-1.lampnets.com/ecommb-prod/categories"
                   title="category"
                   checked={categoryId}
                   setter={setCategoryId}
+                  onChange={handleFilter}
                 />
-              </div>
 
-              <div className="text-right">
-                <IconButton
-                  sx={{ p: 0 }}
-                  onClick={handleFilter}
-                  title="click to send filter"
-                >
-                  <i className="bx bxs-send text-green"></i>
-                </IconButton>
                 <ProductFilter
                   fetchUrl="https://apps-1.lampnets.com/ecommb-prod/brands"
                   title="brands"
                   checked={brandId}
                   setter={setBrandId}
+                  onChange={handleFilter}
                 />
-              </div>
 
-              <div className="text-right">
-                <IconButton
-                  sx={{ p: 0 }}
-                  onClick={handleFilter}
-                  title="click to send filter"
-                >
-                  <i className="bx bxs-send text-green"></i>
-                </IconButton>
-                <ProductFilter
+                {/* <ProductFilter
                   fetchUrl="https://apps-1.lampnets.com/ecommb-prod/product-types"
                   title="product"
                   checked={productTypeId}
                   setter={setProductTypeId}
-                />
+                  onChange={handleFilter}
+                /> */}
               </div>
 
               <div className="flex justify-end items-center">
@@ -408,25 +418,38 @@ function ProductsListing() {
               ) : null}
             </div>
 
-            <div className="my-5 px-2 flex flex-col justify-between gap-10 md:px-6 lg:px-0">
-              {isLoading ? (
-                <div className="lg:h-screen flex justify-center items-center">
-                  <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-full border-8 border-solid border-green bg-transparent flex justify-center items-center loader">
-                    <div className="w-full h-full rounded-full bg-transparent"></div>
-                    <div
-                      style={{ top: "-10px" }}
-                      className="w-5 h-5 absolute bg-[#fbfbfb] z-50"
-                    ></div>
-                  </div>
+            {isLoading ? (
+              <div className="lg:h-screen flex justify-center items-center">
+                <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-full border-8 border-solid border-green bg-transparent flex justify-center items-center loader">
+                  <div className="w-full h-full rounded-full bg-transparent"></div>
+                  <div
+                    style={{ top: "-10px" }}
+                    className="w-5 h-5 absolute bg-[#fbfbfb] z-50"
+                  ></div>
                 </div>
-              ) : !products || products.length === 0 ? (
-                <div className="text-center text-gray-500 text-lg">
-                  No products found for this category.
-                </div>
-              ) : (
-                <MainGroups addToCart={handleAddToCart} products={products} />
-              )}
-            </div>
+              </div>
+            ) : !products || products.length === 0 ? (
+              <div className="text-center text-gray-500 text-lg flex flex-col gap-4 items-center">
+                {brandQuery ? (
+                  <>
+                    <p>
+                      No products found for brand: <strong>{brandQuery}</strong>
+                    </p>
+                    <button
+                      onClick={() => navigate("/products")}
+                      className="bg-green text-white px-4 py-2 rounded hover:bg-dark-green transition duration-300"
+                    >
+                      View All Products
+                    </button>
+                  </>
+                ) : (
+                  <p>No products found for this category.</p>
+                )}
+              </div>
+            ) : (
+              <MainGroups addToCart={handleAddToCart} products={products} />
+            )}
+
             {/* {showProductType && (
               <ProductTypes onClose={() => setShowProductType(false)} />
             )} */}
@@ -454,7 +477,7 @@ function ProductsListing() {
           </ThemeProvider>
         </div>
 
-        <SubProducts addToCart={handleAddToCart} />
+        {/* <SubProducts addToCart={handleAddToCart} /> */}
       </div>
     </Suspense>
   );

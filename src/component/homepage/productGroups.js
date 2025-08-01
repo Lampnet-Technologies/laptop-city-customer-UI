@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import IMAGES from "../../assets";
 import NairaSymbol from "../nairaSymbol";
 
+import Modal from "./Modal";
 function ProductContainer({ product }) {
   const navigate = useNavigate();
 
@@ -105,22 +106,35 @@ export function Groups({ heading, products, seeMore }) {
 
 function ProductGroups() {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     fetch("https://apps-1.lampnets.com/ecommb-prod/products")
       .then((res) => res.json())
       .then((data) => {
-        console.log("Fetched products data:", JSON.stringify(data, null, 2));
         setProducts(data);
+        setLoading(false);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.error("Failed to fetch products:", err);
+        setLoading(false);
+      });
   }, []);
+
+  const handleSeeMore = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleProductTypeSelect = (condition) => {
+    navigate(`/product-type?condition=${condition}`);
+  };
 
   const ProductCard = ({ product }) => (
     <div className="border rounded-lg p-2 shadow hover:shadow-lg transition">
       <img
-        src={product.images[0]?.image}
+        src={product.images[0]?.image || "/placeholder.jpg"}
         alt={product.name}
         className="w-full h-48 object-cover rounded"
       />
@@ -130,7 +144,6 @@ function ProductGroups() {
     </div>
   );
 
-  // Filtering
   const laptops = products
     .filter((p) => p.category?.toLowerCase() === "laptops")
     .slice(0, 6);
@@ -147,7 +160,10 @@ function ProductGroups() {
   const Section = ({ title, items }) => (
     <section className="my-8">
       <h2 className="text-xl font-bold mb-4">{title}</h2>
-      {items.length > 0 ? (
+
+      {loading ? (
+        <p className="text-gray-500">Loading...</p>
+      ) : items.length > 0 ? (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {items.map((p) => (
@@ -156,7 +172,7 @@ function ProductGroups() {
           </div>
           <div className="flex justify-end mt-2">
             <button
-              onClick={() => navigate("/product-type")}
+              onClick={handleSeeMore}
               className="text-blue-600 hover:underline"
             >
               See more &gt;
@@ -174,6 +190,11 @@ function ProductGroups() {
       <Section title="Laptops" items={laptops} />
       <Section title="Phones" items={phones} />
       <Section title="Other Gadgets" items={otherGadgets} />
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSelect={handleProductTypeSelect}
+      />
     </div>
   );
 }

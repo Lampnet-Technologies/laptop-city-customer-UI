@@ -1,19 +1,13 @@
 import React, { useEffect, useState } from "react";
 
-function ProductFilter({ fetchUrl, title, checked, setter }) {
+export default function ProductFilter({ fetchUrl, title, checked, setter, onChange }) {
   const [filters, setFilters] = useState();
 
   useEffect(() => {
     fetch(fetchUrl)
-      .then((res) => {
-        return res.json();
-      })
-      .then((result) => {
-        setFilters(result);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+      .then((res) => res.json())
+      .then((result) => setFilters(result))
+      .catch((error) => console.error(error));
   }, []);
 
   return (
@@ -22,35 +16,32 @@ function ProductFilter({ fetchUrl, title, checked, setter }) {
 
       <div className="space-y-3">
         {filters &&
-          filters.map((filter) => {
-            return (
-              <div
-                key={filter.id}
-                className="bg-white py-5 px-4 flex items-center gap-5 rounded-md"
+          filters.map((filter) => (
+            <div
+              key={filter.id}
+              className="bg-white py-5 px-4 flex items-center gap-5 rounded-md"
+            >
+              <input
+                type="checkbox"
+                id={`${filter.name}-filter`}
+                name={filter.name}
+                value={filter.id}
+                checked={checked == filter.id}
+                onChange={() => {
+                  setter(filter.id);
+                  if (onChange) onChange(); 
+                }}
+                className="accent-green cursor-pointer caret-green w-[18px] h-[18px] lg:w-5 lg:h-5"
+              />
+              <label
+                htmlFor={`${filter.name}-filter`}
+                className="capitalize text-sm font-semibold cursor-pointer"
               >
-                <input
-                  type="checkbox"
-                  id={`${filter.name}-filter`}
-                  name={filter.name}
-                  value={filter.id}
-                  checked={checked == filter.id}
-                  onChange={() => {
-                    setter(filter.id);
-                  }}
-                  className="accent-green cursor-pointer caret-green w-[18px] h-[18px] lg:w-5 lg:h-5"
-                />
-                <label
-                  htmlFor={`${filter.name}-filter`}
-                  className="capitalize text-sm font-semibold cursor-pointer"
-                >
-                  {filter.name}
-                </label>
-              </div>
-            );
-          })}
+                {filter.name}
+              </label>
+            </div>
+          ))}
       </div>
     </div>
   );
 }
-
-export default ProductFilter;
