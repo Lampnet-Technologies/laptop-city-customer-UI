@@ -16,7 +16,7 @@ const BrandsGrid = () => {
     const fetchBrands = async () => {
       try {
         const response = await axios.get(
-          "https://apps-1.lampnets.com/ecommb-prod/brands"
+          "https://apps-1.lampnets.com/ecommb-staging/brands"
         );
         setBrands(response.data);
         setLoading(false);

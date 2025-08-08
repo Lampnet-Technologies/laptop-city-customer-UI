@@ -81,7 +81,6 @@ function ImagesPreviews({ files }) {
     if (arr.length - 1 !== currentIndex) {
       setCurrentIndex((prev) => prev + 1);
     } else {
-      // setCurrentIndex(0);
       return null;
     }
   };
@@ -90,7 +89,6 @@ function ImagesPreviews({ files }) {
     if (currentIndex !== 0) {
       setCurrentIndex((prev) => prev - 1);
     } else {
-      // setCurrentIndex(arr.length - 1);
       return null;
     }
   };
@@ -140,7 +138,6 @@ function ImagesPreviews({ files }) {
                       border: `${
                         currentIndex === index ? "1px solid #009F7F" : "none"
                       }`,
-                      // transition: "0.5s ease",
                     }}
                     onClick={() => setCurrentIndex(index)}
                   >
@@ -177,10 +174,11 @@ function ImagesPreviews({ files }) {
       </div>
     );
   }
+  return null;
 }
 
 function AboutProduct({ product }) {
-  const [loggedIn, setLoggedIn] = useContext(LoginContext);
+  const { loggedIn, token } = useContext(LoginContext);
   const [cartDep, setCartDep] = useContext(UserCartDependency);
   const [showMore, setShowMore] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -212,9 +210,24 @@ function AboutProduct({ product }) {
   const handleAddToCart = (id) => {
     const dataToSend = { productId: id, quantity: quantity };
 
-    const accessToken = localStorage.getItem("token");
+if (!token) {
+        console.error("No authentication token found. User not logged in.");
+        // Redirect to login or show an error
+        navigate("/login");
+        return;
+    }
+  // Now proceed with your fetch call.
+    fetch("https://apps-1.lampnets.com/ecommb-prod/cart-items/add", {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            Authorization: "Bearer " + token, // This should now work
+        },
+        body: JSON.stringify(dataToSend),
+    })
+    // ...
 
-    if (!loggedIn) {
+    if (!loggedIn || !token) {
       navigate("/login", {
         state: {
           previousUrl: location.pathname,
@@ -225,11 +238,17 @@ function AboutProduct({ product }) {
         method: "POST",
         headers: {
           "content-type": "application/json",
-          Authorization: "Bearer " + accessToken,
+          Authorization: "Bearer " + token,
         },
         body: JSON.stringify(dataToSend),
       })
         .then((res) => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then(() => {
           setCartDep(id);
           setAlert({
             ...alert,
@@ -238,7 +257,6 @@ function AboutProduct({ product }) {
             title: "1 item added to cart",
             message: `${product.name} is added to cart`,
           });
-          // alert(`${product.name} is added to cart`);
         })
         .catch((error) => {
           setAlert({
@@ -248,7 +266,6 @@ function AboutProduct({ product }) {
             title: "Failed to add item to cart",
             message: error.message,
           });
-          // alert("Failed to add to cart" + error.message);
         });
     }
   };
@@ -256,9 +273,7 @@ function AboutProduct({ product }) {
   const handleAddToWishlist = (id) => {
     const dataToSend = { basketId: 1, productId: id, quantity: quantity };
 
-    const accessToken = localStorage.getItem("token");
-
-    if (!loggedIn) {
+    if (!loggedIn || !token) {
       setAlert({
         ...alert,
         open: true,
@@ -271,11 +286,17 @@ function AboutProduct({ product }) {
         method: "POST",
         headers: {
           "content-type": "application/json",
-          Authorization: "Bearer " + accessToken,
+          Authorization: "Bearer " + token,
         },
         body: JSON.stringify(dataToSend),
       })
         .then((res) => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then(() => {
           setToast({
             ...toast,
             open: true,
@@ -350,7 +371,6 @@ function AboutProduct({ product }) {
         <div className="flex justify-between items-center gap-1 md:justify-start md:gap-20">
           <h2 className="text-2xl font-semibold lg:text-3xl">
             <NairaSymbol />
-            {/* 350,000 */}
             {quantity * product.price}
           </h2>
 
@@ -531,22 +551,8 @@ function ProductDesc() {
           return res.json();
         })
         .then((response) => {
-          // setValues({
-          //   ...values,
-          //   name: response.name,
-          //   brand: response.brand,
-          //   price: response.price,
-          //   stock: response.stock,
-          //   category: response.category,
-          //   productType: response.productType,
-          //   description: response.description,
-          //   availableOffers: response.availableOffers,
-          //   colour: response.colour,
-          //   images: response.images,
-          // });
           setProduct(response);
           setIsLoading(false);
-          // console.log(response);
         })
         .catch((error) => {
           alert(error.message);
@@ -597,7 +603,6 @@ function ProductDesc() {
             className="rounded-full outline-none bg-transparent flex items-center text-lg lg:text-[22px] font-medium"
             onClick={() => navigate("/products")}
           >
-            {/* <img src={IMAGES.icons.arrowBackward} alt="back" /> */}
             <i className="bx bx-chevron-left bx-md"></i>
             Back
           </button>

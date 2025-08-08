@@ -30,7 +30,7 @@ const theme = createTheme({
 });
 
 function ProductsListing() {
-  const [loggedIn, setLoggedIn] = useContext(LoginContext);
+  const { loggedIn, token } = useContext(LoginContext);
   const [cartDep, setCartDep] = useContext(UserCartDependency);
   const [showFilters, setShowFilters] = useState(false);
   const [products, setProducts] = useState(null);
@@ -61,75 +61,23 @@ function ProductsListing() {
   const myFilter = new URLSearchParams(location.search).get("filter");
 
   const getFetchURL = (page) => {
-    if (myFilter == "new_products") {
-      return `https://apps-1.lampnets.com/ecommb-prod/products/customers/category/1/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
-    } else if (myFilter == "used_products") {
-      return `https://apps-1.lampnets.com/ecommb-prod/products/customers/category/2/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
-    } else if (myFilter == "new arrivals") {
-      return `https://apps-1.lampnets.com/ecommb-prod/products/pagination/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
-    } else if (myFilter == "best selling products") {
-      return `https://apps-1.lampnets.com/ecommb-prod/products/best-selling?pageNo=${page}&pageSize=12`;
-    } else if (myFilter == "recently viewed") {
-      return `https://apps-1.lampnets.com/ecommb-prod/products/reviewed?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+    if (myFilter === "new_products") {
+      return `https://apps-1.lampnets.com/ecommb-staging/products/customers/category/1/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+    } else if (myFilter === "used_products") {
+      return `https://apps-1.lampnets.com/ecommb-staging/products/customers/category/2/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+    } else if (myFilter === "new arrivals") {
+      return `https://apps-1.lampnets.com/ecommb-staging/products/pagination/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+    } else if (myFilter === "best selling products") {
+      return `https://apps-1.lampnets.com/ecommb-staging/products/best-selling?pageNo=${page}&pageSize=12`;
+    } else if (myFilter === "recently viewed") {
+      return `https://apps-1.lampnets.com/ecommb-staging/products/reviewed?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
     } else if (myFilter) {
       const encoded = encodeURI(myFilter);
-      return `https://apps-1.lampnets.com/ecommb-prod/products/search?pageNo=${page}&pageSize=12&query=${encoded}&sortBy=id&sortDir=asc`;
+      return `https://apps-1.lampnets.com/ecommb-staging/products/search?pageNo=${page}&pageSize=12&query=${encoded}&sortBy=id&sortDir=asc`;
     } else if (myFilter === null) {
-      return `https://apps-1.lampnets.com/ecommb-prod/products/pagination/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+      return `https://apps-1.lampnets.com/ecommb-staging/products/pagination/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
     }
   };
-
-  // useEffect(() => {
-  //   const url = getFetchURL(currentPage);
-
-  //   setIsLoading(true);
-
-  //   fetch(url)
-  //     .then((res) => {
-  //       return res.json();
-  //     })
-  //     .then((result) => {
-  //       let filteredProducts = result.content;
-
-  //       //  FILTER BY BRAND QUERY IF PRESENT
-  //       if (brandQuery) {
-  //         filteredProducts = filteredProducts.filter(
-  //           (product) =>
-  //             (product.brand &&
-  //               product.brand
-  //                 .toLowerCase()
-  //                 .includes(brandQuery.toLowerCase())) ||
-  //             (product.name &&
-  //               product.name.toLowerCase().includes(brandQuery.toLowerCase()))
-  //         );
-  //       }
-
-  //       //  IF BRAND HAS NO PRODUCTS, FETCH ALL PRODUCTS INSTEAD
-  //       if (brandQuery && filteredProducts.length === 0) {
-  //         fetch(
-  //           "https://apps-1.lampnets.com/ecommb-prod/products/pagination/active?pageNo=0&pageSize=12&sortBy=createdOn&sortDir=desc"
-  //         )
-  //           .then((res) => res.json())
-  //           .then((allProducts) => {
-  //             setProducts(allProducts.content);
-  //             setTotalPages(allProducts.totalPages);
-  //             setIsLoading(false);
-  //           })
-  //           .catch((error) => {
-  //             console.error();
-  //             setIsLoading(false);
-  //           });
-  //       } else {
-  //         setProducts(filteredProducts);
-  //         setTotalPages(result.totalPages);
-  //         setIsLoading(false);
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.error();
-  //       setIsLoading(false);
-  //     });
-  // }, [currentPage, myFilter, brandQuery]);
 
   useEffect(() => {
     const url = getFetchURL(currentPage);
@@ -169,7 +117,7 @@ function ProductsListing() {
     const encoded = encodeURI(searchTerm);
 
     fetch(
-      `https://apps-1.lampnets.com/ecommb-prod/products/search?pageNo=0&pageSize=12&query=${encoded}&sortBy=id&sortDir=asc`
+      `https://apps-1.lampnets.com/ecommb-staging/products/search?pageNo=0&pageSize=12&query=${encoded}&sortBy=id&sortDir=asc`
     )
       .then((res) => {
         return res.json();
@@ -187,7 +135,7 @@ function ProductsListing() {
 
   const handleFilter = () => {
     fetch(
-      `https://apps-1.lampnets.com/ecommb-prod/products/filter-products?${
+      `https://apps-1.lampnets.com/ecommb-staging/products/filter-products?${
         brandId && `brandId=${brandId}`
       }${categoryId && `&categoryId=${categoryId}`}&pageNo=0&pageSize=12${
         productTypeId && `&productTypeId=${productTypeId}`
@@ -213,7 +161,7 @@ function ProductsListing() {
     setProductTypeId("");
 
     fetch(
-      "https://apps-1.lampnets.com/ecommb-prod/products/pagination/active?pageNo=0&pageSize=12&sortBy=createdOn&sortDir=desc"
+      "https://apps-1.lampnets.com/ecommb-staging/products/pagination/active?pageNo=0&pageSize=12&sortBy=createdOn&sortDir=desc"
     )
       .then((res) => {
         return res.json();
@@ -243,9 +191,23 @@ function ProductsListing() {
   const handleAddToCart = (product) => {
     const dataToSend = { productId: product.id, quantity: 1 };
 
-    const accessToken = localStorage.getItem("token");
-
-    if (!loggedIn) {
+   if (!token) {
+        console.error("No authentication token found. User not logged in.");
+        // Redirect to login or show an error
+        navigate("/login");
+        return;
+    }
+  // Now proceed with your fetch call.
+    fetch("https://apps-1.lampnets.com/ecommb-prod/cart-items/add", {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            Authorization: "Bearer " + token, // This should now work
+        },
+        body: JSON.stringify(dataToSend),
+    })
+    // ...
+    if (!loggedIn || !token) { 
       navigate("/login", {
         state: {
           previousUrl: location.pathname,
@@ -256,28 +218,28 @@ function ProductsListing() {
         method: "POST",
         headers: {
           "content-type": "application/json",
-          Authorization: "Bearer " + accessToken,
+          Authorization: "Bearer " + token, 
         },
         body: JSON.stringify(dataToSend),
       })
         .then((res) => {
-          if (res.status == 200) {
-            setCartDep(product.id);
-            setAlert({
-              ...alert,
-              open: true,
-              severity: "success",
-              title: "1 item added to cart",
-              message: `${product.name} is added to cart`,
-            });
-          } else {
+          if (!res.ok) { 
             setAlert({
               ...alert,
               open: true,
               severity: "info",
               title: "Item was not added to cart",
             });
+            throw new Error(`HTTP error! status: ${res.status}`);
           }
+          setCartDep(product.id);
+          setAlert({
+            ...alert,
+            open: true,
+            severity: "success",
+            title: "1 item added to cart",
+            message: `${product.name} is added to cart`,
+          });
         })
         .catch((error) => {
           setAlert({
@@ -390,7 +352,7 @@ function ProductsListing() {
                       setter={setProductTypeId}
                     />
 
-                    <div className="flex justify-end  items-center">
+                    <div className="flex justify-end  items-center">
                       <button
                         type="button"
                         onClick={() => {

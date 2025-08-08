@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import IMAGES from "../../assets";
 import NairaSymbol from "../nairaSymbol";
-
 import Modal from "./Modal";
+
 function ProductContainer({ product }) {
   const navigate = useNavigate();
 
@@ -43,8 +43,7 @@ function ProductContainer({ product }) {
             fontSize: "10px",
           }}
         >
-          {product.category == "BRAND NEW" ? "new" : "used"}
-          {/* {product.category} */}
+          {product.category === "BRAND NEW" ? "new" : "used"}
         </div>
       </div>
       <div className="flex flex-col gap-1 justify-between h-20 px-2 pb-3 lg:h-28 lg:pt-2">
@@ -103,7 +102,6 @@ export function Groups({ heading, products, seeMore }) {
 }
 
 // Main groups I'm working with.
-
 function ProductGroups() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -111,10 +109,22 @@ function ProductGroups() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("https://apps-1.lampnets.com/ecommb-prod/products")
-      .then((res) => res.json())
+    fetch("https://apps-1.lampnets.com/ecommb-staging/products")
+      .then((res) => {
+        // First, check if the response was successful
+        if (!res.ok) {
+          // If not, throw an error and let the catch block handle it
+          throw new Error(`Server returned status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then((data) => {
-        setProducts(data);
+        // Add a check to ensure 'data' is actually an array
+        if (Array.isArray(data)) {
+          setProducts(data);
+        } else {
+          console.error("API response was not an array:", data);
+        }
         setLoading(false);
       })
       .catch((err) => {
@@ -144,18 +154,27 @@ function ProductGroups() {
     </div>
   );
 
-  const laptops = products
-    .filter((p) => p.category?.toLowerCase() === "laptops")
-    .slice(0, 6);
-  const phones = products
-    .filter((p) => p.category?.toLowerCase() === "smartphones")
-    .slice(0, 6);
-  const otherGadgets = products
-    .filter((p) => {
-      const category = p.category?.toLowerCase();
-      return category !== "smartphones" && category !== "laptops";
-    })
-    .slice(0, 6);
+  // Add a check here before you start filtering
+  const laptops = products && products.length > 0
+    ? products
+      .filter((p) => p.category?.toLowerCase() === "laptops")
+      .slice(0, 6)
+    : [];
+
+  const phones = products && products.length > 0
+    ? products
+      .filter((p) => p.category?.toLowerCase() === "smartphones")
+      .slice(0, 6)
+    : [];
+  
+  const otherGadgets = products && products.length > 0
+    ? products
+      .filter((p) => {
+        const category = p.category?.toLowerCase();
+        return category !== "smartphones" && category !== "laptops";
+      })
+      .slice(0, 6)
+    : [];
 
   const Section = ({ title, items }) => (
     <section className="my-8">
@@ -200,68 +219,3 @@ function ProductGroups() {
 }
 
 export default ProductGroups;
-
-//   const [newArrivals, setNewArrivals] = useState([]);
-//   const [bestSelling, setBestSelling] = useState([]);
-//   const [recentlyViewed, setRecentlyViewed] = useState([]);
-
-//   const checkScreenSize = () => {
-//     if (window.innerWidth >= 1500) {
-//       return 5;
-//     } else {
-//       return 4;
-//     }
-//   };
-
-//   useEffect(() => {
-//     fetch(
-//       `https://apps-1.lampnets.com/ecommb-prod/products/pagination/active?pageNo=0&pageSize=${checkScreenSize()}&sortBy=createdOn&sortDir=desc`
-//     )
-//       .then((res) => {
-//         return res.json();
-//       })
-//       .then((result) => {
-//         setNewArrivals(result.content);
-//       })
-//       .catch((error) => {
-//         console.error();
-//       });
-//   }, []);
-
-//   useEffect(() => {
-//     fetch(
-//       `https://apps-1.lampnets.com/ecommb-prod/products/best-selling?pageNo=0&pageSize=${checkScreenSize()}`
-//     )
-//       .then((res) => {
-//         return res.json();
-//       })
-//       .then((result) => {
-//         setBestSelling(result.content);
-//       })
-//       .catch((error) => {
-//         console.error();
-//       });
-//   }, []);
-
-//   useEffect(() => {
-//     fetch(
-//       `https://apps-1.lampnets.com/ecommb-prod/products/reviewed?pageNo=0&pageSize=${checkScreenSize()}&sortBy=createdOn&sortDir=desc`
-//     )
-//       .then((res) => {
-//         return res.json();
-//       })
-//       .then((result) => {
-//         setRecentlyViewed(result.content);
-//       })
-//       .catch((error) => {
-//         console.error();
-//       });
-//   }, []);
-
-//   return (
-//     <div className="my-10 px-4 flex flex-col justify-between gap-10 md:gap-12 md:px-12 lg:px-24">
-//       <Groups heading="new arrivals" products={newArrivals} seeMore />
-//       <Groups heading="best selling products" products={bestSelling} seeMore />
-//       <Groups heading="recently viewed" products={recentlyViewed} seeMore />
-//     </div>
-//   );
