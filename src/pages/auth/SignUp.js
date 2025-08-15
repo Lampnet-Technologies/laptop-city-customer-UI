@@ -5,7 +5,9 @@ import LaptopCityButton from "../../component/button";
 import { LoginContext } from "../../App";
 import CustomAlert from "../../component/CustomAlert";
 
-const signupAPI = "https://apps-1.lampnets.com/ecommb-staging/register";
+const baseUrl = process.env.REACT_APP_BASE_URL
+
+const signupAPI = `${baseUrl}/ecommb-staging/register`;
 
 function SignUp() {
   const [loggedIn, setLoggedIn] = useContext(LoginContext);

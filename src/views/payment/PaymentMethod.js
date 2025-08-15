@@ -19,6 +19,8 @@ const methods = [
   // },
 ];
 
+const baseUrl = process.env.REACT_APP_BASE_URL
+
 const accessToken = localStorage.getItem("token");
 
 function PaymentMethod({ cart, goTo, back }) {
@@ -40,7 +42,7 @@ function PaymentMethod({ cart, goTo, back }) {
   publicKey: process.env.REACT_APP_PAYSTACK_PUBLIC_KEY
 };
 
-console.log("PAYSTACK KEY", process.env.REACT_APP_PAYSTACK_PUBLIC_KEY);
+// console.log("PAYSTACK KEY", process.env.REACT_APP_PAYSTACK_PUBLIC_KEY);
 
 
   const handleChange = (e) => {
@@ -57,7 +59,7 @@ console.log("PAYSTACK KEY", process.env.REACT_APP_PAYSTACK_PUBLIC_KEY);
       reference: reference.reference,
     };
 
-    fetch("https://apps-1.lampnets.com/ecommb-staging/orders/payment", {
+    fetch(`${baseUrl}/ecommb-staging/orders/payment`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

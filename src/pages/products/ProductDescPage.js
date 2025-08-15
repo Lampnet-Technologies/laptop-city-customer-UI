@@ -73,10 +73,10 @@ Sensors: Fingerprint (side-mounted), accelerometer, gyro, proximity, compass
 BATTERY
 Type: Li-Po 5000 mAh, non-removable
 Charging: Fast Charging 33W`;
-
+const baseUrl = process.env.BASE_URL;
 function ImagesPreviews({ files }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-
+  
   const arrowNext = (arr) => {
     if (arr.length - 1 !== currentIndex) {
       setCurrentIndex((prev) => prev + 1);
@@ -210,21 +210,21 @@ function AboutProduct({ product }) {
   const handleAddToCart = (id) => {
     const dataToSend = { productId: id, quantity: quantity };
 
-if (!token) {
-        console.error("No authentication token found. User not logged in.");
-        // Redirect to login or show an error
-        navigate("/login");
-        return;
+    if (!token) {
+      console.error("No authentication token found. User not logged in.");
+      // Redirect to login or show an error
+      navigate("/login");
+      return;
     }
-  // Now proceed with your fetch call.
-    fetch("https://apps-1.lampnets.com/ecommb-prod/cart-items/add", {
-        method: "POST",
-        headers: {
-            "content-type": "application/json",
-            Authorization: "Bearer " + token, // This should now work
-        },
-        body: JSON.stringify(dataToSend),
-    })
+    // Now proceed with your fetch call.
+    fetch(`${baseUrl}/ecommb-prod/cart-items/add`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        Authorization: "Bearer " + token, // This should now work
+      },
+      body: JSON.stringify(dataToSend),
+    });
     // ...
 
     if (!loggedIn || !token) {
@@ -234,7 +234,7 @@ if (!token) {
         },
       });
     } else {
-      fetch("https://apps-1.lampnets.com/ecommb-staging/cart-items/add", {
+      fetch(`${baseUrl}/ecommb-staging/cart-items/add`, {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -282,7 +282,7 @@ if (!token) {
         message: "Please Sign in first",
       });
     } else {
-      fetch("https://apps-1.lampnets.com/ecommb-staging/wish-lists/add", {
+      fetch(`${baseUrl}/ecommb-staging/wish-lists/add`, {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -546,7 +546,7 @@ function ProductDesc() {
 
   useEffect(() => {
     if (prodId) {
-      fetch(`https://apps-1.lampnets.com/ecommb-staging/products/${prodId}`)
+      fetch(`${baseUrl}/ecommb-staging/products/${prodId}`)
         .then((res) => {
           return res.json();
         })
@@ -562,7 +562,7 @@ function ProductDesc() {
 
   useEffect(() => {
     fetch(
-      `https://apps-1.lampnets.com/ecommb-staging/products/best-selling?pageNo=0&pageSize=${checkScreenSize()}`
+      `${baseUrl}/ecommb-staging/products/best-selling?pageNo=0&pageSize=${checkScreenSize()}`
     )
       .then((res) => {
         return res.json();
@@ -577,7 +577,7 @@ function ProductDesc() {
 
   useEffect(() => {
     fetch(
-      `https://apps-1.lampnets.com/ecommb-staging/products/reviewed?pageNo=0&pageSize=${checkScreenSize()}&sortBy=createdOn&sortDir=desc`
+      `${baseUrl}/ecommb-staging/products/reviewed?pageNo=0&pageSize=${checkScreenSize()}&sortBy=createdOn&sortDir=desc`
     )
       .then((res) => {
         return res.json();

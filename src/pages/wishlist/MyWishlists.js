@@ -22,6 +22,8 @@ function MyWishlists() {
   // This is the missing line.
   const navigate = useNavigate();
 
+  const baseUrl = process.env.REACT_APP_BASE_URL
+
   useEffect(() => {
     // Only fetch if logged in and a token is available
     if (!loggedIn || !token) {
@@ -29,7 +31,7 @@ function MyWishlists() {
       return;
     }
 
-    fetch("https://apps-1.lampnets.com/ecommb-staging/wish-lists/my-wishlist", {
+    fetch(`${baseUrl}/ecommb-staging/wish-lists/my-wishlist`, {
       headers: {
         "content-type": "application/json",
         Authorization: "Bearer " + token,
@@ -65,7 +67,7 @@ function MyWishlists() {
       return;
     }
     
-    fetch("https://apps-1.lampnets.com/ecommb-staging/cart-items/add", {
+    fetch(`${baseUrl}/ecommb-staging/cart-items/add`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -117,7 +119,7 @@ function MyWishlists() {
     }
 
     fetch(
-      `https://apps-1.lampnets.com/ecommb-staging/wish-lists/remove/${idRef.current}`,
+      `${baseUrl}/ecommb-staging/wish-lists/remove/${idRef.current}`,
       {
         method: "DELETE",
         headers: {

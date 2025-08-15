@@ -5,12 +5,16 @@ import IMAGES from "../../assets";
 import NairaSymbol from "../nairaSymbol";
 import Modal from "./Modal";
 
+
+const baseUrl = process.env.REACT_APP_BASE_URL
 function ProductContainer({ product }) {
   const navigate = useNavigate();
 
   const handleProductDesc = (id) => {
     navigate("/product-desc/" + id);
   };
+
+  
 
   return (
     <div
@@ -109,7 +113,7 @@ function ProductGroups() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("https://apps-1.lampnets.com/ecommb-staging/products")
+    fetch(`${baseUrl}/ecommb-staging/products`)
       .then((res) => {
         // First, check if the response was successful
         if (!res.ok) {
@@ -141,37 +145,43 @@ function ProductGroups() {
     navigate(`/product-type?condition=${condition}`);
   };
 
-  const ProductCard = ({ product }) => (
-    <div className="border rounded-lg p-2 shadow hover:shadow-lg transition">
-      <img
-        src={product.images[0]?.image || "/placeholder.jpg"}
-        alt={product.name}
-        className="w-full h-48 object-cover rounded"
-      />
-      <h3 className="mt-2 font-semibold">{product.name}</h3>
-      <p className="text-gray-600">₦{product.price.toLocaleString()}</p>
-      <p className="text-sm text-gray-500">{product.brand}</p>
+const ProductCard = ({ product }) => (
+  <div className="relative border rounded-lg p-2 shadow hover:shadow-lg transition">
+    {/* Tag */}
+    <div className="absolute top-2 right-2 bg-green-600 text-white text-[10px] font-medium px-2 py-0.5 rounded-sm capitalize z-10 bg-green">
+      {product.category?.toUpperCase() === "BRAND NEW" ? "new" : "used"}
     </div>
-  );
+
+    <img
+      src={product.images[0]?.image || "/placeholder.jpg"}
+      alt={product.name}
+      className="w-full h-48 object-cover rounded"
+    />
+    <h3 className="mt-2 font-semibold">{product.name}</h3>
+    <p className="text-gray-600">₦{product.price.toLocaleString()}</p>
+    <p className="text-sm text-gray-500">{product.brand}</p>
+  </div>
+);
+
 
   // Add a check here before you start filtering
   const laptops = products && products.length > 0
     ? products
-      .filter((p) => p.category?.toLowerCase() === "laptops")
+      .filter((p) => p.productType?.toLowerCase() === "laptops")
       .slice(0, 6)
     : [];
 
   const phones = products && products.length > 0
     ? products
-      .filter((p) => p.category?.toLowerCase() === "smartphones")
+      .filter((p) => p.productType?.toLowerCase() === "smartphones")
       .slice(0, 6)
     : [];
   
   const otherGadgets = products && products.length > 0
     ? products
       .filter((p) => {
-        const category = p.category?.toLowerCase();
-        return category !== "smartphones" && category !== "laptops";
+        const others = p.productType?.toLowerCase();
+        return others !== "smartphones" && others !== "laptops";
       })
       .slice(0, 6)
     : [];

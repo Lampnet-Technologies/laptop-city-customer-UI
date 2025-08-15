@@ -21,6 +21,8 @@ function Cart() {
   const [deleteAlert, setDeleteAlert] = useState(false);
   const idRef = useRef();
 
+  const baseUrl = process.env.REACT_APP_BASE_URL
+
   const [alert, setAlert] = useState({
     open: false,
     severity: "",
@@ -67,7 +69,7 @@ function Cart() {
     const dataToSend = { productId: productId, quantity: newQuantity };
 
     fetch(
-      `https://apps-1.lampnets.com/ecommb-staging/cart-items/edit/${cartId}`,
+      `${baseUrl}/ecommb-staging/cart-items/edit/${cartId}`,
       {
         method: "PUT",
         headers: {
@@ -123,7 +125,7 @@ function Cart() {
     const dataToSend = { productId: productId, quantity: newQuantity };
 
     fetch(
-      `https://apps-1.lampnets.com/ecommb-staging/cart-items/edit/${cartId}`,
+      `${baseUrl}/ecommb-staging/cart-items/edit/${cartId}`,
       {
         method: "PUT",
         headers: {
@@ -189,7 +191,7 @@ function Cart() {
     }
 
     fetch(
-      `https://apps-1.lampnets.com/ecommb-staging/cart-items/delete/${idRef.current}`,
+      `${baseUrl}/ecommb-staging/cart-items/delete/${idRef.current}`,
       {
         method: "DELETE",
         headers: {
@@ -234,7 +236,7 @@ function Cart() {
 
     const dataToSend = { couponCode: code };
 
-    fetch("https://apps-1.lampnets.com/ecommb-staging/coupons/verify", {
+    fetch(`${baseUrl}/ecommb-staging/coupons/verify`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

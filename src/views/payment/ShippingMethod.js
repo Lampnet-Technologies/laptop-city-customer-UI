@@ -3,6 +3,8 @@ import NairaSymbol from "../../component/nairaSymbol";
 import { PlaceOrderContext } from "../../App";
 import { ChosenMethodContext } from "../../pages/payment";
 
+const baseUrl = process.env.REACT_APP_BASE_URL
+
 function ShippingMethod({ goTo, back }) {
   const [placeOrder, setPlaceOrder] = useContext(PlaceOrderContext);
   const [chosenMethodPrice, setChosenMethodPrice] =
@@ -22,7 +24,7 @@ function ShippingMethod({ goTo, back }) {
     }
     
 
-    fetch("https://apps-1.lampnets.com/ecommb-staging/shipping/rate", {
+    fetch(`${baseUrl}/ecommb-staging/shipping/rate`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
