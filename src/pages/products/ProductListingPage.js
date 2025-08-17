@@ -11,6 +11,8 @@ import LaptopCityButton from "../../component/button";
 import ScrollToTop from "../../utils/ScrollToTop";
 import { LoginContext, UserCartDependency } from "../../App";
 import CustomAlert from "../../component/CustomAlert";
+import ProductTypes from "./ProductType";
+import BrandsGrid from "./Brands";
 
 const AdSlider = lazy(() => import("../../component/adSlider"));
 const Banner = lazy(() => import("../../component/homepage/banner"));
@@ -26,9 +28,10 @@ const theme = createTheme({
     },
   },
 });
+const baseUrl = process.env.REACT_APP_BASE_URL
 
 function ProductsListing() {
-  const [loggedIn, setLoggedIn] = useContext(LoginContext);
+  const { loggedIn, token } = useContext(LoginContext);
   const [cartDep, setCartDep] = useContext(UserCartDependency);
   const [showFilters, setShowFilters] = useState(false);
   const [products, setProducts] = useState(null);
@@ -38,7 +41,7 @@ function ProductsListing() {
   const [brandId, setBrandId] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [productTypeId, setProductTypeId] = useState("");
-
+  const [showProductType, setShowProductType] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
 
   const [alert, setAlert] = useState({
@@ -47,32 +50,33 @@ function ProductsListing() {
     message: "",
     title: "",
   });
+
   const handleCloseAlert = () => {
     setAlert({ ...alert, open: false });
   };
 
   const location = useLocation();
   const navigate = useNavigate();
+  const brandQuery = new URLSearchParams(location.search).get("brand");
 
   const myFilter = new URLSearchParams(location.search).get("filter");
-// https://apps-1.lampnets.com/ecommb-prod/products
-// https://apps-1.lampnets.com/ecommb-prod/products
+
   const getFetchURL = (page) => {
-    if (myFilter == "new_products") {
-      return `https://apps-1.lampnets.com/ecommb-prod/products/customers/category/1/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
-    } else if (myFilter == "used_products") {
-      return `https://apps-1.lampnets.com/ecommb-prod/products/customers/category/2/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
-    } else if (myFilter == "new arrivals") {
-      return `https://apps-1.lampnets.com/ecommb-prod/products/pagination/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
-    } else if (myFilter == "best selling products") {
-      return `https://apps-1.lampnets.com/ecommb-prod/products/best-selling?pageNo=${page}&pageSize=12`;
-    } else if (myFilter == "recently viewed") {
-      return `https://apps-1.lampnets.com/ecommb-prod/products/reviewed?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+    if (myFilter === "new_products") {
+      return `${baseUrl}/ecommb-staging/products/customers/category/1/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+    } else if (myFilter === "used_products") {
+      return `${baseUrl}/ecommb-staging/products/customers/category/2/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+    } else if (myFilter === "new arrivals") {
+      return `${baseUrl}/ecommb-staging/products/pagination/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+    } else if (myFilter === "best selling products") {
+      return `${baseUrl}/ecommb-staging/products/best-selling?pageNo=${page}&pageSize=12`;
+    } else if (myFilter === "recently viewed") {
+      return `${baseUrl}/ecommb-staging/products/reviewed?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
     } else if (myFilter) {
       const encoded = encodeURI(myFilter);
-      return `https://apps-1.lampnets.com/ecommb-prod/products/search?pageNo=${page}&pageSize=12&query=${encoded}&sortBy=id&sortDir=asc`;
+      return `${baseUrl}/ecommb-staging/products/search?pageNo=${page}&pageSize=12&query=${encoded}&sortBy=id&sortDir=asc`;
     } else if (myFilter === null) {
-      return `https://apps-1.lampnets.com/ecommb-prod/products/pagination/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+      return `${baseUrl}/ecommb-staging/products/pagination/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
     }
   };
 
@@ -82,19 +86,31 @@ function ProductsListing() {
     setIsLoading(true);
 
     fetch(url)
-      .then((res) => {
-        return res.json();
-      })
+      .then((res) => res.json())
       .then((result) => {
-        // window.scrollTo(0, 0);
-        setProducts(result.content);
+        let filteredProducts = result.content;
+
+        if (brandQuery) {
+          filteredProducts = filteredProducts.filter(
+            (product) =>
+              (product.brand &&
+                product.brand
+                  .toLowerCase()
+                  .includes(brandQuery.toLowerCase())) ||
+              (product.name &&
+                product.name.toLowerCase().includes(brandQuery.toLowerCase()))
+          );
+        }
+
+        setProducts(filteredProducts);
         setTotalPages(result.totalPages);
         setIsLoading(false);
       })
       .catch((error) => {
-        console.error();
+        console.error(error);
+        setIsLoading(false);
       });
-  }, [currentPage, myFilter]);
+  }, [currentPage, myFilter, brandQuery]);
 
   const handleSearch = (searchTerm) => {
     setIsLoading(true);
@@ -102,7 +118,7 @@ function ProductsListing() {
     const encoded = encodeURI(searchTerm);
 
     fetch(
-      `https://apps-1.lampnets.com/ecommb-prod/products/search?pageNo=0&pageSize=12&query=${encoded}&sortBy=id&sortDir=asc`
+      `${baseUrl}/ecommb-staging/products/search?pageNo=0&pageSize=12&query=${encoded}&sortBy=id&sortDir=asc`
     )
       .then((res) => {
         return res.json();
@@ -120,7 +136,7 @@ function ProductsListing() {
 
   const handleFilter = () => {
     fetch(
-      `https://apps-1.lampnets.com/ecommb-prod/products/filter-products?${
+      `${baseUrl}/ecommb-staging/products/filter-products?${
         brandId && `brandId=${brandId}`
       }${categoryId && `&categoryId=${categoryId}`}&pageNo=0&pageSize=12${
         productTypeId && `&productTypeId=${productTypeId}`
@@ -140,15 +156,13 @@ function ProductsListing() {
   };
 
   const viewAll = () => {
-    // const url = getFetchURL(0);
-
     setIsLoading(true);
     setBrandId("");
     setCategoryId("");
     setProductTypeId("");
 
     fetch(
-      "https://apps-1.lampnets.com/ecommb-prod/products/pagination/active?pageNo=0&pageSize=12&sortBy=createdOn&sortDir=desc"
+      "${baseUrl}/ecommb-staging/products/pagination/active?pageNo=0&pageSize=12&sortBy=createdOn&sortDir=desc"
     )
       .then((res) => {
         return res.json();
@@ -178,41 +192,55 @@ function ProductsListing() {
   const handleAddToCart = (product) => {
     const dataToSend = { productId: product.id, quantity: 1 };
 
-    const accessToken = localStorage.getItem("token");
-
-    if (!loggedIn) {
+   if (!token) {
+        console.error("No authentication token found. User not logged in.");
+        // Redirect to login or show an error
+        navigate("/login");
+        return;
+    }
+  // Now proceed with your fetch call.
+    fetch(`${baseUrl}/ecommb-prod/cart-items/add`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            Authorization: "Bearer " + token, // This should now work
+        },
+        body: JSON.stringify(dataToSend),
+    })
+    // ...
+    if (!loggedIn || !token) { 
       navigate("/login", {
         state: {
           previousUrl: location.pathname,
         },
       });
     } else {
-      fetch("https://apps-1.lampnets.com/ecommb-prod/cart-items/add", {
+      fetch(`${baseUrl}/ecommb-prod/cart-items/add`, {
         method: "POST",
         headers: {
           "content-type": "application/json",
-          Authorization: "Bearer " + accessToken,
+          Authorization: "Bearer " + token, 
         },
         body: JSON.stringify(dataToSend),
       })
         .then((res) => {
-          if (res.status == 200) {
-            setCartDep(product.id);
-            setAlert({
-              ...alert,
-              open: true,
-              severity: "success",
-              title: "1 item added to cart",
-              message: `${product.name} is added to cart`,
-            });
-          } else {
+          if (!res.ok) { 
             setAlert({
               ...alert,
               open: true,
               severity: "info",
               title: "Item was not added to cart",
             });
+            throw new Error(`HTTP error! status: ${res.status}`);
           }
+          setCartDep(product.id);
+          setAlert({
+            ...alert,
+            open: true,
+            severity: "success",
+            title: "1 item added to cart",
+            message: `${product.name} is added to cart`,
+          });
         })
         .catch((error) => {
           setAlert({
@@ -246,57 +274,37 @@ function ProductsListing() {
         <Banner />
 
         <div className="flex items-start justify-between lg:px-8 lg:mt-6 mb-8">
+          {/* Side bar for product filter */}
           <div
             className="filterDesktop hidden lg:block w-80 max-h-[1300px] overflow-y-auto mr-20 bg-filter-green rounded"
             style={{ scrollBehavior: "smooth", scrollbarWidth: "none" }}
           >
             <div className="pb-8 px-3 flex flex-col gap-10">
+              {/* Filter Sections */}
               <div className="mt-3 text-right">
-                <IconButton
-                  sx={{ p: 0 }}
-                  onClick={handleFilter}
-                  title="click to send filter"
-                >
-                  <i className="bx bxs-send text-green"></i>
-                </IconButton>
                 <ProductFilter
-                  fetchUrl="https://apps-1.lampnets.com/ecommb-prod/categories"
+                  fetchUrl={`${baseUrl}/ecommb-prod/categories`}
                   title="category"
                   checked={categoryId}
                   setter={setCategoryId}
+                  onChange={handleFilter}
                 />
-              </div>
 
-              <div className="text-right">
-                <IconButton
-                  sx={{ p: 0 }}
-                  onClick={handleFilter}
-                  title="click to send filter"
-                >
-                  <i className="bx bxs-send text-green"></i>
-                </IconButton>
                 <ProductFilter
-                  fetchUrl="https://apps-1.lampnets.com/ecommb-prod/brands"
+                  fetchUrl={`${baseUrl}/ecommb-prod/brands`}
                   title="brands"
                   checked={brandId}
                   setter={setBrandId}
+                  onChange={handleFilter}
                 />
-              </div>
 
-              <div className="text-right">
-                <IconButton
-                  sx={{ p: 0 }}
-                  onClick={handleFilter}
-                  title="click to send filter"
-                >
-                  <i className="bx bxs-send text-green"></i>
-                </IconButton>
-                <ProductFilter
-                  fetchUrl="https://apps-1.lampnets.com/ecommb-prod/product-types"
+                {/* <ProductFilter
+                  fetchUrl="${baseUrl}/ecommb-prod/product-types"
                   title="product"
                   checked={productTypeId}
                   setter={setProductTypeId}
-                />
+                  onChange={handleFilter}
+                /> */}
               </div>
 
               <div className="flex justify-end items-center">
@@ -313,6 +321,7 @@ function ProductsListing() {
             </div>
           </div>
 
+          {/* Product cards displayed */}
           <div className="w-full md:pl-4 lg:pl-0">
             <div className="sticky top-[9%] z-20 bg-filter-green md:relative md:bg-transparent">
               <SearchBox show={handleOpen} search={handleSearch} />
@@ -326,25 +335,25 @@ function ProductsListing() {
                     }
                   >
                     <ProductFilter
-                      fetchUrl="https://apps-1.lampnets.com/ecommb-prod/categories"
+                      fetchUrl={`${baseUrl}/ecommb-prod/categories`}
                       title="category"
                       checked={categoryId}
                       setter={setCategoryId}
                     />
                     <ProductFilter
-                      fetchUrl="https://apps-1.lampnets.com/ecommb-prod/brands"
+                      fetchUrl={`${baseUrl}/ecommb-prod/brands`}
                       title="brands"
                       checked={brandId}
                       setter={setBrandId}
                     />
                     <ProductFilter
-                      fetchUrl="https://apps-1.lampnets.com/ecommb-prod/product-types"
+                      fetchUrl={`${baseUrl}/ecommb-prod/product-types`}
                       title="product"
                       checked={productTypeId}
                       setter={setProductTypeId}
                     />
 
-                    <div className="flex justify-end  items-center">
+                    <div className="flex justify-end  items-center">
                       <button
                         type="button"
                         onClick={() => {
@@ -372,31 +381,47 @@ function ProductsListing() {
               ) : null}
             </div>
 
-            {/* {isLoading && <Loading />} */}
-
-            <div className="my-5 px-2 flex flex-col justify-between gap-10 md:px-6 lg:px-0">
-              {isLoading ? (
-                <div className="lg:h-screen flex justify-center items-center">
-                  <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-full border-8 border-solid border-green bg-transparent flex justify-center items-center loader">
-                    <div className="w-full h-full rounded-full bg-transparent"></div>
-                    <div
-                      style={{ top: "-10px" }}
-                      className="w-5 h-5 absolute bg-[#fbfbfb] z-50"
-                    ></div>
-                  </div>
+            {isLoading ? (
+              <div className="lg:h-screen flex justify-center items-center">
+                <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-full border-8 border-solid border-green bg-transparent flex justify-center items-center loader">
+                  <div className="w-full h-full rounded-full bg-transparent"></div>
+                  <div
+                    style={{ top: "-10px" }}
+                    className="w-5 h-5 absolute bg-[#fbfbfb] z-50"
+                  ></div>
                 </div>
-              ) : (
-                <MainGroups addToCart={handleAddToCart} products={products} />
-              )}
-              {/* <MainGroups products={products} /> */}
-            </div>
+              </div>
+            ) : !products || products.length === 0 ? (
+              <div className="text-center text-gray-500 text-lg flex flex-col gap-4 items-center">
+                {brandQuery ? (
+                  <>
+                    <p>
+                      No products found for brand: <strong>{brandQuery}</strong>
+                    </p>
+                    <button
+                      onClick={() => navigate("/products")}
+                      className="bg-green text-white px-4 py-2 rounded hover:bg-dark-green transition duration-300"
+                    >
+                      View All Products
+                    </button>
+                  </>
+                ) : (
+                  <p>No products found for this category.</p>
+                )}
+              </div>
+            ) : (
+              <MainGroups addToCart={handleAddToCart} products={products} />
+            )}
+
+            {/* {showProductType && (
+              <ProductTypes onClose={() => setShowProductType(false)} />
+            )} */}
           </div>
         </div>
 
         <div className="w-full flex justify-center items-center">
           <ThemeProvider theme={theme}>
             <Pagination
-              // sx={{ backgroundColor: "red" }}
               count={totalPages}
               shape="rounded"
               color="primary"
@@ -415,7 +440,7 @@ function ProductsListing() {
           </ThemeProvider>
         </div>
 
-        <SubProducts addToCart={handleAddToCart} />
+        {/* <SubProducts addToCart={handleAddToCart} /> */}
       </div>
     </Suspense>
   );

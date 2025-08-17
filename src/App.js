@@ -27,6 +27,8 @@ import ProductsListing from "./pages/products/ProductListingPage";
 import ProductDesc from "./pages/products/ProductDescPage";
 import { MyWishlists } from "./pages/wishlist";
 import BlogDetails from "./component/blogDetails";
+import BrandsGrid from "./pages/products/Brands";
+import ProductTypesOverlay from "./pages/products/ProductType";
 
 export const LoginContext = createContext();
 export const UserProfileContext = createContext();
@@ -174,6 +176,14 @@ function App() {
                           <Route
                             path="/privacy-policy"
                             element={<PrivacyPolicy />}
+                          />
+                           <Route
+                            path="/product-type"
+                            element={<ProductTypesOverlay />}
+                          />
+                           <Route
+                            path="/brands"
+                            element={<BrandsGrid />}
                           />
                         </Route>
                         <Route path="*" element={<PageNotFound />} />

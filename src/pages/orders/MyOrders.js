@@ -39,6 +39,8 @@ const localOrders = [
   },
 ];
 
+const baseUrl = process.env.REACT_APP_BASE_URL
+
 // const accessToken = localStorage.getItem("token");
 
 function MyOrders() {
@@ -59,7 +61,7 @@ function MyOrders() {
   useEffect(() => {
     const accessToken = localStorage.getItem("token");
 
-    fetch("https://apps-1.lampnets.com/ecommb-staging/orders/my-orders", {
+    fetch(`${baseUrl}/ecommb-staging/orders/my-orders`, {
       headers: {
         "content-type": "application/json",
         Authorization: "Bearer " + accessToken,

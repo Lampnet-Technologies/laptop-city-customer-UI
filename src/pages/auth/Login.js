@@ -5,7 +5,9 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { LoginContext } from "../../App";
 import CustomAlert from "../../component/CustomAlert";
 
-const loginAPI = "https://apps-1.lampnets.com/ecommb-staging/login";
+const baseUrl = process.env.REACT_APP_BASE_URL
+
+const loginAPI = `${baseUrl}/ecommb-staging/login`;
 
 function Login() {
   const [loggedIn, setLoggedIn] = useContext(LoginContext);

@@ -8,6 +8,7 @@ import NairaSymbol from "../../component/nairaSymbol";
 //     "In Progress": "#9E2ED2",
 //     Delivered: "#00A6CA",
 //   };
+const baseUrl =process.env. REACT_APP_BASE_URL
 
 function OrderDetails() {
   const [order, setOrder] = useState("");
@@ -20,7 +21,7 @@ function OrderDetails() {
 
   useEffect(() => {
     if (id) {
-      fetch(`https://apps-1.lampnets.com/ecommb-staging/orders/${id}`)
+      fetch(`${baseUrl}/ecommb-staging/orders/${id}`)
         .then((res) => {
           return res.json();
         })

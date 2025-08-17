@@ -25,7 +25,7 @@ function ProductContainer({ item, deleteItem, addToCart }) {
           />
         </div>
         <div className="bg-green text-[10px] text-white font-medium capitalize w-10 h-5 rounded-sm flex justify-center items-center absolute top-4 right-2 z-10">
-          {item.product.category.name == "BRAND NEW" ? "new" : "used"}
+          {item.product.category.name === "BRAND NEW" ? "new" : "used"}
         </div>
       </div>
       <div className="h-[58%] md:h-[55%] flex flex-col gap-1 justify-between px-2 py-3">

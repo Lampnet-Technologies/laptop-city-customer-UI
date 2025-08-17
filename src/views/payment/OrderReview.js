@@ -9,6 +9,8 @@ import { PlaceOrderContext } from "../../App";
 
 const accessToken = localStorage.getItem("token");
 
+const baseUrl = process.env.REACT_APP_BASE_URL
+
 function OrderReview({ cart, back, goTo }) {
   const [placeOrder, setPlaceOrder] = useContext(PlaceOrderContext);
   const [discount, setDiscount] = useContext(CouponDiscount);
@@ -31,7 +33,7 @@ function OrderReview({ cart, back, goTo }) {
 
     try {
       const response = await fetch(
-        "https://apps-1.lampnets.com/ecommb-staging/orders/place-order",
+        `${baseUrl}/ecommb-staging/orders/place-order`,
         {
           method: "POST",
           headers: {
