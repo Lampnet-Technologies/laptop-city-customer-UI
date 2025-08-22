@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import IMAGES from "../../assets";
 import LaptopCityButton from "../../component/button";
 import { Banner } from "../../component/homepage";
-import { Groups } from "../../component/homepage/productGroups";
+import ProductGroups, { Groups } from "../../component/homepage/productGroups";
 import NairaSymbol from "../../component/nairaSymbol";
 import { LoginContext, UserCartDependency } from "../../App";
 import Loading from "../../component/loading";
@@ -120,7 +120,7 @@ function ImagesPreviews({ files }) {
               {files && (
                 <img
                   src={files[currentIndex].image}
-                  alt="image-1"
+                  alt="product-1"
                   className="max-w-full max-h-full object-fill"
                 />
               )}

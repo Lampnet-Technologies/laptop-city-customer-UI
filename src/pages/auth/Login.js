@@ -1,13 +1,11 @@
-import React, { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
 import { Banner } from "../../component/homepage";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-// import LaptopCityButton from "../../component/button";
 import { LoginContext } from "../../App";
 import CustomAlert from "../../component/CustomAlert";
 
-const baseUrl = process.env.REACT_APP_BASE_URL
-
-const loginAPI = `${baseUrl}/ecommb-staging/login`;
+const baseUrl = process.env.REACT_APP_BASE_URL;
+const loginAPI = `${baseUrl}/login`;
 
 function Login() {
   const [loggedIn, setLoggedIn] = useContext(LoginContext);
@@ -17,7 +15,6 @@ function Login() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-
   const [loading, setLoading] = useState(false);
 
   const [alert, setAlert] = useState({
@@ -26,12 +23,13 @@ function Login() {
     message: "",
     title: "",
   });
-  const handleCloseAlert = () => {
-    setAlert({ ...alert, open: false });
-  };
 
   const navigate = useNavigate();
   const location = useLocation();
+
+  const handleCloseAlert = () => {
+    setAlert({ ...alert, open: false });
+  };
 
   const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value });
@@ -50,24 +48,43 @@ function Login() {
       const res = await fetch(loginAPI, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        body: JSON.stringify({
+          usernameOrEmail: values.usernameOrEmail,
+          password: values.password,
+        }),
       });
 
       if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || "Login failed");
+        if (res.status === 401) {
+          throw new Error("Invalid username/email or password");
+        }
+        throw new Error(`Login failed: ${res.status}`);
       }
 
       const result = await res.json();
+
+      // Store token & update context
       localStorage.setItem("token", result.accessToken);
       setLoggedIn(true);
-      navigate(location?.state?.previousUrl || "/products");
+
+      // Show success alert
+      setAlert({
+        open: true,
+        severity: "success",
+        title: "Login Successful",
+        message: `Welcome back 🎉`,
+      });
+
+      // Navigate after short delay so user sees alert
+      setTimeout(() => {
+        navigate(location?.state?.previousUrl || "/products");
+      }, 800);
     } catch (error) {
       setAlert({
         open: true,
         severity: "error",
         title: "Login Failed",
-        message: error.message,
+        message: error.message || "Invalid credentials",
       });
       setValues({ usernameOrEmail: "", password: "" });
     } finally {
@@ -75,17 +92,12 @@ function Login() {
     }
   };
 
-
   return (
     <div className="my-10 md:my-16 lg:my-20">
       <Banner />
 
       {alert && alert.severity && (
-        <CustomAlert
-          open={alert.open}
-          details={alert}
-          close={handleCloseAlert}
-        />
+        <CustomAlert open={alert.open} details={alert} close={handleCloseAlert} />
       )}
 
       <div className="my-8 p-4 lg:my-20 md:w-4/5 lg:w-3/5 md:mx-auto">
@@ -104,6 +116,7 @@ function Login() {
             <input
               required
               autoFocus
+              autoComplete="username"
               name="usernameOrEmail"
               type="text"
               id="usernameOrEmail"
@@ -114,10 +127,7 @@ function Login() {
           </div>
 
           <div className="flex flex-col gap-3 mb-4 md:gap-5 md:mb-8">
-            <label
-              className="text-sm font-medium md:text-lg"
-              htmlFor="password"
-            >
+            <label className="text-sm font-medium md:text-lg" htmlFor="password">
               Password *
             </label>
             <div className="relative">
@@ -128,6 +138,7 @@ function Login() {
                 type={showPassword ? "text" : "password"}
                 value={values.password}
                 onChange={handleChange("password")}
+                autoComplete="current-password"
                 className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 pr-12 outline-0 font-light text-sm"
               />
               <button
@@ -145,10 +156,7 @@ function Login() {
           </div>
 
           <div className="mb-4 md:mb-8">
-            <Link
-              to=""
-              className="text-sm text-green font-normal underline md:text-lg"
-            >
+            <Link to="" className="text-sm text-green font-normal underline md:text-lg">
               Forgot Password?
             </Link>
           </div>

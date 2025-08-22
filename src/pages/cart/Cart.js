@@ -21,7 +21,7 @@ function Cart() {
   const [deleteAlert, setDeleteAlert] = useState(false);
   const idRef = useRef();
 
-  const baseUrl = process.env.REACT_APP_BASE_URL
+  const baseUrl = process.env.REACT_APP_BASE_URL;
 
   const [alert, setAlert] = useState({
     open: false,
@@ -69,7 +69,7 @@ function Cart() {
     const dataToSend = { productId: productId, quantity: newQuantity };
 
     fetch(
-      `${baseUrl}/ecommb-staging/cart-items/edit/${cartId}`,
+      `${baseUrl}/cart-items/edit/${cartId}`,
       {
         method: "PUT",
         headers: {
@@ -125,7 +125,7 @@ function Cart() {
     const dataToSend = { productId: productId, quantity: newQuantity };
 
     fetch(
-      `${baseUrl}/ecommb-staging/cart-items/edit/${cartId}`,
+      `${baseUrl}/cart-items/edit/${cartId}`,
       {
         method: "PUT",
         headers: {
@@ -191,7 +191,7 @@ function Cart() {
     }
 
     fetch(
-      `${baseUrl}/ecommb-staging/cart-items/delete/${idRef.current}`,
+      `${baseUrl}/cart-items/delete/${idRef.current}`,
       {
         method: "DELETE",
         headers: {
@@ -236,7 +236,7 @@ function Cart() {
 
     const dataToSend = { couponCode: code };
 
-    fetch(`${baseUrl}/ecommb-staging/coupons/verify`, {
+    fetch(`${baseUrl}/coupons/verify`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -1,54 +1,58 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import NairaSymbol from "../../component/nairaSymbol";
 
-// const statusObj = {
-//     Canceled: "#FF1700",
-//     Shipped: "#56CA00",
-//     "In Progress": "#9E2ED2",
-//     Delivered: "#00A6CA",
-//   };
-const baseUrl =process.env. REACT_APP_BASE_URL
+const baseUrl = process.env.REACT_APP_BASE_URL;
 
 function OrderDetails() {
-  const [order, setOrder] = useState("");
-  const [orderItems, setOrderItems] = useState("");
-  const [total, setTotal] = useState("");
+  const [order, setOrder] = useState(null);
+  const [orderItems, setOrderItems] = useState([]);
+  const [total, setTotal] = useState(0);
 
   const params = useParams();
-
   const id = params.id;
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    if (id) {
-      fetch(`${baseUrl}/ecommb-staging/orders/${id}`)
+    if (id && token) {
+      fetch(`${baseUrl}/orders/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
         .then((res) => {
+          if (!res.ok) throw new Error("Failed to fetch order details");
           return res.json();
         })
         .then((result) => {
           setOrder(result);
         })
         .catch((error) => {
-          console.error();
+          console.error(error);
         });
     }
-  }, [id]);
+  }, [id, token]);
 
   useEffect(() => {
-    if (id) {
-      fetch(`https://apps-1.lampnets.com/ecommb-staging/order-items/${id}`)
+    if (id && token) {
+      fetch(`${baseUrl}/order-items/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
         .then((res) => {
+          if (!res.ok) throw new Error("Failed to fetch order items");
           return res.json();
         })
         .then((result) => {
-          setOrderItems(result.orderItems);
-          setTotal(result.total);
+          setOrderItems(result.orderItems || []);
+          setTotal(result.total || 0);
         })
         .catch((error) => {
-          console.error();
+          console.error(error);
         });
     }
-  }, [id]);
+  }, [id, token]);
 
   let num = 1;
 
@@ -57,7 +61,7 @@ function OrderDetails() {
       <div className="border-b border-b-solid border-b-gray-400 p-4 md:p-8 text-center text-lg font-semibold capitalize md:text-xl lg:text-[24px]">
         {order && order.orderNumber
           ? "Order #" + order.orderNumber
-          : order.message}
+          : order?.message || "Loading..."}
       </div>
 
       <div className="overflow-x-auto pb-3 mt-12 mb-24">
@@ -98,72 +102,62 @@ function OrderDetails() {
             </tr>
           </thead>
 
-          {orderItems && (
+          {orderItems && orderItems.length > 0 && (
             <tbody>
-              {orderItems.map((row) => {
-                return (
-                  <tr
-                    style={{
-                      borderBlock: "0.5px solid #7f98ae",
-                      cursor: "pointer",
-                    }}
-                    key={row.id}
-                  >
-                    <td className="text-sm font-normal leading-6 capitalize p-5 text-center">
-                      {num++}
-                    </td>
-                    <td className="text-sm font-normal leading-6 capitalize p-5 text-center">
-                      <div className="mx-auto w-20 h-14 rounded-md flex justify-center items-center">
+              {orderItems.map((row) => (
+                <tr
+                  style={{
+                    borderBlock: "0.5px solid #7f98ae",
+                    cursor: "pointer",
+                  }}
+                  key={row.id}
+                >
+                  <td className="text-sm font-normal leading-6 capitalize p-5 text-center">
+                    {num++}
+                  </td>
+                  <td className="text-sm font-normal leading-6 capitalize p-5 text-center">
+                    <div className="mx-auto w-20 h-14 rounded-md flex justify-center items-center">
+                      <img
+                        src={row.product.images[0]?.image}
+                        alt={row.product.name}
+                        style={{
+                          maxWidth: "70%",
+                          maxHeight: "100%",
+                          borderRadius: "5px",
+                        }}
+                      />
+                    </div>
+                  </td>
+                  <td className="text-sm font-normal leading-6 capitalize p-5 text-left">
+                    <div className="flex flex-col flex-nowrap gap-2 py-2">
+                      <p className="font-semibold">{row.product.name}</p>
+                      <div
+                        className={`font-medium capitalize rounded text-center text-[10px] py-[1px] px-4 w-fit border border-solid ${
+                          row.product.category === "BRAND NEW"
+                            ? "border-green text-green"
+                            : "border-[#FFB400] text-[#FFB400]"
+                        }`}
+                      >
+                        {row.product.category === "BRAND NEW" ? "new" : "used"}
+                      </div>
+                      <div className="w-8 h-8 flex justify-center items-center">
                         <img
-                          src={row.product.images[0]?.image}
-                          alt={row.product.name}
-                          style={{
-                            maxWidth: "70%",
-                            maxHeight: "100%",
-                            borderRadius: "5px",
-                          }}
+                          src={row.product.brand.logo || ""}
+                          alt={row.product.brand.name}
+                          className="max-w-full max-h-full w-full h-full object-fill"
                         />
                       </div>
-                    </td>
-                    <td className="text-sm font-normal leading-6 capitalize p-5 text-left">
-                      <div className="flex flex-col flex-nowrap gap-2 py-2">
-                        <p className="font-semibold">{row.product.name}</p>
-                        {/* <p>Category:</p> */}
-                        <div
-                          className={`font-medium capitalize rounded text-center text-[10px] py-[1px] px-4 w-fit border border-solid ${
-                            row.product.category == "BRAND NEW"
-                              ? "border-green text-green"
-                              : "border-[#FFB400] text-[#FFB400]"
-                          } `}
-                          //   style={{
-                          //     fontSize: "10px", // #FFB400
-                          //   }}
-                        >
-                          {row.product.category == "BRAND NEW" ? "new" : "used"}
-                        </div>
-                        <div className="w-8 h-8 flex justify-center items-center">
-                          <img
-                            src={
-                              row.product.brand.logo
-                                ? row.product.brand.logo
-                                : ""
-                            }
-                            alt={row.product.brand.name}
-                            className="max-w-full max-h-full w-full h-full object-fill"
-                          />
-                        </div>
-                      </div>
-                    </td>
-                    <td className="text-sm font-normal leading-6 capitalize p-5 text-center">
-                      {row.quantity}
-                    </td>
-                    <td className="text-sm leading-6 capitalize p-5 text-right font-medium">
-                      <NairaSymbol />
-                      {row.product.price}
-                    </td>
-                  </tr>
-                );
-              })}
+                    </div>
+                  </td>
+                  <td className="text-sm font-normal leading-6 capitalize p-5 text-center">
+                    {row.quantity}
+                  </td>
+                  <td className="text-sm leading-6 capitalize p-5 text-right font-medium">
+                    <NairaSymbol />
+                    {row.product.price}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           )}
         </table>

@@ -240,12 +240,11 @@ function Nav() {
                 </button>
 
                 {showCategoryMenu && (
-                  <ul className="bg-white shadow p-3 rounded mt-2">
+                  <ul className="bg-white shadow p-3 rounded mt-2 absolute">
                     <li
                       onClick={() => {
                         setShowCategoryMenu(false);
-                        navigate("/product-type");
-                        // s?filter=new_product
+                        navigate("/products?condition=new");
                       }}
                       className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all p-2"
                     >
@@ -254,8 +253,7 @@ function Nav() {
                     <li
                       onClick={() => {
                         setShowCategoryMenu(false);
-                        navigate("/product-type");
-                        // s?filter=used_products
+                        navigate("/products?condition=used");
                       }}
                       className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all p-2"
                     >
@@ -318,8 +316,7 @@ function Nav() {
                     <li
                       onClick={() => {
                         setShowCategoryMenu(false);
-                        navigate("/product-type");
-                        // s?filter=new_products
+                        navigate("/products?condition=new");
                       }}
                       className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all p-2"
                     >
@@ -328,8 +325,7 @@ function Nav() {
                     <li
                       onClick={() => {
                         setShowCategoryMenu(false);
-                        navigate("/product-type");
-                        // ?filter=used_products
+                        navigate("/products?condition=used");
                       }}
                       className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all p-2"
                     >
@@ -443,8 +439,7 @@ function Nav() {
                     <li
                       onClick={() => {
                         setShowCategoryMenu(false);
-                        navigate("/product-type");
-                        // s?filter=new_products
+                        navigate("/products?condition=new");
                       }}
                       className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all p-2"
                     >
@@ -453,8 +448,7 @@ function Nav() {
                     <li
                       onClick={() => {
                         setShowCategoryMenu(false);
-                        navigate("/product-type");
-                        // ?filter=used_products
+                        navigate("/products?condition=used");
                       }}
                       className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all p-2"
                     >
@@ -557,8 +551,7 @@ function Nav() {
                     <li
                       onClick={() => {
                         setShowCategoryMenu(false);
-                        navigate("/product-type");
-                        // s?filter=new_products
+                        navigate("/products?condition=new");
                       }}
                       className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all p-2"
                     >
@@ -567,8 +560,7 @@ function Nav() {
                     <li
                       onClick={() => {
                         setShowCategoryMenu(false);
-                        navigate("/product-type");
-                        // ?filter=used_products
+                        navigate("/products?condition=used");
                       }}
                       className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all p-2"
                     >

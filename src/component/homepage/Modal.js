@@ -1,6 +1,10 @@
-import React from "react";
 
 const Modal = ({ isOpen, onClose, onSelect }) => {
+  const conditions = [
+    { id: 'new', label: 'New Products' },
+    { id: 'used', label: 'Used Products' }
+  ];
+
   if (!isOpen) return null;
 
   return (
@@ -8,24 +12,18 @@ const Modal = ({ isOpen, onClose, onSelect }) => {
       <div className="bg-white rounded-lg p-6 w-80 shadow-lg">
         <h3 className="text-lg font-bold mb-4">Choose Product Type</h3>
         <div className="flex flex-col space-y-3">
-          <button
-            className="w-full bg-gray-600 text-white py-2 rounded hover:bg-gray-700"
-            onClick={() => {
-              onSelect("new");
-              onClose();
-            }}
-          >
-            New Products
-          </button>
-          <button
-            className="w-full border-2 text-red py-2 rounded hover:bg-green-700"
-            onClick={() => {
-              onSelect("used");
-              onClose();
-            }}
-          >
-            Used Products
-          </button>
+          {conditions.map(({ id, label }) => (
+            <button
+              key={id}
+              onClick={() => {
+                onSelect(id);
+                onClose();
+              }}
+              className="w-full bg-gray-600 text-white py-2 rounded hover:bg-gray-700"
+            >
+              {label}
+            </button>
+          ))}
           <button
             className="w-full text-sm text-gray-500 mt-2"
             onClick={onClose}

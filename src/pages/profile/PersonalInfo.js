@@ -5,11 +5,7 @@ import CustomAlert from "../../component/CustomAlert";
 import IMAGES from "../../assets";
 import axios from "axios";
 
-const getProfile =
-  "https://apps-1.lampnets.com/ecommb-staging/profiles/my-profile";
-const updateProfile =
-  "https://apps-1.lampnets.com/ecommb-staging/profiles/edit-profile";
-const accessToken = () => localStorage.getItem("token");
+const baseUrl = process.env.REACT_APP_BASE_URL;
 
 function PersonalInfo() {
   const [profile, setProfile] = useContext(UserProfileContext);
@@ -24,6 +20,9 @@ function PersonalInfo() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState();
+  const hiddenFileInput = useRef(null);
+  const navigate = useNavigate();
 
   const [alert, setAlert] = useState({
     open: false,
@@ -31,102 +30,102 @@ function PersonalInfo() {
     message: "",
     title: "",
   });
-  const handleCloseAlert = () => {
-    setAlert({ ...alert, open: false });
-  };
+  const handleCloseAlert = () => setAlert({ ...alert, open: false });
 
-  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    setValues({
-      ...values,
-      firstName: profile.firstName,
-      lastName: profile.lastName,
-      username: profile.username,
-      email: profile.email,
-      avatar: profile.avatar,
-    });
+    if (profile) {
+      setValues({
+        firstName: profile.firstName || "",
+        lastName: profile.lastName || "",
+        username: profile.username || "",
+        email: profile.email || "",
+        avatar: profile.avatar || "",
+        password: "",
+      });
+    }
   }, [profile]);
 
   const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value });
   };
 
-  const handleShowPassword = () => {
-    setShowPassword((prev) => !prev);
+  const handleShowPassword = () => setShowPassword((prev) => !prev);
+
+  const handleSelectImage = () => hiddenFileInput.current.click();
+
+  const handleFileEvent = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+    const chosenFile = { file, name: file.name, url };
+
+    setUploadedFile(chosenFile);
+    setValues({ ...values, avatar: chosenFile.url });
+  };
+
+  // Cloudinary config
+  const presetKey = "nwanxche_preset";
+  const cloudName = "dikleyjwz";
+
+  const getCloudinaryURL = async (image) => {
+    const formData = new FormData();
+    formData.append("file", image);
+    formData.append("upload_preset", presetKey);
+
+    const { data } = await axios.post(
+      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+      formData,
+      { headers: { "content-type": "multipart/form-data" } }
+    );
+
+    return data.secure_url;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
+      let updatedAvatar = values.avatar;
+
       if (uploadedFile) {
-        const image = await getCloudinaryURL(uploadedFile.file);
-
-        const dataToSend = { ...profile, ...values, avatar: image };
-
-        fetch(updateProfile, {
-          method: "PUT",
-          headers: {
-            "content-type": "application/json",
-            Authorization: "Bearer " + accessToken(),
-          },
-          body: JSON.stringify(dataToSend),
-        })
-          .then((res) => {
-            if (res.status == 200) {
-              setAlert({
-                ...alert,
-                open: true,
-                severity: "success",
-                title: "Profile Updated Successfully",
-              });
-
-              setCartDep(1);
-            }
-          })
-          .catch((error) => {
-            setAlert({
-              ...alert,
-              open: true,
-              severity: "error",
-              title: "Failed to update profile",
-              message: error.message,
-            });
-          });
-      } else {
-        const dataToSend = { ...profile, ...values };
-
-        fetch(updateProfile, {
-          method: "PUT",
-          headers: {
-            "content-type": "application/json",
-            Authorization: "Bearer " + accessToken(),
-          },
-          body: JSON.stringify(dataToSend),
-        })
-          .then((res) => {
-            if (res.status == 200) {
-              setAlert({
-                ...alert,
-                open: true,
-                severity: "success",
-                title: "Profile Updated Successfully",
-              });
-
-              setCartDep(1);
-            }
-          })
-          .catch((error) => {
-            setAlert({
-              ...alert,
-              open: true,
-              severity: "error",
-              title: "Failed to update profile",
-              message: error.message,
-            });
-          });
+        updatedAvatar = await getCloudinaryURL(uploadedFile.file);
       }
+
+      const dataToSend = { ...profile, ...values, avatar: updatedAvatar };
+
+      fetch(`${baseUrl}/profiles/edit-profile`, {
+        method: "PUT",
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(dataToSend),
+      })
+        .then((res) => {
+          if (res.ok) {
+            setAlert({
+              ...alert,
+              open: true,
+              severity: "success",
+              title: "Profile Updated Successfully",
+            });
+            setCartDep(1);
+          } else {
+            throw new Error("Failed to update profile");
+          }
+        })
+        .catch((error) => {
+          setAlert({
+            ...alert,
+            open: true,
+            severity: "error",
+            title: "Failed to update profile",
+            message: error.message,
+          });
+        });
     } catch (err) {
       setAlert({
         ...alert,
@@ -136,51 +135,6 @@ function PersonalInfo() {
         message: err.message,
       });
     }
-  };
-
-  // ** For Image Selection
-  const hiddenFileInput = useRef(null);
-
-  const handleSelectImage = (e) => {
-    hiddenFileInput.current.click();
-  };
-
-  const presetKey = "nwanxche_preset";
-  const cloudName = "dikleyjwz";
-
-  const [uploadedFile, setUploadedFile] = useState();
-
-  const handleFileEvent = (e) => {
-    let chosenFile;
-
-    const file = e.target.files[0];
-    const name = file.name;
-    const url = URL.createObjectURL(file);
-    chosenFile = { file, name, url };
-
-    setUploadedFile(chosenFile);
-    setValues({ ...values, avatar: chosenFile.url });
-  };
-
-  // ** convert selected images to cloudinary url
-  const getCloudinaryURL = async (image) => {
-    let imageFile;
-
-    const formData = new FormData();
-    formData.append("file", image);
-    formData.append("upload_preset", presetKey);
-    const { data } = await axios.post(
-      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-      formData,
-      {
-        headers: {
-          "content-type": "multipart/form-data",
-        },
-      }
-    );
-    imageFile = data.secure_url;
-
-    return imageFile;
   };
 
   return (
@@ -196,6 +150,7 @@ function PersonalInfo() {
       <form className="px-4 py-8 md:px-10 lg:px-[100px] xl:px-[120px] md:py-4">
         <div className="flex flex-col-reverse xl:flex-row gap-6 xl:gap-12 justify-between items-start">
           <div className="w-full xl:flex-1">
+            {/* First Name */}
             <div className="flex flex-col gap-3 mb-4 lg:gap-4 lg:mb-5">
               <label className="text-sm font-medium" htmlFor="firstName">
                 First Name
@@ -209,6 +164,7 @@ function PersonalInfo() {
               />
             </div>
 
+            {/* Last Name */}
             <div className="flex flex-col gap-3 mb-4 lg:gap-4 lg:mb-5">
               <label className="text-sm font-medium" htmlFor="lastName">
                 Last Name
@@ -222,6 +178,7 @@ function PersonalInfo() {
               />
             </div>
 
+            {/* Username */}
             <div className="flex flex-col gap-3 mb-4 lg:gap-4 lg:mb-5">
               <label className="text-sm font-medium" htmlFor="username">
                 Username
@@ -235,6 +192,7 @@ function PersonalInfo() {
               />
             </div>
 
+            {/* Email */}
             <div className="flex flex-col gap-3 mb-4 lg:gap-4 lg:mb-5">
               <label className="text-sm font-medium" htmlFor="email">
                 Email address
@@ -248,6 +206,7 @@ function PersonalInfo() {
               />
             </div>
 
+            {/* Password */}
             <div className="flex flex-col gap-3 mb-4 lg:gap-4 lg:mb-5">
               <label className="text-sm font-medium" htmlFor="password">
                 Password
@@ -281,6 +240,7 @@ function PersonalInfo() {
             </div>
           </div>
 
+          {/* Avatar upload */}
           <div className="space-y-4 w-[150px] xl:w-[200px]">
             <div className="w-[150px] h-[150px] xl:w-[200px] xl:h-[200px] border flex justify-center items-center rounded bg-gray-300">
               {!values.avatar ? (
@@ -324,7 +284,6 @@ function PersonalInfo() {
             className="bg-transparent outline-0 font-semibold text-green tracking-tight underline lg:text-lg"
             onClick={handleSubmit}
           >
-            {" "}
             Save changes
           </button>
         </div>

@@ -22,7 +22,7 @@ function MyWishlists() {
   // This is the missing line.
   const navigate = useNavigate();
 
-  const baseUrl = process.env.REACT_APP_BASE_URL
+  const baseUrl = process.env.REACT_APP_BASE_URL;
 
   useEffect(() => {
     // Only fetch if logged in and a token is available
@@ -31,7 +31,7 @@ function MyWishlists() {
       return;
     }
 
-    fetch(`${baseUrl}/ecommb-staging/wish-lists/my-wishlist`, {
+    fetch(`${baseUrl}/wish-lists/my-wishlist`, {
       headers: {
         "content-type": "application/json",
         Authorization: "Bearer " + token,
@@ -67,7 +67,7 @@ function MyWishlists() {
       return;
     }
     
-    fetch(`${baseUrl}/ecommb-staging/cart-items/add`, {
+    fetch(`${baseUrl}/cart-items/add`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -119,7 +119,7 @@ function MyWishlists() {
     }
 
     fetch(
-      `${baseUrl}/ecommb-staging/wish-lists/remove/${idRef.current}`,
+      `${baseUrl}/wish-lists/remove/${idRef.current}`,
       {
         method: "DELETE",
         headers: {

@@ -40,9 +40,9 @@ function ProductContainer({ product, addToCart }) {
             fontSize: "10px",
           }}
         >
-          {product.category == "BRAND NEW" ? "new" : "used"}
+          {product.category === "BRAND NEW" ? "new" : "used"}
         </div>
-        
+
       </div>
       <div className="flex flex-col gap-1 justify-between h-20 px-2 pb-3 lg:h-28 lg:pt-2">
         <p className="text-xs md:text-sm font-medium capitalize">

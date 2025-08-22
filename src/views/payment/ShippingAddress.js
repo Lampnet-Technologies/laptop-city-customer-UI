@@ -1,6 +1,11 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { PlaceOrderContext } from "../../App";
+
+const createSenderAddressUrl =
+  "https://apps-1.lampnets.com/ecommb-staging/shipping/sender-address";
+
+const accessToken = () => localStorage.getItem("token");
 
 function ShippingAddress({ goTo }) {
   const [placeOrder, setPlaceOrder] = useContext(PlaceOrderContext);
@@ -18,11 +23,12 @@ function ShippingAddress({ goTo }) {
 
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
+  const [isLoadingStates, setIsLoadingStates] = useState(false);
+  const [isLoadingCities, setIsLoadingCities] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
-  const [isLoadingStates, setIsLoadingStates] = useState(false);
-  const [isLoadingCities, setIsLoadingCities] = useState(false);
 
   useEffect(() => {
     setIsLoadingStates(true);
@@ -40,7 +46,6 @@ function ShippingAddress({ goTo }) {
           console.error("States data missing or malformed:", result);
         }
       })
-
       .catch((error) => {
         console.log(error.message);
       })
@@ -78,25 +83,53 @@ function ShippingAddress({ goTo }) {
     setValues({ ...values, [prop]: event.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-   
+    setSubmitting(true);
 
-    setPlaceOrder({
-      ...placeOrder,
-      shippingAddress: {
-        firstName: values.firstName,
-        lastName: values.lastName,
-        email: values.email,
-        address: values.address,
-        state: values.state,
-        city: values.city,
-        zipCode: values.zipCode,
-        phone: `${values.countryCode}${values.phone}`,
-      },
-    });
+    const payload = {
+      firstName: values.firstName,
+      lastName: values.lastName,
+      email: values.email,
+      address: values.address,
+      state: values.state,
+      city: values.city,
+      zipCode: values.zipCode,
+      phone: `${values.countryCode}${values.phone}`,
+    };
 
-    goTo("shipping-method");
+    try {
+      const res = await fetch(createSenderAddressUrl, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          Authorization: "Bearer " + accessToken(),
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        throw new Error(`Failed: ${res.status}`);
+      }
+
+      const data = await res.json();
+
+      // save into PlaceOrderContext
+      setPlaceOrder({
+        ...placeOrder,
+        shippingAddress: {
+          ...payload,
+          address_id: data.address_id, // ✅ store address_id from API
+        },
+      });
+
+      goTo("shipping-method"); // move to next step
+    } catch (error) {
+      console.error("Shipping address error:", error.message);
+      alert("Failed to save shipping address. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -134,7 +167,6 @@ function ShippingAddress({ goTo }) {
 
       <div className="">
         <input
-          // required
           placeholder="Email"
           name="email"
           type="email"
@@ -159,23 +191,6 @@ function ShippingAddress({ goTo }) {
       </div>
 
       <div className="flex justify-between gap-6  md:gap-11 lg:gap-20">
-        {/* <select
-          required
-          name="state"
-          id="state"
-          value={values.state}
-          onChange={handleChange("state")}
-          className="w-full h-11 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
-        >
-          <option value="" disabled>
-            {isLoadingStates ? "Loading states..." : "State"}
-          </option>
-          {states.map((state, i) => (
-            <option key={i} value={state}>
-              {state.replace(" State", "")}
-            </option>
-          ))}
-        </select> */}
         <select
           required
           name="state"
@@ -214,16 +229,6 @@ function ShippingAddress({ goTo }) {
       </div>
 
       <div className="flex justify-between gap-6  md:gap-11 lg:gap-20">
-        {/* <input
-          placeholder="Zip/Postal Code"
-          name="zipCode"
-          type="text"
-          id="zipCode"
-          value={values.zipCode}
-          onChange={handleChange("zipCode")}
-          className="w-full h-11 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
-        /> */}
-
         <div className="w-full flex gap-2">
           <input
             required
@@ -240,12 +245,11 @@ function ShippingAddress({ goTo }) {
 
       <button
         type="submit"
+        disabled={submitting}
         className="inline-block w-full bg-green my-6 p-4 rounded outline-0 font-semibold text-white text-sm"
         style={{ marginTop: "2.5rem" }}
-        // onClick={() => navigate("/payment/shipping-method")}
       >
-        {" "}
-        Next
+        {submitting ? "Saving..." : "Next"}
       </button>
     </form>
   );

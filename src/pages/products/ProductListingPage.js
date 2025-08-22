@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useState, useContext } from "react";
+import { lazy, Suspense, useEffect, useState, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 import Pagination from "@mui/material/Pagination";
@@ -28,7 +28,8 @@ const theme = createTheme({
     },
   },
 });
-const baseUrl = process.env.REACT_APP_BASE_URL
+
+const baseUrl = process.env.REACT_APP_BASE_URL;
 
 function ProductsListing() {
   const { loggedIn, token } = useContext(LoginContext);
@@ -58,123 +59,269 @@ function ProductsListing() {
   const location = useLocation();
   const navigate = useNavigate();
   const brandQuery = new URLSearchParams(location.search).get("brand");
-
   const myFilter = new URLSearchParams(location.search).get("filter");
 
+  // Add a helper function to validate and format query parameters
+  const formatQueryParams = (params) => {
+    const validParams = {};
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        validParams[key] = value;
+      }
+    });
+
+    return new URLSearchParams(validParams).toString();
+  };
+
+  // Update getFetchURL function
   const getFetchURL = (page) => {
-    if (myFilter === "new_products") {
-      return `${baseUrl}/ecommb-staging/products/customers/category/1/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
-    } else if (myFilter === "used_products") {
-      return `${baseUrl}/ecommb-staging/products/customers/category/2/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
-    } else if (myFilter === "new arrivals") {
-      return `${baseUrl}/ecommb-staging/products/pagination/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
-    } else if (myFilter === "best selling products") {
-      return `${baseUrl}/ecommb-staging/products/best-selling?pageNo=${page}&pageSize=12`;
-    } else if (myFilter === "recently viewed") {
-      return `${baseUrl}/ecommb-staging/products/reviewed?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
-    } else if (myFilter) {
-      const encoded = encodeURI(myFilter);
-      return `${baseUrl}/ecommb-staging/products/search?pageNo=${page}&pageSize=12&query=${encoded}&sortBy=id&sortDir=asc`;
-    } else if (myFilter === null) {
-      return `${baseUrl}/ecommb-staging/products/pagination/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+    const condition = new URLSearchParams(location.search).get('condition');
+    const baseEndpoint = `${baseUrl}/products`;
+
+    const params = {
+      pageNo: page,
+      pageSize: 10,
+      sortBy: "createdOn",
+      sortDir: "desc"
+    };
+
+    // Handle condition parameter first
+    if (condition) {
+      return `${baseEndpoint}/filter-products?${formatQueryParams({
+        ...params,
+        condition: condition.toLowerCase()
+      })}`;
+    }
+
+    // Product type specific endpoint
+    if (productTypeId) {
+      return `${baseEndpoint}/product-type/${productTypeId}/${formatQueryParams(params)}`;
+    }
+
+    // Combined filtering
+    if (brandId || categoryId) {
+      return `${baseEndpoint}/filter-products?${formatQueryParams({
+        ...params,
+        brandId,
+        categoryId
+      })}`;
+    }
+
+    // Special lists
+    if (myFilter === "best selling products") {
+      return `${baseEndpoint}/best-selling?${formatQueryParams(params)}`;
+    }
+
+    if (myFilter === "recently viewed") {
+      return `${baseEndpoint}/reviewed?${formatQueryParams(params)}`;
+    }
+
+    // Search functionality
+    if (brandQuery) {
+      return `${baseEndpoint}/search?query=${encodeURIComponent(brandQuery)}&${formatQueryParams(params)}`;
+    }
+
+    // Default active products
+    return `${baseEndpoint}/pagination/active?${formatQueryParams(params)}`;
+  };
+
+  // Update the fetchProducts function with better error handling and fallbacks
+  const fetchProducts = async (url, retryCount = 0) => {
+    const maxRetries = 2;
+    
+    try {
+      console.log(`Fetching products from: ${url}`);
+      
+      const headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers,
+        signal: AbortSignal.timeout(15000), // 15 second timeout
+      });
+
+      if (!response.ok) {
+        // If the filter endpoint fails, try the default endpoint
+        if (response.status === 500 && retryCount === 0) {
+          const fallbackUrl = `${baseUrl}/products/pagination/active?pageNo=${currentPage}&pageSize=12`;
+          console.log('Filter endpoint failed, trying default endpoint:', fallbackUrl);
+          return fetchProducts(fallbackUrl, retryCount + 1);
+        }
+
+        // If still failing after retry, throw error
+        throw new Error(`Server error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      // Handle different response formats
+      let products = [];
+      let totalPages = 0;
+
+      if (Array.isArray(data)) {
+        products = data;
+        totalPages = Math.ceil(data.length / 12);
+      } else if (data.content && Array.isArray(data.content)) {
+        products = data.content;
+        totalPages = data.totalPages || Math.ceil(data.totalElements / 12);
+      }
+
+      return { products, totalPages };
+
+    } catch (error) {
+      console.error('Failed to fetch products:', error);
+      // Return empty state rather than throwing
+      return { products: [], totalPages: 0 };
     }
   };
 
+  // Update the data fetching useEffect
   useEffect(() => {
-    const url = getFetchURL(currentPage);
+    const loadProducts = async () => {
+      setIsLoading(true);
+      
+      try {
+        let url = new URL(getFetchURL(currentPage));
+        const condition = url.searchParams.get('condition');
 
-    setIsLoading(true);
+        // Determine correct endpoint
+        const endpoint = condition
+          ? `${baseUrl}/products/pagination/active?pageNo=${currentPage}&pageSize=12&condition=${condition}`
+          : `${baseUrl}/products/pagination/active?pageNo=${currentPage}&pageSize=12`;
 
-    fetch(url)
-      .then((res) => res.json())
-      .then((result) => {
-        let filteredProducts = result.content;
+        const { products, totalPages } = await fetchProducts(endpoint);
 
-        if (brandQuery) {
-          filteredProducts = filteredProducts.filter(
-            (product) =>
-              (product.brand &&
-                product.brand
-                  .toLowerCase()
-                  .includes(brandQuery.toLowerCase())) ||
-              (product.name &&
-                product.name.toLowerCase().includes(brandQuery.toLowerCase()))
-          );
+        setProducts(products);
+        setTotalPages(totalPages);
+
+        // Show SubProducts component if no main products
+        if (products.length === 0) {
+          setShowProductType(true);
         }
 
-        setProducts(filteredProducts);
-        setTotalPages(result.totalPages);
+      } catch (error) {
+        console.error('Error loading products:', error);
+        setAlert({
+          open: true,
+          severity: 'error',
+          title: 'Error',
+          message: 'Failed to load products. Please try again later.'
+        });
+      } finally {
         setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error(error);
-        setIsLoading(false);
-      });
-  }, [currentPage, myFilter, brandQuery]);
+      }
+    };
 
-  const handleSearch = (searchTerm) => {
+    loadProducts();
+  }, [currentPage, location.search]);
+
+  // ✅ Search API with better error handling
+  const handleSearch = async (searchTerm) => {
+    if (!searchTerm?.trim()) return;
+
     setIsLoading(true);
+    try {
+      const params = {
+        pageNo: 0,
+        pageSize: 12,
+        query: searchTerm.trim(),
+        sortBy: "createdOn",
+        sortDir: "desc"
+      };
 
-    const encoded = encodeURI(searchTerm);
-
-    fetch(
-      `${baseUrl}/ecommb-staging/products/search?pageNo=0&pageSize=12&query=${encoded}&sortBy=id&sortDir=asc`
-    )
-      .then((res) => {
-        return res.json();
-      })
-      .then((result) => {
-        setProducts(result.content);
-        setTotalPages(result.totalPages);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        alert(error);
-        setIsLoading(false);
+      const url = `${baseUrl}/products/search?${formatQueryParams(params)}`;
+      const { products: searchResults, totalPages } = await fetchProducts(url);
+      
+      setProducts(searchResults);
+      setTotalPages(totalPages);
+    } catch (error) {
+      console.error("Search failed:", error);
+      setAlert({
+        open: true,
+        severity: "error",
+        title: "Search Error",
+        message: error.message || "Search failed. Please try again."
       });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleFilter = () => {
-    fetch(
-      `${baseUrl}/ecommb-staging/products/filter-products?${
-        brandId && `brandId=${brandId}`
-      }${categoryId && `&categoryId=${categoryId}`}&pageNo=0&pageSize=12${
-        productTypeId && `&productTypeId=${productTypeId}`
-      }&sortBy=id&sortDir=desc`
-    )
-      .then((res) => {
-        return res.json();
-      })
-      .then((result) => {
-        setProducts(result.content);
-        setTotalPages(result.totalPages);
-        setCurrentPage(result.pageNo);
-      })
-      .catch((error) => {
-        console.error();
+  // Update handleFilter to use filter-products endpoint
+  const handleFilter = async () => {
+    const params = {
+      pageNo: 0,
+      pageSize: 12,
+      sortBy: "createdOn",
+      sortDir: "desc",
+      categoryId,
+      brandId,
+      productTypeId
+    };
+
+    if (!categoryId && !brandId && !productTypeId) return;
+
+    setIsLoading(true);
+    try {
+      const url = `${baseUrl}/products/filter-products?${formatQueryParams(params)}`;
+      const { products: filteredProducts, totalPages } = await fetchProducts(url);
+      
+      setProducts(filteredProducts);
+      setTotalPages(totalPages);
+      setCurrentPage(0);
+    } catch (error) {
+      console.error("Filter operation failed:", error);
+      setAlert({
+        open: true,
+        severity: "error",
+        title: "Filter Error",
+        message: error.message || "Failed to apply filters. Please try again."
       });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const viewAll = () => {
+  // View All with better error handling - Updated to use correct API endpoint
+  const viewAll = async () => {
     setIsLoading(true);
     setBrandId("");
     setCategoryId("");
     setProductTypeId("");
 
-    fetch(
-      "${baseUrl}/ecommb-staging/products/pagination/active?pageNo=0&pageSize=12&sortBy=createdOn&sortDir=desc"
-    )
-      .then((res) => {
-        return res.json();
-      })
-      .then((result) => {
-        setProducts(result.content);
-        setTotalPages(result.totalPages);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error();
+    try {
+      const params = {
+        pageNo: 0,
+        pageSize: 12,
+        sortBy: "createdOn",
+        sortDir: "desc"
+      };
+      
+      const url = `${baseUrl}/products/pagination/active?${formatQueryParams(params)}`;
+      const { products: allProducts, totalPages } = await fetchProducts(url);
+      
+      setProducts(allProducts);
+      setTotalPages(totalPages);
+      setCurrentPage(0);
+    } catch (error) {
+      console.error("Failed to load all products:", error);
+      setAlert({
+        open: true,
+        severity: "error",
+        title: "Error",
+        message: error.message || "Failed to load all products. Please try again."
       });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChangePage = (event, page) => {
@@ -189,68 +336,126 @@ function ProductsListing() {
     setShowFilters((prev) => !prev);
   };
 
-  const handleAddToCart = (product) => {
+  const handleAddToCart = async (product) => {
+    if (!token) {
+      setAlert({
+        open: true,
+        severity: "info",
+        title: "Login Required",
+        message: "Please log in to add items to your cart",
+      });
+      navigate("/login");
+      return;
+    }
+
     const dataToSend = { productId: product.id, quantity: 1 };
 
-   if (!token) {
-        console.error("No authentication token found. User not logged in.");
-        // Redirect to login or show an error
-        navigate("/login");
-        return;
-    }
-  // Now proceed with your fetch call.
-    fetch(`${baseUrl}/ecommb-prod/cart-items/add`, {
+    try {
+      const response = await fetch(`${baseUrl}/cart-items/add`, {
         method: "POST",
         headers: {
-            "content-type": "application/json",
-            Authorization: "Bearer " + token, // This should now work
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify(dataToSend),
-    })
-    // ...
-    if (!loggedIn || !token) { 
-      navigate("/login", {
-        state: {
-          previousUrl: location.pathname,
-        },
       });
-    } else {
-      fetch(`${baseUrl}/ecommb-prod/cart-items/add`, {
+
+      if (!response.ok) {
+        let errorMessage = `Failed to add item to cart: ${response.status}`;
+        
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData?.message || errorData?.error || errorMessage;
+        } catch (parseError) {
+          // Use default error message if can't parse response
+        }
+        
+        throw new Error(errorMessage);
+      }
+
+      // Check if response has content
+      const responseText = await response.text();
+      let result = null;
+      
+      if (responseText) {
+        try {
+          result = JSON.parse(responseText);
+        } catch (parseError) {
+          // Response might not be JSON, which is okay for some APIs
+          console.log("Add to cart response is not JSON:", responseText);
+        }
+      }
+
+      setCartDep(product.id);
+      setAlert({
+        open: true,
+        severity: "success",
+        title: "Success!",
+        message: `${product.name} has been added to your cart`,
+      });
+
+    } catch (error) {
+      console.error("Add to cart failed:", error);
+      setAlert({
+        open: true,
+        severity: "error",
+        title: "Failed to add item to cart",
+        message: error.message || "Unable to add item to cart. Please try again.",
+      });
+    }
+  };
+
+  // Add wishlist functionality
+  const handleAddToWishlist = async (product) => {
+    if (!token) {
+      setAlert({
+        open: true,
+        severity: "info",
+        title: "Login Required",
+        message: "Please log in to add items to your wishlist",
+      });
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${baseUrl}/wish-lists/add`, {
         method: "POST",
         headers: {
-          "content-type": "application/json",
-          Authorization: "Bearer " + token, 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(dataToSend),
-      })
-        .then((res) => {
-          if (!res.ok) { 
-            setAlert({
-              ...alert,
-              open: true,
-              severity: "info",
-              title: "Item was not added to cart",
-            });
-            throw new Error(`HTTP error! status: ${res.status}`);
-          }
-          setCartDep(product.id);
-          setAlert({
-            ...alert,
-            open: true,
-            severity: "success",
-            title: "1 item added to cart",
-            message: `${product.name} is added to cart`,
-          });
-        })
-        .catch((error) => {
-          setAlert({
-            ...alert,
-            open: true,
-            severity: "error",
-            title: "Failed to add item to cart",
-            message: error.message,
-          });
-        });
+        body: JSON.stringify({ productId: product.id }),
+      });
+
+      if (!response.ok) {
+        let errorMessage = `Failed to add to wishlist: ${response.status}`;
+        
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData?.message || errorData?.error || errorMessage;
+        } catch (parseError) {
+          // Use default error message
+        }
+        
+        throw new Error(errorMessage);
+      }
+
+      setAlert({
+        open: true,
+        severity: "success",
+        title: "Added to Wishlist!",
+        message: `${product.name} has been added to your wishlist`,
+      });
+
+    } catch (error) {
+      console.error("Add to wishlist failed:", error);
+      setAlert({
+        open: true,
+        severity: "error",
+        title: "Failed to add to wishlist",
+        message: error.message || "Unable to add item to wishlist. Please try again.",
+      });
     }
   };
 
@@ -274,16 +479,12 @@ function ProductsListing() {
         <Banner />
 
         <div className="flex items-start justify-between lg:px-8 lg:mt-6 mb-8">
-          {/* Side bar for product filter */}
-          <div
-            className="filterDesktop hidden lg:block w-80 max-h-[1300px] overflow-y-auto mr-20 bg-filter-green rounded"
-            style={{ scrollBehavior: "smooth", scrollbarWidth: "none" }}
-          >
+          {/* Sidebar filters */}
+          <div className="filterDesktop hidden lg:block w-80 max-h-[1300px] overflow-y-auto mr-20 bg-filter-green rounded">
             <div className="pb-8 px-3 flex flex-col gap-10">
-              {/* Filter Sections */}
               <div className="mt-3 text-right">
                 <ProductFilter
-                  fetchUrl={`${baseUrl}/ecommb-prod/categories`}
+                  fetchUrl={`${baseUrl}/categories`}
                   title="category"
                   checked={categoryId}
                   setter={setCategoryId}
@@ -291,20 +492,12 @@ function ProductsListing() {
                 />
 
                 <ProductFilter
-                  fetchUrl={`${baseUrl}/ecommb-prod/brands`}
+                  fetchUrl={`${baseUrl}/brands`}
                   title="brands"
                   checked={brandId}
                   setter={setBrandId}
                   onChange={handleFilter}
                 />
-
-                {/* <ProductFilter
-                  fetchUrl="${baseUrl}/ecommb-prod/product-types"
-                  title="product"
-                  checked={productTypeId}
-                  setter={setProductTypeId}
-                  onChange={handleFilter}
-                /> */}
               </div>
 
               <div className="flex justify-end items-center">
@@ -321,7 +514,7 @@ function ProductsListing() {
             </div>
           </div>
 
-          {/* Product cards displayed */}
+          {/* Product cards */}
           <div className="w-full md:pl-4 lg:pl-0">
             <div className="sticky top-[9%] z-20 bg-filter-green md:relative md:bg-transparent">
               <SearchBox show={handleOpen} search={handleSearch} />
@@ -335,25 +528,25 @@ function ProductsListing() {
                     }
                   >
                     <ProductFilter
-                      fetchUrl={`${baseUrl}/ecommb-prod/categories`}
+                      fetchUrl={`${baseUrl}/categories`}
                       title="category"
                       checked={categoryId}
                       setter={setCategoryId}
                     />
                     <ProductFilter
-                      fetchUrl={`${baseUrl}/ecommb-prod/brands`}
+                      fetchUrl={`${baseUrl}/brands`}
                       title="brands"
                       checked={brandId}
                       setter={setBrandId}
                     />
                     <ProductFilter
-                      fetchUrl={`${baseUrl}/ecommb-prod/product-types`}
+                      fetchUrl={`${baseUrl}/product-types`}
                       title="product"
                       checked={productTypeId}
                       setter={setProductTypeId}
                     />
 
-                    <div className="flex justify-end  items-center">
+                    <div className="flex justify-end items-center">
                       <button
                         type="button"
                         onClick={() => {
@@ -410,12 +603,12 @@ function ProductsListing() {
                 )}
               </div>
             ) : (
-              <MainGroups addToCart={handleAddToCart} products={products} />
+              <MainGroups 
+                addToCart={handleAddToCart} 
+                addToWishlist={handleAddToWishlist}
+                products={products} 
+              />
             )}
-
-            {/* {showProductType && (
-              <ProductTypes onClose={() => setShowProductType(false)} />
-            )} */}
           </div>
         </div>
 
@@ -439,8 +632,6 @@ function ProductsListing() {
             />
           </ThemeProvider>
         </div>
-
-        {/* <SubProducts addToCart={handleAddToCart} /> */}
       </div>
     </Suspense>
   );

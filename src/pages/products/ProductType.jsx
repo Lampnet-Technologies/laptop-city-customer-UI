@@ -1,4 +1,4 @@
-import React from "react";
+
 import { useNavigate } from "react-router-dom";
 import accessories from "../../images/accessories.png";
 import desktop from "../../images/desktop.png";

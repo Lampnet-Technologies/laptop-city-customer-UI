@@ -3,11 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { UserCartDependency, UserProfileContext } from "../../App";
 import CustomAlert from "../../component/CustomAlert";
 
-const getProfile =
-  "https://apps-1.lampnets.com/ecommb-staging/profiles/my-profile";
-const updateProfile =
-  "https://apps-1.lampnets.com/ecommb-staging/profiles/edit-profile";
-const accessToken = () => localStorage.getItem("token");
+const baseUrl = process.env.REACT_APP_BASE_URL;
 
 function ContactInfo() {
   const [profile, setProfile] = useContext(UserProfileContext);
@@ -35,21 +31,22 @@ function ContactInfo() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const token = localStorage.getItem("token");
+
   useEffect(() => {
-    setValues({
-      ...values,
-      address: profile.address,
-      city: profile.city,
-      state: profile.state,
-      phoneNumber: toNumber(profile.phoneNumber),
-    });
+    if (profile) {
+      setValues({
+        address: profile.address || "",
+        city: profile.city || "",
+        state: profile.state || "",
+        phoneNumber: toNumber(profile.phoneNumber || ""),
+      });
+    }
   }, [profile]);
 
   const toNumber = (str) => {
-    if (typeof str === "number") {
-      return str;
-    }
-
+    if (typeof str === "number") return str;
+    if (!str) return "";
     return parseInt(str);
   };
 
@@ -59,14 +56,12 @@ function ContactInfo() {
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ country: "Nigeria" }),
     })
-      .then((res) => {
-        return res.json();
-      })
+      .then((res) => res.json())
       .then((result) => {
         setStates(result.data.states);
       })
       .catch((error) => {
-        alert(error.message);
+        console.error(error);
       });
   }, [location.pathname, cartDep]);
 
@@ -77,14 +72,12 @@ function ContactInfo() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ country: "Nigeria", state: values.state }),
       })
-        .then((res) => {
-          return res.json();
-        })
+        .then((res) => res.json())
         .then((result) => {
           setCities(result.data);
         })
         .catch((error) => {
-          alert(error.message);
+          console.error(error);
         });
     }
   }, [values.state]);
@@ -98,24 +91,25 @@ function ContactInfo() {
 
     const dataToSend = { ...profile, ...values };
 
-    fetch(updateProfile, {
+    fetch(`${baseUrl}/profiles/edit-profile`, {
       method: "PUT",
       headers: {
         "content-type": "application/json",
-        Authorization: "Bearer " + accessToken(),
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(dataToSend),
     })
       .then((res) => {
-        if (res.status == 200) {
+        if (res.ok) {
           setAlert({
             ...alert,
             open: true,
             severity: "success",
             title: "Profile Updated Successfully",
           });
-
           setCartDep(2);
+        } else {
+          throw new Error("Failed to update profile");
         }
       })
       .catch((error) => {
@@ -166,13 +160,11 @@ function ContactInfo() {
             >
               <option value="">None</option>
               {states.length > 0 &&
-                states.map((state, i) => {
-                  return (
-                    <option key={i} value={state.name}>
-                      {state.name}
-                    </option>
-                  );
-                })}
+                states.map((state, i) => (
+                  <option key={i} value={state.name}>
+                    {state.name}
+                  </option>
+                ))}
             </select>
           </div>
 
@@ -189,13 +181,11 @@ function ContactInfo() {
             >
               <option value="">None</option>
               {cities.length > 0 &&
-                cities.map((city, i) => {
-                  return (
-                    <option key={i} value={city}>
-                      {city}
-                    </option>
-                  );
-                })}
+                cities.map((city, i) => (
+                  <option key={i} value={city}>
+                    {city}
+                  </option>
+                ))}
             </select>
           </div>
         </div>
@@ -219,7 +209,6 @@ function ContactInfo() {
             className="bg-transparent outline-0 font-semibold text-green tracking-tight underline lg:text-lg"
             onClick={handleSubmit}
           >
-            {" "}
             Save changes
           </button>
         </div>

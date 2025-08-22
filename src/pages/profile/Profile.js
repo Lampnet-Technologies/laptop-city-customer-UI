@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import { useEffect, useContext } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { Banner } from "../../component/homepage";
 import ProfileMenu from "./ProfileMenu";

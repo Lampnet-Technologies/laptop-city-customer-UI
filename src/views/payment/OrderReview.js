@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import NairaSymbol from "../../component/nairaSymbol";
 import { CouponDiscount } from "../../App";
 import {
@@ -9,7 +9,7 @@ import { PlaceOrderContext } from "../../App";
 
 const accessToken = localStorage.getItem("token");
 
-const baseUrl = process.env.REACT_APP_BASE_URL
+const baseUrl = process.env.REACT_APP_BASE_URL;
 
 function OrderReview({ cart, back, goTo }) {
   const [placeOrder, setPlaceOrder] = useContext(PlaceOrderContext);
@@ -33,7 +33,7 @@ function OrderReview({ cart, back, goTo }) {
 
     try {
       const response = await fetch(
-        `${baseUrl}/ecommb-staging/orders/place-order`,
+        `${baseUrl}/orders/place-order`,
         {
           method: "POST",
           headers: {

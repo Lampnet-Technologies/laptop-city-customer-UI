@@ -1,13 +1,11 @@
-import React, { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Banner } from "../../component/homepage";
 import { Link, useNavigate } from "react-router-dom";
-import LaptopCityButton from "../../component/button";
 import { LoginContext } from "../../App";
 import CustomAlert from "../../component/CustomAlert";
 
-const baseUrl = process.env.REACT_APP_BASE_URL
-
-const signupAPI = `${baseUrl}/ecommb-staging/register`;
+const baseUrl = process.env.REACT_APP_BASE_URL;
+const signupAPI = `${baseUrl}/register`;
 
 function SignUp() {
   const [loggedIn, setLoggedIn] = useContext(LoginContext);
@@ -21,8 +19,10 @@ function SignUp() {
     confirmPassword: "",
     refCode: "",
   });
+
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -32,6 +32,7 @@ function SignUp() {
     message: "",
     title: "",
   });
+
   const handleCloseAlert = () => {
     setAlert({ ...alert, open: false });
   };
@@ -45,17 +46,16 @@ function SignUp() {
       if (val === "" || /^[A-Za-z]{2}-\d{4}$/.test(val)) {
         setError("");
       } else {
-        setError(
-          "Reference code must be in format XX-XXXX (2 letters, dash, 4 digits)"
-        );
+        setError("Reference code must be in format XX-XXXX (2 letters, dash, 4 digits)");
       }
     }
   };
 
   useEffect(() => {
+    // Reset login state on signup page
     localStorage.removeItem("token");
     setLoggedIn(false);
-  }, []);
+  }, [setLoggedIn]);
 
   const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value });
@@ -65,50 +65,70 @@ function SignUp() {
     setShowPassword((prev) => !prev);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (error) {
-      alert("Please use the right ref format.");
+      setAlert({
+        open: true,
+        severity: "warning",
+        title: "Invalid Reference Code",
+        message: "Please use the right ref format (XX-XXXX).",
+      });
       return;
     }
-    // Proceed with submit logic...
-    console.log("Submitted refCode:", values.refCode);
+
     if (values.password !== values.confirmPassword) {
-      // alert("Confirm your password!!!");
       setAlert({
-        ...alert,
         open: true,
         severity: "warning",
         title: "Wrong password",
         message: "Confirm your password!!!",
       });
-    } else {
-      fetch(signupAPI, {
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const res = await fetch(signupAPI, {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
         body: JSON.stringify(values),
-      })
-        .then((res) => {
-          // alert("Welcome onboard 🎊🎉");
-          setAlert({
-            ...alert,
-            open: true,
-            severity: "success",
-            title: "Welcome!!",
-            message: `Welcome Onboard ${values.userName} 🎊🎉`,
-          });
-          navigate("/login");
-        })
-        .catch((error) => {
-          setAlert({
-            ...alert,
-            open: true,
-            severity: "error",
-            title: "Confirm your Credentials",
-            message: error.message,
-          });
-          // alert("Confirm Credentials", error.message);
-        });
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Signup failed");
+      }
+
+      // ✅ Save token if API returns one
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        setLoggedIn(true);
+      }
+
+      setAlert({
+        open: true,
+        severity: "success",
+        title: "Welcome!!",
+        message: `Welcome Onboard ${values.userName} 🎊🎉`,
+      });
+
+      navigate("/login");
+    } catch (err) {
+      setAlert({
+        open: true,
+        severity: "error",
+        title: "Signup Failed",
+        message: err.message,
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -133,11 +153,9 @@ function SignUp() {
           onSubmit={handleSubmit}
           className="border border-green border-solid rounded-md px-4 py-14 md:px-36 md:py-24 lg:pb-60"
         >
+          {/* First Name */}
           <div className="flex flex-col gap-3 mb-4 md:gap-5 md:mb-8">
-            <label
-              className="text-sm font-medium md:text-lg"
-              htmlFor="firstName"
-            >
+            <label className="text-sm font-medium md:text-lg" htmlFor="firstName">
               First Name *
             </label>
             <input
@@ -148,15 +166,13 @@ function SignUp() {
               id="firstName"
               value={values.firstName}
               onChange={handleChange("firstName")}
-              className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 outline-0 font-light text-sm"
+              className="w-full h-11 md:h-14 rounded-sm bg-[#ECF3F9] p-3 outline-0 font-light text-sm"
             />
           </div>
 
+          {/* Last Name */}
           <div className="flex flex-col gap-3 mb-4 md:gap-5 md:mb-8">
-            <label
-              className="text-sm font-medium md:text-lg"
-              htmlFor="lastName"
-            >
+            <label className="text-sm font-medium md:text-lg" htmlFor="lastName">
               Last Name *
             </label>
             <input
@@ -166,15 +182,13 @@ function SignUp() {
               id="lastName"
               value={values.lastName}
               onChange={handleChange("lastName")}
-              className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 outline-0 font-light text-sm"
+              className="w-full h-11 md:h-14 rounded-sm bg-[#ECF3F9] p-3 outline-0 font-light text-sm"
             />
           </div>
 
+          {/* Username */}
           <div className="flex flex-col gap-3 mb-4 md:gap-5 md:mb-8">
-            <label
-              className="text-sm font-medium md:text-lg"
-              htmlFor="userName"
-            >
+            <label className="text-sm font-medium md:text-lg" htmlFor="userName">
               Username *
             </label>
             <input
@@ -184,10 +198,11 @@ function SignUp() {
               id="userName"
               value={values.userName}
               onChange={handleChange("userName")}
-              className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 outline-0 font-light text-sm"
+              className="w-full h-11 md:h-14 rounded-sm bg-[#ECF3F9] p-3 outline-0 font-light text-sm"
             />
           </div>
 
+          {/* Email */}
           <div className="flex flex-col gap-3 mb-4 md:gap-5 md:mb-8">
             <label className="text-sm font-medium md:text-lg" htmlFor="email">
               Email address *
@@ -199,12 +214,13 @@ function SignUp() {
               id="email"
               value={values.email}
               onChange={handleChange("email")}
-              className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 outline-0 font-light text-sm"
+              className="w-full h-11 md:h-14 rounded-sm bg-[#ECF3F9] p-3 outline-0 font-light text-sm"
             />
           </div>
 
+          {/* Phone Number */}
           <div className="flex flex-col gap-3 mb-4 md:gap-5 md:mb-8">
-            <label className="text-sm font-medium md:text-lg" htmlFor="email">
+            <label className="text-sm font-medium md:text-lg" htmlFor="phoneNumber">
               Phone number *
             </label>
             <input
@@ -214,15 +230,13 @@ function SignUp() {
               id="phoneNumber"
               value={values.phoneNumber}
               onChange={handleChange("phoneNumber")}
-              className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 outline-0 font-light text-sm"
+              className="w-full h-11 md:h-14 rounded-sm bg-[#ECF3F9] p-3 outline-0 font-light text-sm"
             />
           </div>
 
+          {/* Password */}
           <div className="flex flex-col gap-3 mb-4 md:gap-5 md:mb-8">
-            <label
-              className="text-sm font-medium md:text-lg"
-              htmlFor="password"
-            >
+            <label className="text-sm font-medium md:text-lg" htmlFor="password">
               Password *
             </label>
             <div className="relative">
@@ -233,7 +247,7 @@ function SignUp() {
                 type={showPassword ? "text" : "password"}
                 value={values.password}
                 onChange={handleChange("password")}
-                className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 pr-12 outline-0 font-light text-sm"
+                className="w-full h-11 md:h-14 rounded-sm bg-[#ECF3F9] p-3 pr-12 outline-0 font-light text-sm"
               />
               <button
                 type="button"
@@ -249,11 +263,9 @@ function SignUp() {
             </div>
           </div>
 
+          {/* Confirm Password + Ref Code */}
           <div className="flex flex-col gap-3 mb-4 md:gap-5 md:mb-8">
-            <label
-              className="text-sm font-medium md:text-lg"
-              htmlFor="confirmPassword"
-            >
+            <label className="text-sm font-medium md:text-lg" htmlFor="confirmPassword">
               Confirm Password *
             </label>
             <div className="relative">
@@ -264,9 +276,8 @@ function SignUp() {
                 type={showPassword ? "text" : "password"}
                 value={values.confirmPassword}
                 onChange={handleChange("confirmPassword")}
-                className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 pr-12 outline-0 font-light text-sm"
+                className="w-full h-11 md:h-14 rounded-sm bg-[#ECF3F9] p-3 pr-12 outline-0 font-light text-sm"
               />
-
               <button
                 type="button"
                 onClick={handleShowPassword}
@@ -279,6 +290,8 @@ function SignUp() {
                 )}
               </button>
             </div>
+
+            {/* Reference Code */}
             <label className="text-sm font-medium md:text-lg" htmlFor="refCode">
               Reference Code (optional)
               <input
@@ -287,32 +300,34 @@ function SignUp() {
                 type="text"
                 value={values.refCode}
                 onChange={handleRefChange("refCode")}
-                className="w-full h-11 md:h-14 md:rounded mt-3 rounded-sm bg-[#ECF3F9] p-3 pr-12 outline-0 font-light text-sm"
+                className="w-full h-11 md:h-14 mt-3 rounded-sm bg-[#ECF3F9] p-3 outline-0 font-light text-sm"
                 placeholder="Enter reference code if you have one eg. XX-XXXX"
               />
             </label>
             {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
           </div>
 
+          {/* Submit Button */}
           <div className="mt-14 flex flex-col items-center gap-10 text-sm font-normal md:text-base md:gap-12 lg:gap-16">
             <button
-              className="capitalize font-semibold text-white text-sm lg:text-base md:px-16 lg:py-4 lg:px-[86px] rounded bg-green py-[11px] px-12 hover:bg-dark-green"
-              onClick={handleSubmit}
+              type="submit"
+              disabled={loading}
+              className="capitalize font-semibold text-white text-sm lg:text-base md:px-16 lg:py-4 lg:px-[86px] rounded bg-green py-[11px] px-12 hover:bg-dark-green disabled:opacity-60"
             >
-              Sign up
+              {loading ? "Signing up..." : "Sign up"}
             </button>
 
             <p className="font-light">
               Already have an account?{" "}
               <Link to="/login" className="text-green font-semibold">
                 Login
-              </Link>{" "}
+              </Link>
             </p>
 
             <p className="self-start font-normal lg:leading-10">
               By clicking <span className="md:font-medium">“Sign up”</span>{" "}
               above, you acknowledge that you have read and understood, and
-              agree to Laptop city’s{" "}
+              agree to Laptop City’s{" "}
               <Link
                 to="/terms-&-conditions"
                 className="text-green underline font-medium"

@@ -19,7 +19,7 @@ const methods = [
   // },
 ];
 
-const baseUrl = process.env.REACT_APP_BASE_URL
+const baseUrl = process.env.REACT_APP_BASE_URL;
 
 const accessToken = localStorage.getItem("token");
 
@@ -59,7 +59,7 @@ function PaymentMethod({ cart, goTo, back }) {
       reference: reference.reference,
     };
 
-    fetch(`${baseUrl}/ecommb-staging/orders/payment`, {
+    fetch(`${baseUrl}/orders/payment`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

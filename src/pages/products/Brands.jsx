@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const baseUrl = process.env.REACT_APP_BASE_URL
+const baseUrl = process.env.REACT_APP_BASE_URL;
 
 const BrandsGrid = () => {
   const [brands, setBrands] = useState([]);
@@ -18,7 +18,7 @@ const BrandsGrid = () => {
     const fetchBrands = async () => {
       try {
         const response = await axios.get(
-          `${baseUrl}/ecommb-staging/brands`
+          `${baseUrl}/brands`
         );
         setBrands(response.data);
         setLoading(false);
