@@ -73,7 +73,7 @@ Sensors: Fingerprint (side-mounted), accelerometer, gyro, proximity, compass
 BATTERY
 Type: Li-Po 5000 mAh, non-removable
 Charging: Fast Charging 33W`;
-const baseUrl = process.env.BASE_URL;
+const baseUrl = process.env.REACT_APP_BASE_URL || 'https://apps-1.lampnets.com/ecommb-staging';
 function ImagesPreviews({ files }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   
@@ -217,7 +217,7 @@ function AboutProduct({ product }) {
       return;
     }
     // Now proceed with your fetch call.
-    fetch(`${baseUrl}/ecommb-prod/cart-items/add`, {
+    fetch(`${baseUrl}/cart-items/add`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -234,7 +234,7 @@ function AboutProduct({ product }) {
         },
       });
     } else {
-      fetch(`${baseUrl}/ecommb-staging/cart-items/add`, {
+      fetch(`${baseUrl}/cart-items/add`, {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -282,7 +282,7 @@ function AboutProduct({ product }) {
         message: "Please Sign in first",
       });
     } else {
-      fetch(`${baseUrl}/ecommb-staging/wish-lists/add`, {
+      fetch(`${baseUrl}/wish-lists/add`, {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -471,28 +471,22 @@ function ProductDetails({ bestSelling, recentlyViewed, product }) {
     <div className="mt-20">
       {product && (
         <div className="flex flex-col gap-4 md:px-10 lg:hidden">
-          <ImagesPreviews files={product.images} />
-
+          <ImagesPreviews files={product.images || images} />
           <div className="w-4/5 border border-pagination rounded self-center my-3" />
-
           <AboutProduct product={product} />
-
-          <Description descr={product.description} />
+          <Description descr={product.description || example} />
         </div>
       )}
 
       {product && (
         <div className="hidden lg:flex justify-between items-start gap-4 px-20 mb-12">
           <div className="flex flex-col gap-4 w-[120%]">
-            <ImagesPreviews files={product.images} />
-
+            <ImagesPreviews files={product.images || images} />
             <div className="w-4/5 border border-pagination rounded self-center my-3" />
-
             <AboutProduct product={product} />
           </div>
-
           <div className="w-[80%]">
-            <Description descr={product.description} />
+            <Description descr={product.description || example} />
           </div>
         </div>
       )}
@@ -500,15 +494,23 @@ function ProductDetails({ bestSelling, recentlyViewed, product }) {
       <Banner />
 
       <div className="mt-8 md:mt-12 px-4 md:px-12 lg:mt-24 lg:px-24">
-        <Groups
-          heading="best selling products"
-          products={bestSelling}
-          seeMore
-        />
+        {bestSelling && bestSelling.length > 0 && (
+          <Groups
+            heading="best selling products"
+            products={bestSelling}
+            seeMore
+          />
+        )}
       </div>
 
       <div className="mt-8 px-4 md:px-12 lg:px-24">
-        <Groups heading="recently viewed" products={recentlyViewed} seeMore />
+        {recentlyViewed && recentlyViewed.length > 0 && (
+          <Groups 
+            heading="recently viewed" 
+            products={recentlyViewed} 
+            seeMore 
+          />
+        )}
       </div>
     </div>
   );
@@ -530,6 +532,12 @@ function ProductDesc() {
   });
   const [product, setProduct] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [alert, setAlert] = useState({
+    open: false,
+    severity: "",
+    message: "",
+    title: "",
+  });
 
   const navigate = useNavigate();
   const params = useParams();
@@ -544,50 +552,141 @@ function ProductDesc() {
     }
   };
 
+  // Update the useEffect for product fetching
   useEffect(() => {
-    if (prodId) {
-      fetch(`${baseUrl}/ecommb-staging/products/${prodId}`)
-        .then((res) => {
-          return res.json();
-        })
-        .then((response) => {
-          setProduct(response);
-          setIsLoading(false);
-        })
-        .catch((error) => {
-          alert(error.message);
+    const fetchProduct = async () => {
+      if (!prodId) return;
+      
+      setIsLoading(true);
+      try {
+        const response = await fetch(`${baseUrl}/products/${prodId}`, {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
         });
-    }
-  }, [prodId]);
+        
+        if (!response.ok) {
+          throw new Error(`Server responded with ${response.status}`);
+        }
 
+        const text = await response.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (e) {
+          console.error('Invalid JSON response:', text.substring(0, 100));
+          throw new Error('Invalid server response format');
+        }
+
+        // Validate product data
+        if (!data || typeof data !== 'object') {
+          throw new Error('Invalid product data received');
+        }
+
+        setProduct(data);
+        
+        // Set default image if none provided
+        if (!data.images || data.images.length === 0) {
+          data.images = [{ 
+            image: IMAGES.productDesc.productMain,
+            id: 'default-image'
+          }];
+        }
+        
+      } catch (error) {
+        console.error('Error fetching product:', error);
+        setAlert({
+          open: true,
+          severity: 'error',
+          title: 'Error Loading Product',
+          message: 'Unable to load product details. Please try again later.'
+        });
+        navigate('/products');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [prodId, navigate]);
+
+  // Update the best selling products fetch
   useEffect(() => {
-    fetch(
-      `${baseUrl}/ecommb-staging/products/best-selling?pageNo=0&pageSize=${checkScreenSize()}`
-    )
-      .then((res) => {
-        return res.json();
-      })
-      .then((result) => {
-        setBestSelling(result.content);
-      })
-      .catch((error) => {
-        console.error();
-      });
+    const fetchBestSelling = async () => {
+      try {
+        const response = await fetch(
+          `${baseUrl}/products/best-selling`, {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            params: {
+              pageNo: 0,
+              pageSize: checkScreenSize()
+            }
+          }
+        );
+        
+        if (!response.ok) {
+          throw new Error(`Server responded with ${response.status}`);
+        }
+
+        const text = await response.text();
+        try {
+          const data = JSON.parse(text);
+          setBestSelling(Array.isArray(data) ? data : data?.content || []);
+        } catch (e) {
+          console.error('Invalid JSON in best selling products:', text.substring(0, 100));
+          setBestSelling([]);
+        }
+        
+      } catch (error) {
+        console.error('Error fetching best selling products:', error);
+        setBestSelling([]);
+      }
+    };
+
+    fetchBestSelling();
   }, []);
 
+  // Update the recently viewed products fetch
   useEffect(() => {
-    fetch(
-      `${baseUrl}/ecommb-staging/products/reviewed?pageNo=0&pageSize=${checkScreenSize()}&sortBy=createdOn&sortDir=desc`
-    )
-      .then((res) => {
-        return res.json();
-      })
-      .then((result) => {
-        setRecentlyViewed(result.content);
-      })
-      .catch((error) => {
-        console.error();
-      });
+    const fetchRecentlyViewed = async () => {
+      try {
+        const response = await fetch(
+          `${baseUrl}/products/reviewed`, {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            params: {
+              pageNo: 0,
+              pageSize: checkScreenSize()
+            }
+          }
+        );
+        
+        if (!response.ok) {
+          throw new Error(`Server responded with ${response.status}`);
+        }
+
+        const text = await response.text();
+        try {
+          const data = JSON.parse(text);
+          setRecentlyViewed(Array.isArray(data) ? data : data?.content || []);
+        } catch (e) {
+          console.error('Invalid JSON in recently viewed:', text.substring(0, 100));
+          setRecentlyViewed([]);
+        }
+
+      } catch (error) {
+        console.error('Error fetching recently viewed products:', error);
+        setRecentlyViewed([]);
+      }
+    };
+
+    fetchRecentlyViewed();
   }, []);
 
   return (

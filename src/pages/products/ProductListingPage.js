@@ -129,19 +129,19 @@ function ProductsListing() {
   // Update the fetchProducts function with better error handling and fallbacks
   const fetchProducts = async (url, retryCount = 0) => {
     const maxRetries = 2;
-    
+
     try {
       console.log(`Fetching products from: ${url}`);
-      
+
       const headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       };
-      
+
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
       }
-      
+
       const response = await fetch(url, {
         method: 'GET',
         headers,
@@ -161,7 +161,7 @@ function ProductsListing() {
       }
 
       const data = await response.json();
-      
+
       // Handle different response formats
       let products = [];
       let totalPages = 0;
@@ -187,7 +187,7 @@ function ProductsListing() {
   useEffect(() => {
     const loadProducts = async () => {
       setIsLoading(true);
-      
+
       try {
         let url = new URL(getFetchURL(currentPage));
         const condition = url.searchParams.get('condition');
@@ -239,7 +239,7 @@ function ProductsListing() {
 
       const url = `${baseUrl}/products/search?${formatQueryParams(params)}`;
       const { products: searchResults, totalPages } = await fetchProducts(url);
-      
+
       setProducts(searchResults);
       setTotalPages(totalPages);
     } catch (error) {
@@ -273,7 +273,7 @@ function ProductsListing() {
     try {
       const url = `${baseUrl}/products/filter-products?${formatQueryParams(params)}`;
       const { products: filteredProducts, totalPages } = await fetchProducts(url);
-      
+
       setProducts(filteredProducts);
       setTotalPages(totalPages);
       setCurrentPage(0);
@@ -304,10 +304,10 @@ function ProductsListing() {
         sortBy: "createdOn",
         sortDir: "desc"
       };
-      
+
       const url = `${baseUrl}/products/pagination/active?${formatQueryParams(params)}`;
       const { products: allProducts, totalPages } = await fetchProducts(url);
-      
+
       setProducts(allProducts);
       setTotalPages(totalPages);
       setCurrentPage(0);
@@ -362,21 +362,21 @@ function ProductsListing() {
 
       if (!response.ok) {
         let errorMessage = `Failed to add item to cart: ${response.status}`;
-        
+
         try {
           const errorData = await response.json();
           errorMessage = errorData?.message || errorData?.error || errorMessage;
         } catch (parseError) {
           // Use default error message if can't parse response
         }
-        
+
         throw new Error(errorMessage);
       }
 
       // Check if response has content
       const responseText = await response.text();
       let result = null;
-      
+
       if (responseText) {
         try {
           result = JSON.parse(responseText);
@@ -430,14 +430,14 @@ function ProductsListing() {
 
       if (!response.ok) {
         let errorMessage = `Failed to add to wishlist: ${response.status}`;
-        
+
         try {
           const errorData = await response.json();
           errorMessage = errorData?.message || errorData?.error || errorMessage;
         } catch (parseError) {
           // Use default error message
         }
-        
+
         throw new Error(errorMessage);
       }
 
@@ -603,10 +603,10 @@ function ProductsListing() {
                 )}
               </div>
             ) : (
-              <MainGroups 
-                addToCart={handleAddToCart} 
+              <MainGroups
+                addToCart={handleAddToCart}
                 addToWishlist={handleAddToWishlist}
-                products={products} 
+                products={products}
               />
             )}
           </div>
