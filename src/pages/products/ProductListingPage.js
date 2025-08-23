@@ -74,107 +74,103 @@ function ProductsListing() {
     return new URLSearchParams(validParams).toString();
   };
 
-  // Update getFetchURL function
+  // Update getFetchURL function to use correct parameters
   const getFetchURL = (page) => {
-    const condition = new URLSearchParams(location.search).get('condition');
-    const baseEndpoint = `${baseUrl}/products`;
-
     const params = {
       pageNo: page,
-      pageSize: 10,
-      sortBy: "createdOn",
+      pageSize: 10, // Changed to 10 to match working endpoint
+      sortBy: "id", // Changed to id instead of createdOn
       sortDir: "desc"
     };
 
-    // Handle condition parameter first
+    const condition = new URLSearchParams(location.search).get('condition');
+    const productType = new URLSearchParams(location.search).get('productType');
+
+    // Handle condition filtering (used/new)
     if (condition) {
-      return `${baseEndpoint}/filter-products?${formatQueryParams({
+      return `${baseUrl}/products/filter-products?${new URLSearchParams({
         ...params,
         condition: condition.toLowerCase()
       })}`;
     }
 
-    // Product type specific endpoint
-    if (productTypeId) {
-      return `${baseEndpoint}/product-type/${productTypeId}/${formatQueryParams(params)}`;
-    }
-
-    // Combined filtering
-    if (brandId || categoryId) {
-      return `${baseEndpoint}/filter-products?${formatQueryParams({
+    // Handle category and brand filtering
+    if (categoryId || brandId) {
+      return `${baseUrl}/products/filter-products?${new URLSearchParams({
         ...params,
-        brandId,
-        categoryId
+        ...(categoryId && { categoryId }),
+        ...(brandId && { brandId })
       })}`;
     }
 
-    // Special lists
-    if (myFilter === "best selling products") {
-      return `${baseEndpoint}/best-selling?${formatQueryParams(params)}`;
+    // Handle product type filtering
+    if (productType) {
+      return `${baseUrl}/products/filter-products?${new URLSearchParams({
+        ...params,
+        productType
+      })}`;
     }
 
-    if (myFilter === "recently viewed") {
-      return `${baseEndpoint}/reviewed?${formatQueryParams(params)}`;
-    }
-
-    // Search functionality
-    if (brandQuery) {
-      return `${baseEndpoint}/search?query=${encodeURIComponent(brandQuery)}&${formatQueryParams(params)}`;
-    }
-
-    // Default active products
-    return `${baseEndpoint}/pagination/active?${formatQueryParams(params)}`;
+    // Default endpoint for all products
+    return `${baseUrl}/products/pagination/active?${new URLSearchParams(params)}`;
   };
 
-  // Update the fetchProducts function with better error handling and fallbacks
-  const fetchProducts = async (url, retryCount = 0) => {
-    const maxRetries = 2;
-
+  // Update the fetchProducts function with better error handling
+  const fetchProducts = async (url) => {
     try {
-      console.log(`Fetching products from: ${url}`);
-
-      const headers = {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      };
-
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      const response = await fetch(url, {
-        method: 'GET',
-        headers,
-        signal: AbortSignal.timeout(15000), // 15 second timeout
+      // First try OPTIONS request to check endpoint availability
+      const optionsResponse = await fetch(url, {
+        method: 'OPTIONS',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
       });
 
-      if (!response.ok) {
-        // If the filter endpoint fails, try the default endpoint
-        if (response.status === 500 && retryCount === 0) {
-          const fallbackUrl = `${baseUrl}/products/pagination/active?pageNo=${currentPage}&pageSize=12`;
-          console.log('Filter endpoint failed, trying default endpoint:', fallbackUrl);
-          return fetchProducts(fallbackUrl, retryCount + 1);
-        }
+      if (optionsResponse.status !== 200) {
+        console.warn('OPTIONS request failed, proceeding with GET');
+      }
 
-        // If still failing after retry, throw error
-        throw new Error(`Server error: ${response.status}`);
+      // Proceed with GET request
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      });
+
+      // Handle 500 error specifically for category filtering
+      if (response.status === 500 && url.includes('categoryId')) {
+        console.warn('Category filter failed, falling back to default endpoint');
+        // Fall back to default endpoint
+        const fallbackUrl = `${baseUrl}/products/pagination/active?${new URLSearchParams({
+          pageNo: 0,
+          pageSize: 10,
+          sortBy: "id",
+          sortDir: "desc"
+        })}`;
+        return fetchProducts(fallbackUrl);
+      }
+
+      if (!response.ok) {
+        throw new Error(`Server responded with ${response.status}`);
       }
 
       const data = await response.json();
-
+      
       // Handle different response formats
-      let products = [];
-      let totalPages = 0;
-
       if (Array.isArray(data)) {
-        products = data;
-        totalPages = Math.ceil(data.length / 12);
-      } else if (data.content && Array.isArray(data.content)) {
-        products = data.content;
-        totalPages = data.totalPages || Math.ceil(data.totalElements / 12);
+        return {
+          products: data,
+          totalPages: Math.ceil(data.length / 10)
+        };
       }
 
-      return { products, totalPages };
+      return {
+        products: data.content || [],
+        totalPages: data.totalPages || Math.ceil((data.totalElements || 0) / 10)
+      };
 
     } catch (error) {
       console.error('Failed to fetch products:', error);
@@ -255,22 +251,22 @@ function ProductsListing() {
     }
   };
 
-  // Update handleFilter to use filter-products endpoint
+  // Update handleFilter function to use correct parameters
   const handleFilter = async () => {
-    const params = {
-      pageNo: 0,
-      pageSize: 12,
-      sortBy: "createdOn",
-      sortDir: "desc",
-      categoryId,
-      brandId,
-      productTypeId
-    };
-
     if (!categoryId && !brandId && !productTypeId) return;
 
     setIsLoading(true);
     try {
+      const params = {
+        pageNo: 0,
+        pageSize: 10,
+        sortBy: "id",
+        sortDir: "desc",
+        ...(categoryId && { categoryId }),
+        ...(brandId && { brandId }),
+        ...(productTypeId && { productTypeId })
+      };
+
       const url = `${baseUrl}/products/filter-products?${formatQueryParams(params)}`;
       const { products: filteredProducts, totalPages } = await fetchProducts(url);
 
@@ -283,7 +279,7 @@ function ProductsListing() {
         open: true,
         severity: "error",
         title: "Filter Error",
-        message: error.message || "Failed to apply filters. Please try again."
+        message: "Failed to apply filters. Please try again."
       });
     } finally {
       setIsLoading(false);
@@ -300,8 +296,8 @@ function ProductsListing() {
     try {
       const params = {
         pageNo: 0,
-        pageSize: 12,
-        sortBy: "createdOn",
+        pageSize: 10,
+        sortBy: "id",
         sortDir: "desc"
       };
 
@@ -336,71 +332,67 @@ function ProductsListing() {
     setShowFilters((prev) => !prev);
   };
 
+  // Update handleAddToCart to work for both guest and logged-in users
   const handleAddToCart = async (product) => {
-    if (!token) {
+    if (!loggedIn) {
+      // For guest users, store cart in localStorage
+      const guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
+      const existingItem = guestCart.find(item => item.productId === product.id);
+      
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        guestCart.push({
+          productId: product.id,
+          quantity: 1,
+          product: product
+        });
+      }
+      
+      localStorage.setItem('guestCart', JSON.stringify(guestCart));
+      setCartDep(prev => prev + 1);
+      
       setAlert({
         open: true,
-        severity: "info",
-        title: "Login Required",
-        message: "Please log in to add items to your cart",
+        severity: 'success',
+        title: 'Success',
+        message: 'Product added to cart'
       });
-      navigate("/login");
       return;
     }
 
-    const dataToSend = { productId: product.id, quantity: 1 };
-
+    // For logged-in users, use the API
     try {
-      const response = await fetch(`${baseUrl}/cart-items/add`, {
-        method: "POST",
+      const response = await fetch(`${baseUrl}/cart/add`, {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(dataToSend),
+        body: JSON.stringify({
+          productId: product.id,
+          quantity: 1
+        })
       });
 
       if (!response.ok) {
-        let errorMessage = `Failed to add item to cart: ${response.status}`;
-
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData?.message || errorData?.error || errorMessage;
-        } catch (parseError) {
-          // Use default error message if can't parse response
-        }
-
-        throw new Error(errorMessage);
+        throw new Error('Failed to add to cart');
       }
 
-      // Check if response has content
-      const responseText = await response.text();
-      let result = null;
-
-      if (responseText) {
-        try {
-          result = JSON.parse(responseText);
-        } catch (parseError) {
-          // Response might not be JSON, which is okay for some APIs
-          console.log("Add to cart response is not JSON:", responseText);
-        }
-      }
-
-      setCartDep(product.id);
+      setCartDep(prev => prev + 1);
       setAlert({
         open: true,
-        severity: "success",
-        title: "Success!",
-        message: `${product.name} has been added to your cart`,
+        severity: 'success',
+        title: 'Success',
+        message: 'Product added to cart'
       });
-
     } catch (error) {
-      console.error("Add to cart failed:", error);
+      console.error('Add to cart failed:', error);
       setAlert({
         open: true,
-        severity: "error",
-        title: "Failed to add item to cart",
-        message: error.message || "Unable to add item to cart. Please try again.",
+        severity: 'error',
+        title: 'Error',
+        message: 'Failed to add product to cart'
       });
     }
   };

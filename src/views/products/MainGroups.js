@@ -3,70 +3,59 @@ import { Link, useNavigate } from "react-router-dom";
 import IMAGES from "../../assets";
 import NairaSymbol from "../../component/nairaSymbol";
 
-function ProductContainer({ product, addToCart }) {
+function ProductContainer({ product, addToCart, addToWishlist }) {
   const navigate = useNavigate();
 
-  const handleProductDesc = (id) => {
-    navigate("/product-desc/" + id);
+  const handleProductClick = (id) => {
+    navigate(`/product/${id}`); // Navigate to product detail page
   };
 
   return (
-    <div
-      className="w-[170px] h-56 rounded flex flex-col justify-between cursor-pointer border-[#DADADA] border-tiny border-solid md:w-52 lg:w-60 lg:h-[300px] transition-all ease-in-out duration-500 hover:scale-105"
-      onClick={() => handleProductDesc(product.id)}
-    >
-      <div className="h-32 rounded bg-[#D9D9D9] flex justify-center items-center relative lg:h-44">
-        {product.images && (
-          <div className="w-4/5 h-4/5 flex justify-center items-center">
-            {product.images.length >= 1 ? (
-              <img
-                loading="lazy"
-                src={product.images[0].image}
-                alt={product.name || ""}
-                className="max-w-full max-h-full"
-              />
-            ) : (
-              <img
-                src={IMAGES.icons.cartGreen}
-                alt={""}
-                className="max-w-full max-h-full w-[50px]"
-              />
-            )}
-          </div>
-        )}
-        <div
-          className="bg-green text-white font-medium capitalize w-9 h-4 rounded-sm flex justify-center items-center absolute top-4 right-2 z-10"
-          style={{
-            fontSize: "10px",
-          }}
-        >
-          {product.category === "BRAND NEW" ? "new" : "used"}
+    <div className="relative bg-white p-4 rounded-lg shadow hover:shadow-lg transition-shadow">
+      <div
+        onClick={() => handleProductClick(product.id)}
+        className="cursor-pointer"
+      >
+        {/* Product Image */}
+        <div className="relative h-48 mb-4">
+          <img
+            src={product.images?.[0]?.image || "default-image-url"}
+            alt={product.name}
+            className="w-full h-full object-contain"
+          />
         </div>
 
-      </div>
-      <div className="flex flex-col gap-1 justify-between h-20 px-2 pb-3 lg:h-28 lg:pt-2">
-        <p className="text-xs md:text-sm font-medium capitalize">
-          {product.name}
-        </p>
-
-        <div className="flex justify-between items-center gap-2">
-          <p className="text-base font-bold text-green">
+        {/* Product Info */}
+        <div className="space-y-2">
+          <h3 className="text-lg font-semibold truncate">{product.name}</h3>
+          <p className="text-gray-600 text-sm">{product.brand}</p>
+          <p className="text-green font-bold">
             <NairaSymbol />
             {product.price}
           </p>
-
-          <button
-            type="button"
-            className="bg-green text-white text-xs capitalize py-1 px-2 rounded flex justify-between items-center md:gap-1 lg:px-4"
-            onClick={(e) => {
-              e.stopPropagation();
-
-              addToCart(product);
-            }}
-          >
-            <i className="bx bx-cart-add lg:text-base"></i> add
-          </button>
         </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="mt-4 flex justify-between">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            addToCart(product);
+          }}
+          className="bg-green text-white px-3 py-1 rounded hover:bg-dark-green"
+        >
+          Add to Cart
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            addToWishlist(product);
+          }}
+          className="text-green hover:text-dark-green"
+        >
+          <i className="bx bx-heart"></i>
+        </button>
       </div>
     </div>
   );
