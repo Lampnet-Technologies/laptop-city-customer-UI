@@ -74,7 +74,7 @@ function ProductsListing() {
     return new URLSearchParams(validParams).toString();
   };
 
-  // Update getFetchURL function to use correct parameters
+  // Updated getFetchURL function to use correct parameters
   const getFetchURL = (page) => {
     const params = {
       pageNo: page,
@@ -115,7 +115,7 @@ function ProductsListing() {
     return `${baseUrl}/products/pagination/active?${new URLSearchParams(params)}`;
   };
 
-  // Update the fetchProducts function with better error handling
+  // Updated the fetchProducts function with better error handling
   const fetchProducts = async (url) => {
     try {
       // First try OPTIONS request to check endpoint availability
@@ -158,7 +158,7 @@ function ProductsListing() {
       }
 
       const data = await response.json();
-      
+
       // Handle different response formats
       if (Array.isArray(data)) {
         return {
@@ -190,8 +190,8 @@ function ProductsListing() {
 
         // Determine correct endpoint
         const endpoint = condition
-          ? `${baseUrl}/products/pagination/active?pageNo=${currentPage}&pageSize=12&condition=${condition}`
-          : `${baseUrl}/products/pagination/active?pageNo=${currentPage}&pageSize=12`;
+          ? `${baseUrl}/products/pagination/active?pageNo=${currentPage}&pageSize=10&condition=${condition}`
+          : `${baseUrl}/products/pagination/active?pageNo=${currentPage}&pageSize=10`;
 
         const { products, totalPages } = await fetchProducts(endpoint);
 
@@ -227,7 +227,7 @@ function ProductsListing() {
     try {
       const params = {
         pageNo: 0,
-        pageSize: 12,
+        pageSize: 10,
         query: searchTerm.trim(),
         sortBy: "createdOn",
         sortDir: "desc"
@@ -338,7 +338,7 @@ function ProductsListing() {
       // For guest users, store cart in localStorage
       const guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
       const existingItem = guestCart.find(item => item.productId === product.id);
-      
+
       if (existingItem) {
         existingItem.quantity += 1;
       } else {
@@ -348,10 +348,10 @@ function ProductsListing() {
           product: product
         });
       }
-      
+
       localStorage.setItem('guestCart', JSON.stringify(guestCart));
       setCartDep(prev => prev + 1);
-      
+
       setAlert({
         open: true,
         severity: 'success',
@@ -463,168 +463,167 @@ function ProductsListing() {
         />
       )}
 
-      <div className="my-4 flex flex-col gap-8 lg:my-16">
+      <div className="my-4 flex flex-col gap-8 lg:my-8">
         <div className="md:mx-12 lg:mx-24">
           <AdSlider />
         </div>
 
         <Banner />
 
-        <div className="flex items-start justify-between lg:px-8 lg:mt-6 mb-8">
-          {/* Sidebar filters */}
-          <div className="filterDesktop hidden lg:block w-80 max-h-[1300px] overflow-y-auto mr-20 bg-filter-green rounded">
-            <div className="pb-8 px-3 flex flex-col gap-10">
-              <div className="mt-3 text-right">
-                <ProductFilter
-                  fetchUrl={`${baseUrl}/categories`}
-                  title="category"
-                  checked={categoryId}
-                  setter={setCategoryId}
-                  onChange={handleFilter}
-                />
+        {/* Main content area with search and products */}
+        <div className="px-4 md:px-12 lg:px-24">
 
-                <ProductFilter
-                  fetchUrl={`${baseUrl}/brands`}
-                  title="brands"
-                  checked={brandId}
-                  setter={setBrandId}
-                  onChange={handleFilter}
-                />
-              </div>
+          {/* Desktop and Mobile layouts */}
+          <div className="flex flex-col lg:flex-row lg:gap-8">
+            {/* Desktop Sidebar - Always visible on desktop */}
+            <div className="hidden lg:block w-80 flex-shrink-0">
+              <div className="sticky top-[15%] bg-filter-green rounded-lg shadow-md">
+                <div className="p-6 flex flex-col gap-8">
+                  <ProductFilter
+                    fetchUrl={`${baseUrl}/categories`}
+                    title="category"
+                    checked={categoryId}
+                    setter={setCategoryId}
+                    onChange={handleFilter}
+                  />
 
-              <div className="flex justify-end items-center">
-                <button className="flex items-center text-sm" onClick={viewAll}>
-                  View all <i className="bx bx-chevron-right bx-sm"></i>
-                </button>
-              </div>
+                  <ProductFilter
+                    fetchUrl={`${baseUrl}/brands`}
+                    title="brands"
+                    checked={brandId}
+                    setter={setBrandId}
+                    onChange={handleFilter}
+                  />
 
-              <div className="text-center lg:mt-4 lg:mb-2">
-                <LaptopCityButton onClick={handleFilter}>
-                  search
-                </LaptopCityButton>
-              </div>
-            </div>
-          </div>
+                  <ProductFilter
+                    fetchUrl={`${baseUrl}/product-types`}
+                    title="product"
+                    checked={productTypeId}
+                    setter={setProductTypeId}
+                    onChange={handleFilter}
+                  />
 
-          {/* Product cards */}
-          <div className="w-full md:pl-4 lg:pl-0">
-            <div className="sticky top-[9%] z-20 bg-filter-green md:relative md:bg-transparent">
-              <SearchBox show={handleOpen} search={handleSearch} />
-
-              {showFilters ? (
-                <div>
-                  <div
-                    id="mobileFilter"
-                    className={
-                      showFilters ? "#mobileFilter active" : "#mobileFilter"
-                    }
-                  >
-                    <ProductFilter
-                      fetchUrl={`${baseUrl}/categories`}
-                      title="category"
-                      checked={categoryId}
-                      setter={setCategoryId}
-                    />
-                    <ProductFilter
-                      fetchUrl={`${baseUrl}/brands`}
-                      title="brands"
-                      checked={brandId}
-                      setter={setBrandId}
-                    />
-                    <ProductFilter
-                      fetchUrl={`${baseUrl}/product-types`}
-                      title="product"
-                      checked={productTypeId}
-                      setter={setProductTypeId}
-                    />
-
-                    <div className="flex justify-end items-center">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          handleOpen();
-                          viewAll();
-                        }}
-                        className="flex items-center text-sm"
-                      >
-                        View all <i className="bx bx-chevron-right bx-sm"></i>
-                      </button>
-                    </div>
-
-                    <div className="text-center mt-3 mb-5 sticky bottom-0 bg-filter-green py-4">
-                      <LaptopCityButton
-                        onClick={() => {
-                          handleOpen();
-                          handleFilter();
-                        }}
-                      >
-                        search
-                      </LaptopCityButton>
-                    </div>
+                  <div className="text-center mt-4">
+                    <LaptopCityButton onClick={handleFilter}>
+                      Search
+                    </LaptopCityButton>
                   </div>
                 </div>
-              ) : null}
+              </div>
             </div>
 
-            {isLoading ? (
-              <div className="lg:h-screen flex justify-center items-center">
-                <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-full border-8 border-solid border-green bg-transparent flex justify-center items-center loader">
-                  <div className="w-full h-full rounded-full bg-transparent"></div>
-                  <div
-                    style={{ top: "-10px" }}
-                    className="w-5 h-5 absolute bg-[#fbfbfb] z-50"
-                  ></div>
-                </div>
-              </div>
-            ) : !products || products.length === 0 ? (
-              <div className="text-center text-gray-500 text-lg flex flex-col gap-4 items-center">
-                {brandQuery ? (
-                  <>
-                    <p>
-                      No products found for brand: <strong>{brandQuery}</strong>
-                    </p>
-                    <button
-                      onClick={() => navigate("/products")}
-                      className="bg-green text-white px-4 py-2 rounded hover:bg-dark-green transition duration-300"
+            {/* Mobile Filters - Only visible on mobile */}
+            <div className="lg:hidden mb-6 rounded-xl shadow bg-white p-4 space-y-6">
+              {showFilters && (
+                <div className="bg-filter-green p-4 rounded-lg mb-4">
+                  <ProductFilter
+                    fetchUrl={`${baseUrl}/categories`}
+                    title="category"
+                    checked={categoryId}
+                    setter={setCategoryId}
+                  />
+                  <ProductFilter
+                    fetchUrl={`${baseUrl}/brands`}
+                    title="brands"
+                    checked={brandId}
+                    setter={setBrandId}
+                  />
+                  <ProductFilter
+                    fetchUrl={`${baseUrl}/product-types`}
+                    title="product"
+                    checked={productTypeId}
+                    setter={setProductTypeId}
+                  />
+
+                  <div className="text-center mt-4 sticky bottom-0 bg-filter-green py-4">
+                    <LaptopCityButton
+                      onClick={() => {
+                        handleOpen();
+                        handleFilter();
+                      }}
                     >
-                      View All Products
-                    </button>
-                  </>
+                      Search
+                    </LaptopCityButton>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Search bar - Always visible on top */}
+            <div className="sticky top-[9%] z-20 bg-white mb-6 px-4">
+                <SearchBox
+                  className="w-full"
+                  show={handleOpen}
+                  search={handleSearch}
+                />
+
+              {/* Products Grid */}
+              <div className="flex-grow">
+                {isLoading ? (
+                  <div className="min-h-[400px] flex justify-center items-center">
+                    <Loading />
+                  </div>
+                ) : !products || products.length === 0 ? (
+                  <div className="text-center text-gray-500 text-lg py-8">
+                    {brandQuery ? (
+                      <>
+                        <p>
+                          No products found for brand: <strong>{brandQuery}</strong>
+                        </p>
+                        <button
+                          onClick={() => navigate("/products")}
+                          className="mt-4 bg-green text-white px-4 py-2 rounded hover:bg-dark-green transition duration-300"
+                        >
+                          View All Products
+                        </button>
+                      </>
+                    ) : (
+                      <p>No products found for this category.</p>
+                    )}
+                  </div>
                 ) : (
-                  <p>No products found for this category.</p>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
+                    {products.map((product) => (
+                      <div key={product.id}>
+                        <MainGroups
+                          addToCart={handleAddToCart}
+                          addToWishlist={handleAddToWishlist}
+                          products={[product]}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="mt-8 mb-4 flex justify-center">
+                    <ThemeProvider theme={theme}>
+                      <Pagination
+                        count={totalPages}
+                        shape="rounded"
+                        color="primary"
+                        size="large"
+                        onChange={handleChangePage}
+                        renderItem={(item) => (
+                          <PaginationItem
+                            sx={{
+                              backgroundColor: (theme) => `${theme.palette.grey[200]}`,
+                              mx: "4px",
+                            }}
+                            {...item}
+                          />
+                        )}
+                      />
+                    </ThemeProvider>
+                  </div>
                 )}
               </div>
-            ) : (
-              <MainGroups
-                addToCart={handleAddToCart}
-                addToWishlist={handleAddToWishlist}
-                products={products}
-              />
-            )}
+            </div>
           </div>
         </div>
-
-        <div className="w-full flex justify-center items-center">
-          <ThemeProvider theme={theme}>
-            <Pagination
-              count={totalPages}
-              shape="rounded"
-              color="primary"
-              size="large"
-              onChange={handleChangePage}
-              renderItem={(item) => (
-                <PaginationItem
-                  sx={{
-                    backgroundColor: (theme) => `${theme.palette.grey[200]}`,
-                    mx: "4px",
-                  }}
-                  {...item}
-                />
-              )}
-            />
-          </ThemeProvider>
+        {/* End of Desktop and Mobile layouts */}
         </div>
-      </div>
     </Suspense>
   );
 }
