@@ -6,6 +6,154 @@ import Modal from "./Modal";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
+export const Groups = ({ heading, products, seeMore }) => (
+  <div className="mb-8">
+    <div className="flex justify-between items-center mb-4">
+      <h2 className="text-xl font-bold capitalize">{heading}</h2>
+      {products.length > 0 && seeMore && (
+        <Link
+          to={`/products?category=${heading.toLowerCase().replace(' ', '_')}`}
+          className="text-green hover:text-dark-green transition-colors"
+        >
+          See more &gt;
+        </Link>
+      )}
+    </div>
+    {products.length > 0 ? (
+      <div className="relative">
+        <div className="overflow-x-auto hide-scrollbar">
+          <div className="flex gap-4 pb-4 min-w-0">
+            {products.map((product) => (
+              <div className="flex-none w-44 lg:w-60" key={product.id}>
+                <ProductContainer product={product} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    ) : (
+      <div className="bg-gray-50 rounded-lg p-6 text-center">
+        <p className="text-gray-500">
+          No {heading.toLowerCase()} available at the moment
+        </p>
+      </div>
+    )}
+  </div>
+);
+
+function ProductGroups() {
+  const [products, setProducts] = useState({
+    laptops: [],
+    phones: [],
+    otherGadgets: []
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch(`${baseUrl}/products/pagination/active`, {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`Server responded with ${response.status}`);
+        }
+
+        const data = await response.json();
+        const content = data.content || [];
+
+        const grouped = {
+          laptops: content.filter(p => {
+            const type = (p?.productType || '').toLowerCase();
+            return type.includes('laptop') || type.includes('notebook');
+          }),
+          phones: content.filter(p => {
+            const type = (p?.productType || '').toLowerCase();
+            return type.includes('phone') || type.includes('mobile');
+          }),
+          otherGadgets: content.filter(p => {
+            const type = (p?.productType || '').toLowerCase();
+            // Include all products that aren't laptops or phones
+            return p.productType &&
+              !type.includes('laptop') &&
+              !type.includes('notebook') &&
+              !type.includes('phone') &&
+              !type.includes('mobile');
+          })
+        };
+
+        setProducts(grouped);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  // Remove handleProductTypeSelect since Modal is using onSelect prop
+  const handleRetry = () => {
+    setError(null);
+    setLoading(true);
+    window.location.reload(); // Simple retry by reloading the page
+  };
+
+  // Update error display to be more user-friendly
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+            <h3 className="text-yellow-800 font-semibold mb-2">
+              We're having trouble loading the products
+            </h3>
+            <p className="text-gray-600 mb-4">
+              Please try again in a moment
+            </p>
+            <button
+              onClick={handleRetry}
+              className="bg-green text-white px-4 py-2 rounded hover:bg-dark-green transition-colors"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-16 mb-10 px-2 space-y-8 md:mx-12 lg:mt-24 lg:mx-24">
+      <Groups
+        heading="laptops"
+        products={products.laptops || []}
+        seeMore
+      />
+      <Groups
+        heading="smartphones"
+        products={products.phones || []}
+        seeMore
+      />
+      <Groups
+        heading="other gadgets"
+        products={products.otherGadgets || []}
+        seeMore
+      />
+    </div>
+  );
+}
+
+// Keep original ProductContainer component
 function ProductContainer({ product, addToCart }) {
   const navigate = useNavigate();
 
@@ -96,179 +244,5 @@ function ProductContainer({ product, addToCart }) {
     </div>
   );
 }
-
-export const Groups = ({ products, addToCart }) => (
-  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-    {products && products.length > 0 ? (
-      products.map((product) => (
-        <ProductContainer key={product.id} product={product} addToCart={addToCart} />
-      ))
-    ) : (
-      <div className="col-span-full text-center text-gray-500 py-8">
-        No products available
-      </div>
-    )}
-  </div>
-);
-
-function ProductGroups() {
-  const [products, setProducts] = useState({
-    laptops: [],
-    phones: [],
-    otherGadgets: []
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const navigate = useNavigate();
-
-  // Move fetchHomepageProducts inside useEffect to fix scope
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const response = await fetch(`${baseUrl}/products/pagination/active`, {
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error(`Server responded with ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        // Group products by category
-        const grouped = {
-          laptops: data.content.filter(p => p.productType?.toLowerCase().includes('laptop') || []),
-          phones: data.content.filter(p => p.productType?.toLowerCase().includes('phone') || []),
-          otherGadgets: data.content.filter(p =>
-            !p.productType?.toLowerCase().includes('laptop') &&
-            !p.productType?.toLowerCase().includes('phone') || []
-          )
-        };
-
-        setProducts(grouped);
-      } catch (error) {
-        console.error("Failed to fetch products:", error);
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
-
-  // Remove handleProductTypeSelect since Modal is using onSelect prop
-  const handleRetry = () => {
-    setError(null);
-    setLoading(true);
-    window.location.reload(); // Simple retry by reloading the page
-  };
-
-  // Update error display to be more user-friendly
-  if (error) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-            <h3 className="text-yellow-800 font-semibold mb-2">
-              We're having trouble loading the products
-            </h3>
-            <p className="text-gray-600 mb-4">
-              Please try again in a moment
-            </p>
-            <button
-              onClick={handleRetry}
-              className="bg-green text-white px-4 py-2 rounded hover:bg-dark-green transition-colors"
-            >
-              Retry
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <Section
-        title="Laptops"
-        items={products.laptops}
-      />
-      <Section
-        title="SmartPhones"
-        items={products.phones}
-      />
-      <Section
-        title="Other Gadgets"
-        items={products.otherGadgets}
-      />
-
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        // Remove undefined handleProductTypeSelect
-        onSelect={() => setIsModalOpen(false)}
-      />
-    </div>
-  );
-}
-
-// Update Section component to use the navigate from useNavigate hook
-const Section = ({ title, items }) => {
-  const navigate = useNavigate();
-
-  // Map homepage sections to correct category parameters
-  const getCategoryParam = (title) => {
-    switch (title.toLowerCase()) {
-      case 'laptops':
-        return 'laptop';
-      case 'smartphones':
-        return 'phone';
-      case 'other gadgets':
-        return 'other';
-      default:
-        return title.toLowerCase();
-    }
-  };
-
-  return (
-    <section className="my-8">
-      <h2 className="text-xl font-bold mb-4">{title}</h2>
-      {items && items.length > 0 ? (
-        <>
-          <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-2">
-            {items.map((product) => (
-              <ProductContainer
-                key={product.id}
-                product={product}
-              />
-            ))}
-          </div>
-          <div className="flex justify-end mt-4">
-            <Link
-              to={`/products?productType=${getCategoryParam(title)}`}
-              className="text-green hover:text-dark-green transition-colors"
-            >
-              See more &gt;
-            </Link>
-          </div>
-        </>
-      ) : (
-        <div className="bg-gray-50 rounded-lg p-8 text-center">
-          <p className="text-gray-500">
-            No {title.toLowerCase()} available at the moment
-          </p>
-        </div>
-      )}
-    </section>
-  );
-};
 
 export default ProductGroups;

@@ -1,9 +1,8 @@
-import React, { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import IMAGES from "../../assets";
-import LaptopCityButton from "../../component/button";
 import { Banner } from "../../component/homepage";
-import ProductGroups, { Groups } from "../../component/homepage/productGroups";
+import { Groups } from "../../component/homepage/productGroups";
 import NairaSymbol from "../../component/nairaSymbol";
 import { LoginContext, UserCartDependency } from "../../App";
 import Loading from "../../component/loading";
@@ -73,10 +72,12 @@ Sensors: Fingerprint (side-mounted), accelerometer, gyro, proximity, compass
 BATTERY
 Type: Li-Po 5000 mAh, non-removable
 Charging: Fast Charging 33W`;
+
 const baseUrl = process.env.REACT_APP_BASE_URL || 'https://apps-1.lampnets.com/ecommb-staging';
+
 function ImagesPreviews({ files }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  
+
   const arrowNext = (arr) => {
     if (arr.length - 1 !== currentIndex) {
       setCurrentIndex((prev) => prev + 1);
@@ -107,10 +108,9 @@ function ImagesPreviews({ files }) {
               onClick={() => arrowNext(files)}
               className="bx bx-chevron-right bx-lg text-green font-normal cursor-pointer absolute top-1/4 right-2"
               style={{
-                color: `${
-                  files &&
+                color: `${files &&
                   (currentIndex === files.length - 1 ? "#9ca3af" : "#009F7F")
-                }`,
+                  }`,
               }}
             ></i>
           </div>
@@ -135,9 +135,8 @@ function ImagesPreviews({ files }) {
                     key={index}
                     className="h-24 w-28 rounded py-4 flex justify-center items-center lg:rounded-md lg:w-32 lg:h-28"
                     style={{
-                      border: `${
-                        currentIndex === index ? "1px solid #009F7F" : "none"
-                      }`,
+                      border: `${currentIndex === index ? "1px solid #009F7F" : "none"
+                        }`,
                     }}
                     onClick={() => setCurrentIndex(index)}
                   >
@@ -165,9 +164,8 @@ function ImagesPreviews({ files }) {
             onClick={() => arrowNext(files)}
             className="bx bx-chevron-right bx-lg text-green font-normal cursor-pointer"
             style={{
-              color: `${
-                currentIndex === files.length - 1 ? "#9ca3af" : "#009F7F"
-              }`,
+              color: `${currentIndex === files.length - 1 ? "#9ca3af" : "#009F7F"
+                }`,
             }}
           ></i>
         </div>
@@ -505,10 +503,10 @@ function ProductDetails({ bestSelling, recentlyViewed, product }) {
 
       <div className="mt-8 px-4 md:px-12 lg:px-24">
         {recentlyViewed && recentlyViewed.length > 0 && (
-          <Groups 
-            heading="recently viewed" 
-            products={recentlyViewed} 
-            seeMore 
+          <Groups
+            heading="recently viewed"
+            products={recentlyViewed}
+            seeMore
           />
         )}
       </div>
@@ -556,7 +554,7 @@ function ProductDesc() {
   useEffect(() => {
     const fetchProduct = async () => {
       if (!prodId) return;
-      
+
       setIsLoading(true);
       try {
         const response = await fetch(`${baseUrl}/products/${prodId}`, {
@@ -565,7 +563,7 @@ function ProductDesc() {
             'Content-Type': 'application/json'
           }
         });
-        
+
         if (!response.ok) {
           throw new Error(`Server responded with ${response.status}`);
         }
@@ -585,15 +583,15 @@ function ProductDesc() {
         }
 
         setProduct(data);
-        
+
         // Set default image if none provided
         if (!data.images || data.images.length === 0) {
-          data.images = [{ 
+          data.images = [{
             image: IMAGES.productDesc.productMain,
             id: 'default-image'
           }];
         }
-        
+
       } catch (error) {
         console.error('Error fetching product:', error);
         setAlert({
@@ -617,17 +615,17 @@ function ProductDesc() {
       try {
         const response = await fetch(
           `${baseUrl}/products/best-selling`, {
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            params: {
-              pageNo: 0,
-              pageSize: checkScreenSize()
-            }
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          params: {
+            pageNo: 0,
+            pageSize: checkScreenSize()
           }
+        }
         );
-        
+
         if (!response.ok) {
           throw new Error(`Server responded with ${response.status}`);
         }
@@ -640,7 +638,7 @@ function ProductDesc() {
           console.error('Invalid JSON in best selling products:', text.substring(0, 100));
           setBestSelling([]);
         }
-        
+
       } catch (error) {
         console.error('Error fetching best selling products:', error);
         setBestSelling([]);
@@ -656,17 +654,17 @@ function ProductDesc() {
       try {
         const response = await fetch(
           `${baseUrl}/products/reviewed`, {
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            params: {
-              pageNo: 0,
-              pageSize: checkScreenSize()
-            }
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          params: {
+            pageNo: 0,
+            pageSize: checkScreenSize()
           }
+        }
         );
-        
+
         if (!response.ok) {
           throw new Error(`Server responded with ${response.status}`);
         }

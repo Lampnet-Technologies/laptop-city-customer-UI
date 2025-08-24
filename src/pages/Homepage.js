@@ -15,7 +15,7 @@ function Homepage() {
       <Hero />
       <Banner />
       <Search />
-      {/* <Categories /> */}
+      <Categories />
       <ProductGroups />
       {/* </Suspense> */}
     </div>
