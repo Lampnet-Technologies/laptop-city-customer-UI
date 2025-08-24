@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import IMAGES from "../../assets";
+/* import IMAGES from "../../assets"; */
 import NairaSymbol from "../../component/nairaSymbol";
 
 function ProductContainer({ product, addToCart, addToWishlist }) {
