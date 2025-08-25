@@ -512,10 +512,11 @@ function ProductsListing() {
               </div>
             </div>
 
-            {/* Mobile Filters - Only visible on mobile */}
-            <div className="lg:hidden mb-6 rounded-xl shadow bg-white p-4 space-y-6">
+            {/* Mobile Filters Dropdown */}
+            <div className="lg:hidden relative">
+              {/* Dropdown overlay */}
               {showFilters && (
-                <div className="bg-filter-green p-4 rounded-lg mb-4">
+                <div className="absolute top-20 left-0 w-64 shadow-lg rounded-lg p-4 z-30 bg-filter-green">
                   <ProductFilter
                     fetchUrl={`${baseUrl}/categories`}
                     title="category"
@@ -535,27 +536,28 @@ function ProductsListing() {
                     setter={setProductTypeId}
                   />
 
-                  <div className="text-center mt-4 sticky bottom-0 bg-filter-green py-4">
+                  <div className="text-center mt-4">
                     <LaptopCityButton
                       onClick={() => {
-                        handleOpen();
                         handleFilter();
+                        setShowFilters(false); // close dropdown after applying filter
                       }}
                     >
-                      Search
+                      Apply
                     </LaptopCityButton>
                   </div>
                 </div>
               )}
             </div>
 
+
             {/* Search bar - Always visible on top */}
             <div className="sticky top-[9%] z-20 bg-white mb-6 px-4">
-                <SearchBox
-                  className="w-full"
-                  show={handleOpen}
-                  search={handleSearch}
-                />
+              <SearchBox
+                className="w-full"
+                show={handleOpen}
+                search={handleSearch}
+              />
 
               {/* Products Grid */}
               <div className="flex-grow">
@@ -582,7 +584,7 @@ function ProductsListing() {
                     )}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 lg:gap-4">
                     {products.map((product) => (
                       <div key={product.id}>
                         <MainGroups
@@ -623,7 +625,7 @@ function ProductsListing() {
           </div>
         </div>
         {/* End of Desktop and Mobile layouts */}
-        </div>
+      </div>
     </Suspense>
   );
 }

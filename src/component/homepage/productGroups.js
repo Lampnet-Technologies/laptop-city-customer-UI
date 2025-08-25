@@ -4,6 +4,8 @@ import IMAGES from "../../assets";
 import ProductTypesModal from "../../views/popup_modals/productTypes"; // modal for product types
 import BrandsModal from "../../views/popup_modals/brands"; // modal for brands
 
+const baseUrl = process.env.REACT_APP_BASE_URL;
+
 // Reusable Product Card
 function ProductContainer({ product, onClick }) {
   const formatPrice = (price) =>
@@ -129,7 +131,7 @@ function ProductGroups() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BASE_URL}/products/pagination/active`, {
+        const response = await fetch(`${baseUrl}/products/pagination/active`, {
           headers: { Accept: "application/json", "Content-Type": "application/json" },
         });
         if (!response.ok) throw new Error(`Server responded with ${response.status}`);

@@ -49,14 +49,14 @@ function Login() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          usernameOrEmail: values.usernameOrEmail,
+          usernameOrEmailOrphoneNumber: values.usernameOrEmailOrphoneNumber,
           password: values.password,
         }),
       });
 
       if (!res.ok) {
         if (res.status === 401) {
-          throw new Error("Invalid username/email or password");
+          throw new Error("Invalid username/email/phone number or password");
         }
         throw new Error(`Login failed: ${res.status}`);
       }
@@ -86,7 +86,7 @@ function Login() {
         title: "Login Failed",
         message: error.message || "Invalid credentials",
       });
-      setValues({ usernameOrEmail: "", password: "" });
+      setValues({ usernameOrEmailOrphoneNumber: "", password: "" });
     } finally {
       setLoading(false);
     }
@@ -110,8 +110,8 @@ function Login() {
           className="border border-green border-solid rounded-md px-4 py-14 md:px-36 md:py-24"
         >
           <div className="flex flex-col gap-3 mb-4 md:gap-5 md:mb-8">
-            <label className="text-sm font-medium md:text-lg" htmlFor="usernameOrEmail">
-              Email address or Username *
+            <label className="text-sm font-medium md:text-lg" htmlFor="usernameOrEmailOrphoneNumber">
+              Phone Number or Email or Username *
             </label>
             <input
               required
@@ -120,8 +120,8 @@ function Login() {
               name="usernameOrEmail"
               type="text"
               id="usernameOrEmail"
-              value={values.usernameOrEmail}
-              onChange={handleChange("usernameOrEmail")}
+              value={values.usernameOrEmailOrphoneNumber}
+              onChange={handleChange("usernameOrEmailOrphoneNumber")}
               className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 outline-0 font-light text-sm"
             />
           </div>

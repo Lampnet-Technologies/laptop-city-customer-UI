@@ -73,7 +73,7 @@ BATTERY
 Type: Li-Po 5000 mAh, non-removable
 Charging: Fast Charging 33W`;
 
-const baseUrl = process.env.REACT_APP_BASE_URL || 'https://apps-1.lampnets.com/ecommb-staging';
+const baseUrl = process.env.REACT_APP_BASE_URL;
 
 function ImagesPreviews({ files }) {
   const [currentIndex, setCurrentIndex] = useState(0);
