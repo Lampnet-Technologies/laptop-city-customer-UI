@@ -20,7 +20,7 @@ function ProductContainer({ product, addToCart, addToWishlist }) {
         className="cursor-pointer flex-grow flex flex-col"
       >
         {/* Product Image */}
-        <div className="relative h-40 flex items-center justify-center mb-3">
+        <div className="relative h-20 flex items-center justify-center mb-3">
           <img
             src={product.images?.[0]?.image || "default-image-url"}
             alt={product.name}
