@@ -424,42 +424,42 @@ function ProductsListing() {
     }
   }, [token, baseUrl, navigate]);
 
-// ==================== BRAND QUERY HANDLING ====================
+  // ==================== BRAND QUERY HANDLING ====================
 
-/**
- * If the URL contains a brand name (brandQuery), fetch the corresponding brandId
- * from the /brands API. This ensures the filter works even if backend needs brandId.
- */
-useEffect(() => {
-  if (!brandQuery) return;
+  /**
+   * If the URL contains a brand name (brandQuery), fetch the corresponding brandId
+   * from the /brands API. This ensures the filter works even if backend needs brandId.
+   */
+  useEffect(() => {
+    if (!brandQuery) return;
 
-  const fetchBrandId = async () => {
-    try {
-      const cacheKey = "all_brands";
-      let brands = apiCache.get(cacheKey);
+    const fetchBrandId = async () => {
+      try {
+        const cacheKey = "all_brands";
+        let brands = apiCache.get(cacheKey);
 
-      if (!brands) {
-        const response = await fetch(`${baseUrl}/brands`, {
-          headers: { Accept: "application/json" },
-        });
-        if (!response.ok) throw new Error(`Failed to fetch brands: ${response.status}`);
-        brands = await response.json();
-        apiCache.set(cacheKey, brands, 10 * 60 * 1000); // cache for 10 min
+        if (!brands) {
+          const response = await fetch(`${baseUrl}/brands`, {
+            headers: { Accept: "application/json" },
+          });
+          if (!response.ok) throw new Error(`Failed to fetch brands: ${response.status}`);
+          brands = await response.json();
+          apiCache.set(cacheKey, brands, 10 * 60 * 1000); // cache for 10 min
+        }
+
+        // Find brand by name (case-insensitive)
+        const brand = brands.find(
+          (b) => b.name.toLowerCase() === brandQuery.toLowerCase()
+        );
+        if (brand) setBrandId(brand.id);
+        else console.warn(`Brand not found for name: ${brandQuery}`);
+      } catch (error) {
+        console.error("Error fetching brand ID from brandQuery:", error);
       }
+    };
 
-      // Find brand by name (case-insensitive)
-      const brand = brands.find(
-        (b) => b.name.toLowerCase() === brandQuery.toLowerCase()
-      );
-      if (brand) setBrandId(brand.id);
-      else console.warn(`Brand not found for name: ${brandQuery}`);
-    } catch (error) {
-      console.error("Error fetching brand ID from brandQuery:", error);
-    }
-  };
-
-  fetchBrandId();
-}, [brandQuery]);
+    fetchBrandId();
+  }, [brandQuery]);
 
 
   // ==================== PAGINATION ====================

@@ -1,107 +1,65 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Banner } from "../../component/homepage";
 
-const brands = [
-  {
-    id: 1,
-    name: "INFINIX",
-    logo: "https://res.cloudinary.com/dikleyjwz/image/upload/v1686043784/infinix_cwwbum.png",
-  },
-  {
-    id: 2,
-    name: "APPLE",
-    logo: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764541/apple-logo_v1oqh1.png",
-  },
-  {
-    id: 3,
-    name: "LG",
-    logo: "https://res.cloudinary.com/dikleyjwz/image/upload/v1686043783/LG_zz0avi.png",
-  },
-  {
-    id: 4,
-    name: "SAMSUNG",
-    logo: "https://res.cloudinary.com/dikleyjwz/image/upload/v1686043783/samsung_gryfam.png",
-  },
-  {
-    id: 5,
-    name: "HP",
-    logo: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764542/HP-Logo_rgygsp.png",
-  },
-  {
-    id: 6,
-    name: "LENOVO",
-    logo: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764541/Lenovo-logo_znap6l.png",
-  },
-  {
-    id: 7,
-    name: "ORAIMO",
-    logo: "https://res.cloudinary.com/dikleyjwz/image/upload/v1686043783/oraimo_f98vtj.png",
-  },
-  {
-    id: 9,
-    name: "TECNO",
-    logo: "https://res.cloudinary.com/dikleyjwz/image/upload/v1686043203/TecnoMobile_h1f3pd.png",
-  },
-  {
-    id: 10,
-    name: "XIAOMI",
-    logo: "https://res.cloudinary.com/dikleyjwz/image/upload/v1685447298/iborllf38pitgulzdodp.png",
-  },
-];
+const baseUrl = process.env.REACT_APP_BASE_URL;
 
-// const getBrands = "https://apps-1.lampnets.com/ecommb-staging/brands";
-
-function BrandsContainer({ brand }) {
+function BrandsContainer({ brand, onClick }) {
   return (
-    <Link
-      to={`/products`}
-      onClick={() => (document.body.style.overflow = "unset")}
+    <div
+      onClick={() => {
+        onClick(brand);
+        document.body.style.overflow = "unset";
+      }}
+      className="w-44 h-44 rounded-md flex justify-center items-center border-tiny border-green cursor-pointer"
     >
       <div
-        className="w-44 h-44 rounded-md flex justify-center items-center border-tiny border-green"
-        //   style={{ flexBasis: "11rem", flexGrow: 1 }}
+        className="flex justify-center items-center"
+        style={{ height: "50%", width: "70%" }}
       >
-        <div
-          className="flex justify-center items-center"
-          style={{ height: "50%", width: "70%" }}
-        >
-          <img
-            className="max-w-full max-h-full"
-            src={brand.logo}
-            alt={brand.name}
-          />
-        </div>
+        <img
+          className="max-w-full max-h-full"
+          src={brand.logo}
+          alt={brand.name}
+        />
       </div>
-    </Link>
+    </div>
   );
 }
 
-function Groups({ brands }) {
+function Groups({ brands, onClick }) {
   return (
     <div className="mt-8 flex flex-wrap justify-center gap-x-3 gap-y-4">
-      {brands.map((brand) => {
-        return <BrandsContainer key={brand.id} brand={brand} />;
-      })}
+      {brands.map((brand) => (
+        <BrandsContainer key={brand.id} brand={brand} onClick={onClick} />
+      ))}
     </div>
   );
 }
 
 function BrandsModal({ isVisible, onClose }) {
-  // const [brands, setBrands] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   fetch(getBrands)
-  //     .then((res) => {
-  //       return res.json();
-  //     })
-  //     .then((result) => {
-  //       setBrands(result);
-  //     })
-  //     .catch((error) => {
-  //       alert(error);
-  //     });
-  // }, []);
+  useEffect(() => {
+    const fetchBrands = async () => {
+      try {
+        const response = await fetch(`${baseUrl}/brands`, {
+          headers: { Accept: "application/json" },
+        });
+        if (!response.ok) throw new Error("Failed to fetch brands");
+        const data = await response.json();
+        setBrands(data);
+      } catch (error) {
+        console.error("Error fetching brands:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBrands();
+  }, []);
 
   if (!isVisible) return null;
 
@@ -109,10 +67,16 @@ function BrandsModal({ isVisible, onClose }) {
     if (e.target.id === "body") onClose();
   };
 
+  const handleBrandClick = (brand) => {
+    // Pass brand name so ProductsListing useEffect can map to brandId
+    navigate(`/products?brand=${encodeURIComponent(brand.name)}`);
+    onClose();
+  };
+
   return (
     <div
       id="body"
-      className="fixed inset-0 z-50 bg-black bg-opacity-25 backdrop-blur-sm w-full flex justify-center items-center overflow-x-hidden overflow-y-auto md:inset-0 py-20" // h-[calc(100%-1rem)] max-h-full
+      className="fixed inset-0 z-50 bg-black bg-opacity-25 backdrop-blur-sm w-full flex justify-center items-center overflow-x-hidden overflow-y-auto md:inset-0 py-20"
       onClick={handleClose}
     >
       <div className="relative w-full max-w-2xl max-h-full">
@@ -149,7 +113,11 @@ function BrandsModal({ isVisible, onClose }) {
           </div>
 
           <div>
-            <Groups brands={brands} />
+            {loading ? (
+              <div className="text-center p-4">Loading...</div>
+            ) : (
+              <Groups brands={brands} onClick={handleBrandClick} />
+            )}
           </div>
         </div>
       </div>

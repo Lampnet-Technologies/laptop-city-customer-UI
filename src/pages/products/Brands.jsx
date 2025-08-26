@@ -11,15 +11,12 @@ const BrandsGrid = () => {
 
   const handleBrandClick = (brandName) => {
     navigate(`/products?brand=${encodeURIComponent(brandName)}`);
-    
   };
 
   useEffect(() => {
     const fetchBrands = async () => {
       try {
-        const response = await axios.get(
-          `${baseUrl}/brands`
-        );
+        const response = await axios.get(`${baseUrl}/brands`);
         setBrands(response.data);
         setLoading(false);
       } catch (error) {
