@@ -1,4 +1,4 @@
-
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import accessories from "../../images/accessories.png";
 import desktop from "../../images/desktop.png";
@@ -19,6 +19,8 @@ const localImages = [
   power,
   accessories,
 ];
+
+const baseUrl = process.env.REACT_APP_BASE_URL;
 
 const ProductTypesOverlay = ({ onClose }) => {
   const navigate = useNavigate();
