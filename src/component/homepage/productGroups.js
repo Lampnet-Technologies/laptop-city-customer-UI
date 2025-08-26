@@ -1,28 +1,96 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import IMAGES from "../../assets";
-import ProductTypesModal from "../../views/popup_modals/productTypes"; // modal for product types
-import BrandsModal from "../../views/popup_modals/brands"; // modal for brands
+import ProductTypesModal from "../../views/popup_modals/productTypes";
+import BrandsModal from "../../views/popup_modals/brands";
+import LaptopCityButton from "../../component/button";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
-// Reusable Product Card
+// Cache for products with timestamp
+let productCache = {
+  data: null,
+  timestamp: null,
+  expiry: 5 * 60 * 1000, // 5 minutes cache
+};
+
+/* -------------------- Placeholder Card -------------------- */
+export function ProductPlaceholder() {
+  return (
+    <div className="w-44 h-56 lg:w-60 lg:h-80 rounded-md flex flex-col justify-between border border-[#DADADA] animate-pulse">
+      <div className="h-32 lg:h-48 rounded bg-gray-200 flex justify-center items-center relative">
+        <div className="w-12 h-12 bg-gray-300 rounded"></div>
+        <div className="absolute top-4 right-2 w-9 h-4 bg-gray-300 rounded-sm"></div>
+      </div>
+      <div className="flex flex-col gap-2 justify-between h-20 px-2 pb-3 lg:h-28 lg:pt-2">
+        <div className="space-y-2">
+          <div className="h-3 bg-gray-300 rounded w-3/4"></div>
+          <div className="h-3 bg-gray-300 rounded w-1/2"></div>
+        </div>
+        <div className="h-4 bg-gray-300 rounded w-1/3"></div>
+      </div>
+    </div>
+  );
+}
+
+/* -------------------- Search Bar -------------------- */
+function SearchBar({ onSearch, loading }) {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      onSearch(searchTerm.trim());
+    }
+  };
+
+  return (
+    <div className="w-full flex justify-center mb-8 px-4">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-row items-center justify-center gap-3 w-full max-w-3xl"
+      >
+        <div className="flex items-center w-full bg-white border-2 border-[#BBC8D4] rounded-lg px-4 h-[45px] md:h-[56px]">
+          <i className="display-hidden bx-sm text-[#94A3B1] mr-2"></i>
+          <input
+            id="searchGadget"
+            type="text"
+            placeholder="Search for gadgets..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="flex-1 placeholder:text-[#BBC8D4] text-sm md:text-base font-medium outline-none"
+          />
+        </div>
+
+        <LaptopCityButton
+          className="min-w-[90px] px-6 py-3"
+          type="submit"
+          disabled={loading}
+        >
+          {loading ? "Searching..." : "Search"}
+        </LaptopCityButton>
+      </form>
+    </div>
+  );
+}
+
+/* -------------------- Product Card -------------------- */
 function ProductContainer({ product, onClick }) {
   const formatPrice = (price) =>
     price ? price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "0";
 
-  const getConditionText = (product) => {
-    if (product.condition) return product.condition.toLowerCase() === "new" ? "new" : "used";
-    if (product.category) return product.category === "BRAND NEW" ? "new" : "used";
+  const getConditionText = (p) => {
+    if (p.condition) return p.condition.toLowerCase() === "new" ? "new" : "used";
+    if (p.category) return p.category === "BRAND NEW" ? "new" : "used";
     return "used";
   };
 
   return (
     <div
-      className="w-44 h-56 lg:w-60 lg:h-80 rounded-md flex flex-col justify-between cursor-pointer border border-[#DADADA] hover:shadow-lg transition-shadow duration-300"
+      className="w-full aspect-[4/5] rounded-lg flex flex-col justify-between cursor-pointer border border-[#DADADA] hover:shadow-lg transition-shadow duration-300 bg-white"
       onClick={() => onClick(product.id)}
     >
-      <div className="h-32 lg:h-48 rounded bg-[#D9D9D9] flex justify-center items-center relative">
+      <div className="flex-1 rounded-t-lg bg-[#F8F9FA] flex justify-center items-center relative p-2">
         {product.images?.length > 0 ? (
           <img
             loading="lazy"
@@ -31,61 +99,113 @@ function ProductContainer({ product, onClick }) {
             className="max-w-full max-h-full object-contain"
             onError={(e) => {
               e.target.src = IMAGES.icons.cartGreen;
-              e.target.className = "max-w-full max-h-full w-[50px]";
+              e.target.className = "max-w-full max-h-full w-[40px] h-[40px]";
             }}
           />
         ) : (
-          <img src={IMAGES.icons.cartGreen} alt="no product" className="max-w-full max-h-full w-[50px]" />
+          <img
+            src={IMAGES.icons.cartGreen}
+            alt="no product"
+            className="w-[40px] h-[40px]"
+          />
         )}
-        <div className="absolute top-4 right-2 z-10 bg-green text-white font-medium capitalize w-9 h-4 rounded-sm flex justify-center items-center text-[10px]">
+        <div className="absolute top-2 right-2 bg-green text-white font-medium capitalize px-2 py-0.5 rounded-sm text-[10px]">
           {getConditionText(product)}
         </div>
       </div>
 
-      <div className="flex flex-col gap-1 justify-between h-20 px-2 pb-3 lg:h-28 lg:pt-2">
-        <p className="text-xs font-medium capitalize md:text-sm lg:text-base line-clamp-2" title={product.name}>
+      <div className="flex flex-col gap-1 p-2 min-h-[80px] justify-between">
+        <p
+          className="text-xs font-medium capitalize line-clamp-2 leading-tight"
+          title={product.name}
+        >
           {product.name || "Product Name"}
         </p>
-        <div className="flex justify-between items-center gap-2">
-          <p className="text-base font-bold text-green md:text-lg lg:text-xl">
-            &#8358;{formatPrice(product.price)}
-          </p>
-        </div>
+        <p className="text-sm font-bold text-green">
+          &#8358;{formatPrice(product.price)}
+        </p>
       </div>
     </div>
   );
 }
 
-// Groups Section
-export const Groups = ({ heading, products, onSeeMore, onProductClick }) => (
-  <div className="mb-8">
-    <div className="flex justify-between items-center mb-4">
-      <h2 className="text-xl font-bold capitalize">{heading}</h2>
-      {products.length > 0 && onSeeMore && (
-        <button onClick={onSeeMore} className="text-green hover:text-dark-green transition-colors">
-          See more &gt;
-        </button>
+/* -------------------- Groups Section -------------------- */
+export const Groups = ({
+  heading,
+  products,
+  onSeeMore,
+  onProductClick,
+  loading,
+  showAsGrid = false,
+}) => {
+  const renderPlaceholders = () =>
+    Array.from({ length: showAsGrid ? 6 : 4 }, (_, index) => (
+      <ProductPlaceholder key={`placeholder-${index}`} />
+    ));
+
+  const renderProducts = () => {
+    if (loading) return renderPlaceholders();
+
+    if (products.length === 0) {
+      return (
+        <div className="col-span-full bg-gray-50 rounded-lg p-6 text-center">
+          <div className="flex flex-col items-center gap-3">
+            <img
+              src={IMAGES.icons.cartGreen}
+              alt="No products"
+              className="w-12 h-12 opacity-50"
+            />
+            <p className="text-gray-600 font-medium">
+              No {heading.toLowerCase()} available
+            </p>
+            <p className="text-gray-500 text-sm">
+              Check back later for new products
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    return products.map((product) => (
+      <ProductContainer
+        key={product.id}
+        product={product}
+        onClick={onProductClick}
+      />
+    ));
+  };
+
+  return (
+    <div className="mb-6">
+      <div className="mb-3">
+        <h2 className="text-lg font-bold capitalize">{heading}</h2>
+      </div>
+
+      {showAsGrid ? (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          {renderProducts()}
+        </div>
+      ) : (
+        <div className="relative overflow-x-auto hide-scrollbar">
+          <div className="flex gap-3 pb-3 min-w-0">{renderProducts()}</div>
+        </div>
+      )}
+
+      {!loading && products.length > 0 && onSeeMore && (
+        <div className="flex justify-end mt-3">
+          <button
+            onClick={onSeeMore}
+            className="text-green hover:text-dark-green transition-colors font-medium text-sm"
+          >
+            See more &gt;
+          </button>
+        </div>
       )}
     </div>
-    {products.length > 0 ? (
-      <div className="relative overflow-x-auto hide-scrollbar">
-        <div className="flex gap-4 pb-4 min-w-0">
-          {products.map((product) => (
-            <div className="flex-none w-44 lg:w-60" key={product.id}>
-              <ProductContainer product={product} onClick={onProductClick} />
-            </div>
-          ))}
-        </div>
-      </div>
-    ) : (
-      <div className="bg-gray-50 rounded-lg p-6 text-center">
-        <p className="text-gray-500">No {heading.toLowerCase()} available at the moment</p>
-      </div>
-    )}
-  </div>
-);
+  );
+};
 
-// Modal for New / Used / Cancel
+/* -------------------- Condition Modal -------------------- */
 function ConditionModal({ isVisible, onSelect, onClose }) {
   if (!isVisible) return null;
 
@@ -99,15 +219,28 @@ function ConditionModal({ isVisible, onSelect, onClose }) {
       className="fixed inset-0 z-50 bg-black bg-opacity-25 backdrop-blur-sm w-full flex justify-center items-center py-20"
       onClick={handleClose}
     >
-      <div className="relative w-full max-w-md bg-white rounded-md p-6 flex flex-col gap-4">
-        <h3 className="text-lg font-bold text-green text-center">Select Condition</h3>
-        <button onClick={() => onSelect("new")} className="bg-green text-white py-2 rounded hover:bg-dark-green">
-          New
-        </button>
-        <button onClick={() => onSelect("used")} className="bg-green text-white py-2 rounded hover:bg-dark-green">
-          Used
-        </button>
-        <button onClick={onClose} className="bg-gray-200 text-gray-700 py-2 rounded hover:bg-gray-300">
+      <div className="relative w-full max-w-md mx-4 bg-white rounded-lg p-6">
+        <h3 className="text-lg font-bold text-green text-center mb-6">
+          Select Condition
+        </h3>
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            onClick={() => onSelect("new")}
+            className="bg-green text-white py-3 px-4 rounded-lg hover:bg-dark-green transition-colors font-medium"
+          >
+            New
+          </button>
+          <button
+            onClick={() => onSelect("used")}
+            className="bg-green text-white py-3 px-4 rounded-lg hover:bg-dark-green transition-colors font-medium"
+          >
+            Used
+          </button>
+        </div>
+        <button
+          onClick={onClose}
+          className="w-full mt-3 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+        >
           Cancel
         </button>
       </div>
@@ -115,8 +248,13 @@ function ConditionModal({ isVisible, onSelect, onClose }) {
   );
 }
 
+/* -------------------- Main Component -------------------- */
 function ProductGroups() {
-  const [products, setProducts] = useState({ laptops: [], phones: [], otherGadgets: [] });
+  const [products, setProducts] = useState({
+    laptops: [],
+    phones: [],
+    otherGadgets: [],
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -128,23 +266,56 @@ function ProductGroups() {
 
   const navigate = useNavigate();
 
+  // Search handler
+  const handleSearch = (searchTerm) => {
+    navigate(`/products?filter=${encodeURIComponent(searchTerm)}`);
+  };
+
+  const isCacheValid = () =>
+    productCache.data &&
+    productCache.timestamp &&
+    Date.now() - productCache.timestamp < productCache.expiry;
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        if (isCacheValid()) {
+          setProducts(productCache.data);
+          setLoading(false);
+          return;
+        }
+
+        setLoading(true);
         const response = await fetch(`${baseUrl}/products/pagination/active`, {
-          headers: { Accept: "application/json", "Content-Type": "application/json" },
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
         });
-        if (!response.ok) throw new Error(`Server responded with ${response.status}`);
+
+        if (!response.ok)
+          throw new Error(`Server responded with ${response.status}`);
+
         const data = await response.json();
         const content = data.content || [];
 
         const grouped = { laptops: [], phones: [], otherGadgets: [] };
         content.forEach((p) => {
           const type = (p.productType || "").trim().toLowerCase();
-          if (type.includes("laptop") || type.includes("notebook")) grouped.laptops.push(p);
-          else if (type.includes("phone") || type.includes("mobile")) grouped.phones.push(p);
-          else grouped.otherGadgets.push(p);
+          if (type.includes("laptop") || type.includes("notebook")) {
+            grouped.laptops.push(p);
+          } else if (type.includes("phone") || type.includes("mobile")) {
+            grouped.phones.push(p);
+          } else {
+            grouped.otherGadgets.push(p);
+          }
         });
+
+        productCache = {
+          data: grouped,
+          timestamp: Date.now(),
+          expiry: 5 * 60 * 1000,
+        };
 
         setProducts(grouped);
       } catch (err) {
@@ -154,11 +325,13 @@ function ProductGroups() {
         setLoading(false);
       }
     };
+
     fetchProducts();
   }, []);
 
   const handleRetry = () => {
     setError(null);
+    productCache.data = null;
     setLoading(true);
     window.location.reload();
   };
@@ -188,9 +361,14 @@ function ProductGroups() {
     return (
       <div className="container mx-auto px-4 py-8 text-center">
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-          <h3 className="text-yellow-800 font-semibold mb-2">We're having trouble loading the products</h3>
+          <h3 className="text-yellow-800 font-semibold mb-2">
+            We're having trouble loading the products
+          </h3>
           <p className="text-gray-600 mb-4">Please try again in a moment</p>
-          <button onClick={handleRetry} className="bg-green text-white px-4 py-2 rounded hover:bg-dark-green">
+          <button
+            onClick={handleRetry}
+            className="bg-green text-white px-4 py-2 rounded hover:bg-dark-green"
+          >
             Retry
           </button>
         </div>
@@ -199,37 +377,45 @@ function ProductGroups() {
   }
 
   return (
-    <div className="mt-16 mb-10 px-2 space-y-8 md:mx-12 lg:mt-24 lg:mx-24">
+    <div className="mt-12 mb-8 px-3 space-y-6 md:mx-8 lg:mt-16 lg:mx-16">
+      {/* 🔍 Single SearchBar */}
+      <SearchBar onSearch={handleSearch} loading={false} />
+
+      {/* Groups */}
       <Groups
         heading="laptops"
         products={products.laptops}
         onSeeMore={() => handleSeeMore("laptops")}
         onProductClick={handleProductClick}
+        loading={loading}
+        showAsGrid
       />
       <Groups
         heading="smartphones"
         products={products.phones}
         onSeeMore={() => handleSeeMore("phones")}
         onProductClick={handleProductClick}
+        loading={loading}
+        showAsGrid
       />
       <Groups
         heading="other gadgets"
         products={products.otherGadgets}
         onSeeMore={() => handleSeeMore("otherGadgets")}
         onProductClick={handleProductClick}
+        loading={loading}
       />
 
+      {/* Modals */}
       <ConditionModal
         isVisible={conditionModalVisible}
         onSelect={handleConditionSelect}
         onClose={() => setConditionModalVisible(false)}
       />
-
       <ProductTypesModal
         isVisible={productTypeModalVisible}
         onClose={handleProductTypeClose}
       />
-
       <BrandsModal
         isVisible={brandModalVisible}
         onClose={() => setBrandModalVisible(false)}

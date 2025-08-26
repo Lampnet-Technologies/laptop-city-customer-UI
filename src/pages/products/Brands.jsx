@@ -11,7 +11,7 @@ const BrandsGrid = () => {
 
   const handleBrandClick = (brandName) => {
     navigate(`/products?brand=${encodeURIComponent(brandName)}`);
-    
+
   };
 
   useEffect(() => {

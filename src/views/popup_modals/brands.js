@@ -38,11 +38,6 @@ const brands = [
     name: "ORAIMO",
     logo: "https://res.cloudinary.com/dikleyjwz/image/upload/v1686043783/oraimo_f98vtj.png",
   },
-  // {
-  //   id: 8,
-  //   name: "APPLE",
-  //   logo: "https://res.cloudinary.com/dikleyjwz/image/upload/v1684764541/apple-logo_v1oqh1.png",
-  // },
   {
     id: 9,
     name: "TECNO",
@@ -125,7 +120,6 @@ function BrandsModal({ isVisible, onClose }) {
 
         <div className="relative bg-white px-2 pt-4 pb-8 flex flex-col gap-8 ">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-medium text-green">breadcrumb</h3>
             <button
               type="button"
               className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"

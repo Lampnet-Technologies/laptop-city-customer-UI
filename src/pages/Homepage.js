@@ -14,7 +14,7 @@ function Homepage() {
       {/* <Suspense fallback={null}> */}
       <Hero />
       <Banner />
-      <Search />
+      {/* <Search /> */}
       {/* <Categories /> */}
       <ProductGroups />
       {/* </Suspense> */}

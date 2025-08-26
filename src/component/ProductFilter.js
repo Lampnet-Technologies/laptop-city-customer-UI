@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { LoginContext } from '../App'; // Adjust import path as needed
+import { LoginContext } from '../App';
 
 const ProductFilter = ({ 
   fetchUrl, 

@@ -20,7 +20,7 @@ function ProductContainer({ product, addToCart, addToWishlist }) {
         className="cursor-pointer flex-grow flex flex-col"
       >
         {/* Product Image */}
-        <div className="relative h-20 flex items-center justify-center mb-3">
+        <div className="relative h-20 flex items-center justify-center mb-2">
           <img
             src={product.images?.[0]?.image || "default-image-url"}
             alt={product.name}
@@ -40,7 +40,7 @@ function ProductContainer({ product, addToCart, addToWishlist }) {
       </div>
 
       {/* Action Buttons */}
-      <div className="mt-3 flex justify-between items-center">
+      <div className="mt-2 flex justify-between items-center">
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -74,7 +74,7 @@ function MainGroups({ heading, products, seeMore, addToCart, addToWishlist }) {
       )}
 
       {/* Uniform grid */}
-      <div className="mt-8 lg:mt-14 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-6">
+      <div className="mt-2 lg:mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
         {products &&
           products.map((product, index) => (
             <ProductContainer
