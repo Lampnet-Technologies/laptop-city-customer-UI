@@ -464,7 +464,7 @@ function Description({ descr }) {
   );
 }
 
-function ProductDetails({ bestSelling, recentlyViewed, product }) {
+function ProductDetails({ bestSelling, recentlyViewed, product, otherGadgets }) {
   return (
     <div className="mt-20">
       {product && (
@@ -500,8 +500,19 @@ function ProductDetails({ bestSelling, recentlyViewed, product }) {
           />
         )}
       </div>
+      {/* NEW: Other gadgets section (no see more) */}
+      <div className="mt-8 md:mt-12 px-4 md:px-12 lg:mt-24 lg:px-24">
+        {otherGadgets && otherGadgets.length > 0 && (
+          <Groups
+            heading="other gadgets"
+            products={otherGadgets}
+            seeMore={false} // disable see more button
+          />
+        )}
+      </div>
 
-      <div className="mt-8 px-4 md:px-12 lg:px-24">
+      {/* Recently viewed (still commented out for now) */}
+      {/* <div className="mt-8 px-4 md:px-12 lg:px-24">
         {recentlyViewed && recentlyViewed.length > 0 && (
           <Groups
             heading="recently viewed"
@@ -509,13 +520,15 @@ function ProductDetails({ bestSelling, recentlyViewed, product }) {
             seeMore
           />
         )}
-      </div>
+      </div> */}
     </div>
   );
 }
+
 function ProductDesc() {
   const [bestSelling, setBestSelling] = useState(null);
   const [recentlyViewed, setRecentlyViewed] = useState(null);
+  const [otherGadgets, setOtherGadgets] = useState(null); // NEW: other gadgets
   const [values, setValues] = useState({
     name: "",
     productType: "",
@@ -549,6 +562,42 @@ function ProductDesc() {
       return 4;
     }
   };
+
+  // NEW: fetch other gadgets
+  useEffect(() => {
+    const fetchOtherGadgets = async () => {
+      try {
+        const response = await fetch(
+          `${baseUrl}/products`, // assuming this gets all gadgets
+          {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Server responded with ${response.status}`);
+        }
+
+        const text = await response.text();
+        try {
+          const data = JSON.parse(text);
+          setOtherGadgets(Array.isArray(data) ? data : data?.content || []);
+        } catch (e) {
+          console.error('Invalid JSON in other gadgets:', text.substring(0, 100));
+          setOtherGadgets([]);
+        }
+      } catch (error) {
+        console.error('Error fetching other gadgets:', error);
+        setOtherGadgets([]);
+      }
+    };
+
+    fetchOtherGadgets();
+  }, []);
+
 
   // Update the useEffect for product fetching
   useEffect(() => {
@@ -715,6 +764,7 @@ function ProductDesc() {
       <ProductDetails
         bestSelling={bestSelling}
         recentlyViewed={recentlyViewed}
+        otherGadgets={otherGadgets} // NEW: pass other gadgets
         product={product}
       />
     </div>
