@@ -7,7 +7,7 @@ import { UserCartDependency, LoginContext } from "../../App";
 import { useNavigate } from "react-router-dom";
 
 function MyWishlists() {
-  const { loggedIn, token } = useContext(LoginContext);
+  const { loggedIn, setLoggedIn, token, setToken } = useContext(LoginContext);
   const [cartDep, setCartDep] = useContext(UserCartDependency);
   const [wishlists, setWishlists] = useState(null);
   const [wishlistDep, setWishlistDep] = useState();

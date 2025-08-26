@@ -5,7 +5,7 @@ export const CartContext = createContext();
 
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
-  const { loggedIn, token } = useContext(LoginContext);
+  const { loggedIn, setLoggedIn, token, setToken } = useContext(LoginContext);
   const baseUrl = process.env.REACT_APP_BASE_URL;
 
   useEffect(() => {

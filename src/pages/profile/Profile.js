@@ -5,8 +5,8 @@ import ProfileMenu from "./ProfileMenu";
 import { LoginContext, UserProfileContext } from "../../App";
 
 function Profile() {
-  const [loggedIn, setLoggedIn] = useContext(LoginContext);
-  const [profile, setProfile] = useContext(UserProfileContext);
+  const { loggedIn, setLoggedIn, token, setToken } = useContext(LoginContext);
+  const { profile, setProfile } = useContext(UserProfileContext);
 
   const navigate = useNavigate();
 
@@ -14,7 +14,7 @@ function Profile() {
     if (!loggedIn) {
       navigate("/login");
     }
-  });
+  }, [loggedIn, navigate]);
 
   return (
     <div className="my-10 md:my-20">
@@ -40,7 +40,6 @@ function Profile() {
 
         <div className="hidden md:flex md:justify-between xl:justify-start md:gap-12 xl:gap-20 items-start pl-6 md:pr-12 xl:pr-24">
           <ProfileMenu />
-
           <Outlet />
         </div>
       </div>

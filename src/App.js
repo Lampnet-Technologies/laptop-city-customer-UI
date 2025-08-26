@@ -30,7 +30,25 @@ import BlogDetails from "./component/blogDetails";
 import BrandsGrid from "./pages/products/Brands";
 import ProductTypesOverlay from "./pages/products/ProductType";
 
-export const LoginContext = createContext();
+// Import Base URL from environment variables
+const baseUrl = process.env.REACT_APP_BASE_URL;
+
+/**
+ * Contexts for global state
+ * - LoginContext → holds login state + token
+ * - UserProfileContext → stores user profile
+ * - UserCart → stores cart items and total
+ * - UserCartDependency → used for refreshing cart after add/remove
+ * - PlaceOrderContext → order state when checking out
+ * - CouponDiscount → coupon discount applied at checkout
+ */
+export const LoginContext = createContext({
+  loggedIn: false,
+  token: null,
+  setLoggedIn: () => {},
+  setToken: () => {},
+});
+
 export const UserProfileContext = createContext();
 export const UserCart = createContext();
 export const UserCartDependency = createContext();
@@ -38,11 +56,17 @@ export const PlaceOrderContext = createContext();
 export const CouponDiscount = createContext();
 
 function App() {
-  const [loggedIn, setLoggedIn] = useState(localStorage.token ? true : false);
+  // ✅ Login state + token pulled from localStorage
+  const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem("token"));
+  const [token, setToken] = useState(localStorage.getItem("token") || null);
+
+  // ✅ Other global states
   const [profile, setProfile] = useState("");
   const [cart, setCart] = useState({ cartItems: null, total: "" });
   const [cartDep, setCartDep] = useState();
   const [discount, setDiscount] = useState(0);
+
+  // Default Nigeria ZIP to prevent checkout issues
   const [placeOrder, setPlaceOrder] = useState({
     couponCode: "",
     firstName: "",
@@ -51,45 +75,37 @@ function App() {
     streetAddress: "",
     state: "",
     city: "",
-    zipCode: "",
+    zipCode: "100001", // ✅ Default Nigerian ZIP
     phoneNumber: "",
     shippingMethodId: "",
   });
 
+  // ✅ Fetch user profile if logged in
   useEffect(() => {
-    const accessToken = localStorage.getItem("token");
-
-    if (loggedIn) {
-      fetch("https://apps-1.lampnets.com/ecommb-staging/profiles/my-profile", {
-        headers: {
-          Authorization: "Bearer " + accessToken,
-        },
+    if (loggedIn && token) {
+      fetch(`${baseUrl}/profiles/my-profile`, {
+        headers: { Authorization: "Bearer " + token },
       })
-        .then((res) => {
-          return res.json();
-        })
+        .then((res) => res.json())
         .then((result) => {
           setProfile(result);
         })
         .catch((error) => {
-          console.log(error);
+          console.log("Error fetching profile:", error);
         });
     }
-  }, [loggedIn, cartDep]);
+  }, [loggedIn, token, cartDep]);
 
+  // ✅ Fetch user cart if logged in
   useEffect(() => {
-    const accessToken = localStorage.getItem("token");
-
-    if (loggedIn) {
-      fetch("https://apps-1.lampnets.com/ecommb-staging/cart-items/my-cart", {
+    if (loggedIn && token) {
+      fetch(`${baseUrl}/cart-items/my-cart`, {
         headers: {
           "content-type": "application/json",
-          Authorization: "Bearer " + accessToken,
+          Authorization: "Bearer " + token,
         },
       })
-        .then((res) => {
-          return res.json();
-        })
+        .then((res) => res.json())
         .then((result) => {
           setCart({
             ...cart,
@@ -98,13 +114,13 @@ function App() {
           });
         })
         .catch((error) => {
-          console.error(error.message);
+          console.error("Error fetching cart:", error.message);
         });
     }
-  }, [loggedIn, cartDep]);
+  }, [loggedIn, token, cartDep]);
 
   return (
-    <LoginContext.Provider value={[loggedIn, setLoggedIn]}>
+    <LoginContext.Provider value={{ loggedIn, setLoggedIn, token, setToken }}>
       <UserProfileContext.Provider value={[profile, setProfile]}>
         <UserCart.Provider value={[cart, setCart]}>
           <UserCartDependency.Provider value={[cartDep, setCartDep]}>
@@ -119,19 +135,14 @@ function App() {
                       <Routes>
                         <Route path="/" element={<Homepage />} />
                         <Route path="/products" element={<ProductsListing />} />
-                        <Route
-                          path="/product/:id"
-                          element={<ProductDesc />}
-                        />
+                        <Route path="/product/:id" element={<ProductDesc />} />
                         <Route path="/blog" element={<Blog />} />
                         <Route path="/blog/:id" element={<BlogDetails />} />
-                        {/* <Route
-                          path="/blog/:slug"
-                          element={<SingleBlogPost />}
-                        /> */}
+                        {/* <Route path="/blog/:slug" element={<SingleBlogPost />} /> */}
 
                         <Route path="/login" element={<Login />} />
                         <Route path="/signup" element={<SignUp />} />
+
                         <Route element={<Profile />}>
                           <Route path="/profile" element={<ProfileMenu />} />
                           <Route element={<ProfileInfo />}>
@@ -158,6 +169,7 @@ function App() {
                           </Route>
                           <Route path="/wishlist" element={<MyWishlists />} />
                         </Route>
+
                         <Route path="/payment" element={<Payment />} />
                         <Route
                           path="/payment/successful"
@@ -167,6 +179,7 @@ function App() {
                           path="/track-order/:id"
                           element={<TrackOrder />}
                         />
+
                         <Route element={<Company />}>
                           <Route path="/about" element={<About />} />
                           <Route
@@ -177,15 +190,13 @@ function App() {
                             path="/privacy-policy"
                             element={<PrivacyPolicy />}
                           />
-                           <Route
+                          <Route
                             path="/product-type"
                             element={<ProductTypesOverlay />}
                           />
-                           <Route
-                            path="/brands"
-                            element={<BrandsGrid />}
-                          />
+                          <Route path="/brands" element={<BrandsGrid />} />
                         </Route>
+
                         <Route path="*" element={<PageNotFound />} />
                       </Routes>
                     </div>

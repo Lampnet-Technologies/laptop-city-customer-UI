@@ -10,15 +10,9 @@ import CustomAlert from "../../component/CustomAlert";
 import CustomSnackbar from "../../component/CustomSnackbar";
 
 const images = [
-  {
-    image: `${IMAGES.productDesc.productMain}`,
-  },
-  {
-    image: `${IMAGES.productDesc.productSide}`,
-  },
-  {
-    image: `${IMAGES.productDesc.productBack}`,
-  },
+  { image: `${IMAGES.productDesc.productMain}` },
+  { image: `${IMAGES.productDesc.productSide}` },
+  { image: `${IMAGES.productDesc.productBack}` },
 ];
 
 const example = `The smartphone is powered by a Mediatek Helio G96 Octa-core processor and Mali-G57 MC2 GPU. It comes in a big screen that has a 6.95 inches display IPS LCD capacitive touchscreen with a resolution of 1080 x 2460 pixels.
@@ -81,380 +75,235 @@ function ImagesPreviews({ files }) {
   const arrowNext = (arr) => {
     if (arr.length - 1 !== currentIndex) {
       setCurrentIndex((prev) => prev + 1);
-    } else {
-      return null;
     }
   };
 
   const arrowPrev = (arr) => {
     if (currentIndex !== 0) {
       setCurrentIndex((prev) => prev - 1);
-    } else {
-      return null;
     }
   };
 
-  if (files && files.length > 0) {
-    return (
-      <div>
-        <div className="p-4 flex flex-col gap-6 relative lg:gap-3 lg:flex-row-reverse lg:justify-around lg:items-center">
-          <div className="lg:hidden">
-            <i
-              onClick={() => arrowPrev(files)}
-              className="bx bx-chevron-left bx-lg text-gray-400 font-normal cursor-pointer absolute top-1/4 left-2"
-              style={{ color: `${currentIndex !== 0 ? "#009F7F" : "#9ca3af"}` }}
-            ></i>
-            <i
-              onClick={() => arrowNext(files)}
-              className="bx bx-chevron-right bx-lg text-green font-normal cursor-pointer absolute top-1/4 right-2"
-              style={{
-                color: `${files &&
-                  (currentIndex === files.length - 1 ? "#9ca3af" : "#009F7F")
-                  }`,
-              }}
-            ></i>
-          </div>
+  if (!files || files.length === 0) return null;
 
-          <div className="flex justify-center items-center">
-            <div className="h-60 w-4/5 mx-auto object-contain flex justify-center items-center md:w-80 lg:h-[360px] lg:w-full">
-              {files && (
-                <img
-                  src={files[currentIndex].image}
-                  alt="product-1"
-                  className="max-w-full max-h-full object-fill"
-                />
-              )}
-            </div>
-          </div>
-
-          <div className="bg-[#ECF3F9] rounded p-2 flex justify-between items-center gap-4 md:rounded-lg md:justify-around md:py-6 lg:py-11 lg:flex-col lg:w-48 lg:min-h-[500px]">
-            {files &&
-              files.map((image, index) => {
-                return (
-                  <div
-                    key={index}
-                    className="h-24 w-28 rounded py-4 flex justify-center items-center lg:rounded-md lg:w-32 lg:h-28"
-                    style={{
-                      border: `${currentIndex === index ? "1px solid #009F7F" : "none"
-                        }`,
-                    }}
-                    onClick={() => setCurrentIndex(index)}
-                  >
-                    <img
-                      src={image.image}
-                      alt={`image-${index + 1}`}
-                      className="max-w-full max-h-full"
-                    />
-                  </div>
-                );
-              })}
-          </div>
-        </div>
-
-        <div className="hidden lg:flex justify-center items-center gap-6 mt-10 lg:mt-20">
+  return (
+    <div>
+      <div className="p-4 flex flex-col gap-6 relative lg:gap-3 lg:flex-row-reverse lg:justify-around lg:items-center">
+        {/* Mobile navigation */}
+        <div className="lg:hidden">
           <i
             onClick={() => arrowPrev(files)}
-            className="bx bx-chevron-left bx-lg text-gray-400 font-normal cursor-pointer"
-            style={{ color: `${currentIndex !== 0 ? "#009F7F" : "#9ca3af"}` }}
+            className="bx bx-chevron-left bx-lg text-gray-400 font-normal cursor-pointer absolute top-1/4 left-2"
+            style={{ color: currentIndex !== 0 ? "#009F7F" : "#9ca3af" }}
           ></i>
-          <div>
-            {currentIndex + 1} / {files.length}
-          </div>
           <i
             onClick={() => arrowNext(files)}
-            className="bx bx-chevron-right bx-lg text-green font-normal cursor-pointer"
+            className="bx bx-chevron-right bx-lg text-green font-normal cursor-pointer absolute top-1/4 right-2"
             style={{
-              color: `${currentIndex === files.length - 1 ? "#9ca3af" : "#009F7F"
-                }`,
+              color:
+                currentIndex === files.length - 1 ? "#9ca3af" : "#009F7F",
             }}
           ></i>
         </div>
+
+        {/* Main image */}
+        <div className="flex justify-center items-center">
+          <div className="h-60 w-4/5 mx-auto object-contain flex justify-center items-center md:w-80 lg:h-[360px] lg:w-full">
+            <img
+              src={files[currentIndex].image}
+              alt="product"
+              className="max-w-full max-h-full object-fill"
+            />
+          </div>
+        </div>
+
+        {/* Thumbnails */}
+        <div className="bg-[#ECF3F9] rounded p-2 flex justify-between items-center gap-4 md:rounded-lg md:justify-around md:py-6 lg:py-11 lg:flex-col lg:w-48 lg:min-h-[500px]">
+          {files.map((image, index) => (
+            <div
+              key={index}
+              className="h-24 w-28 rounded py-4 flex justify-center items-center lg:rounded-md lg:w-32 lg:h-28"
+              style={{
+                border:
+                  currentIndex === index ? "1px solid #009F7F" : "none",
+              }}
+              onClick={() => setCurrentIndex(index)}
+            >
+              <img
+                src={image.image}
+                alt={`image-${index + 1}`}
+                className="max-w-full max-h-full"
+              />
+            </div>
+          ))}
+        </div>
       </div>
-    );
-  }
-  return null;
+
+      {/* Desktop navigation */}
+      <div className="hidden lg:flex justify-center items-center gap-6 mt-10 lg:mt-20">
+        <i
+          onClick={() => arrowPrev(files)}
+          className="bx bx-chevron-left bx-lg text-gray-400 font-normal cursor-pointer"
+          style={{ color: currentIndex !== 0 ? "#009F7F" : "#9ca3af" }}
+        ></i>
+        <div>
+          {currentIndex + 1} / {files.length}
+        </div>
+        <i
+          onClick={() => arrowNext(files)}
+          className="bx bx-chevron-right bx-lg text-green font-normal cursor-pointer"
+          style={{
+            color:
+              currentIndex === files.length - 1 ? "#9ca3af" : "#009F7F",
+          }}
+        ></i>
+      </div>
+    </div>
+  );
 }
 
 function AboutProduct({ product }) {
   const { loggedIn, token } = useContext(LoginContext);
   const [cartDep, setCartDep] = useContext(UserCartDependency);
-  const [showMore, setShowMore] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [alert, setAlert] = useState({ open: false, severity: "", message: "", title: "" });
+  const [toast, setToast] = useState({ open: false, severity: "", message: "" });
 
-  const [alert, setAlert] = useState({
-    open: false,
-    severity: "",
-    message: "",
-    title: "",
-  });
-
-  const [toast, setToast] = useState({
-    open: false,
-    severity: "",
-    message: "",
-  });
-
-  const handleCloseAlert = () => {
-    setAlert({ ...alert, open: false });
-  };
-
-  const handleCloseToast = () => {
-    setToast({ ...toast, open: false });
-  };
-
-  const navigate = useNavigate();
   const location = useLocation();
+  const navigate = useNavigate();
 
-  const handleAddToCart = (id) => {
-    const dataToSend = { productId: id, quantity: quantity };
+  const handleCloseAlert = () => setAlert({ ...alert, open: false });
+  const handleCloseToast = () => setToast({ ...toast, open: false });
 
-    if (!token) {
-      console.error("No authentication token found. User not logged in.");
-      // Redirect to login or show an error
-      navigate("/login");
+  const handleAddToCart = async (id) => {
+    if (!loggedIn || !token) {
+      navigate("/login", { state: { previousUrl: location.pathname } });
       return;
     }
-    // Now proceed with your fetch call.
-    fetch(`${baseUrl}/cart-items/add`, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + token, // This should now work
-      },
-      body: JSON.stringify(dataToSend),
-    });
-    // ...
-
-    if (!loggedIn || !token) {
-      navigate("/login", {
-        state: {
-          previousUrl: location.pathname,
-        },
-      });
-    } else {
-      fetch(`${baseUrl}/cart-items/add`, {
+    try {
+      const res = await fetch(`${baseUrl}/cart-items/add`, {
         method: "POST",
-        headers: {
-          "content-type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-        body: JSON.stringify(dataToSend),
-      })
-        .then((res) => {
-          if (!res.ok) {
-            throw new Error(`HTTP error! status: ${res.status}`);
-          }
-          return res.json();
-        })
-        .then(() => {
-          setCartDep(id);
-          setAlert({
-            ...alert,
-            open: true,
-            severity: "success",
-            title: "1 item added to cart",
-            message: `${product.name} is added to cart`,
-          });
-        })
-        .catch((error) => {
-          setAlert({
-            ...alert,
-            open: true,
-            severity: "error",
-            title: "Failed to add item to cart",
-            message: error.message,
-          });
-        });
-    }
-  };
-
-  const handleAddToWishlist = (id) => {
-    const dataToSend = { basketId: 1, productId: id, quantity: quantity };
-
-    if (!loggedIn || !token) {
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ productId: id, quantity }),
+      });
+      if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+      setCartDep(id);
       setAlert({
-        ...alert,
         open: true,
-        severity: "warning",
-        title: "YOU ARE NOT SIGNED IN!",
-        message: "Please Sign in first",
+        severity: "success",
+        title: "1 item added to cart",
+        message: `${product.name} added to cart`,
       });
-    } else {
-      fetch(`${baseUrl}/wish-lists/add`, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-        body: JSON.stringify(dataToSend),
-      })
-        .then((res) => {
-          if (!res.ok) {
-            throw new Error(`HTTP error! status: ${res.status}`);
-          }
-          return res.json();
-        })
-        .then(() => {
-          setToast({
-            ...toast,
-            open: true,
-            severity: "success",
-            message: "product added to wishlist",
-          });
-        })
-        .catch((error) => {
-          setToast({
-            ...toast,
-            open: true,
-            severity: "error",
-            message: "product NOT added to wishlist",
-          });
-        });
+    } catch (err) {
+      setAlert({ open: true, severity: "error", title: "Failed to add to cart", message: err.message });
     }
   };
 
-  const increaseQuantity = () => {
-    quantity < product.stock && setQuantity((prev) => prev + 1);
-  };
-
-  const decreaseQuantity = () => {
-    quantity > 1 && setQuantity((prev) => prev - 1);
+  const handleAddToWishlist = async (id) => {
+    if (!loggedIn || !token) {
+      navigate("/login", { state: { previousUrl: location.pathname } });
+      return;
+    }
+    try {
+      const res = await fetch(`${baseUrl}/wish-lists/add`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ basketId: 1, productId: id, quantity }),
+      });
+      if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+      setToast({ open: true, severity: "success", message: "Added to wishlist" });
+    } catch {
+      setToast({ open: true, severity: "error", message: "Failed to add to wishlist" });
+    }
   };
 
   return (
     <div className="p-4 flex flex-col gap-6">
-      <div className="flex flex-col gap-6">
-        <h2 className="text-2xl font-semibold lg:text-3xl">{product.name}</h2>
-        <div className="my-5 flex justify-start items-start gap-10 md:gap-20">
-          <div className="text-sm flex flex-col gap-4 lg:gap-8 font-normal lg:text-base">
-            <p>Product id :{product.id}</p>
-            <p>Brand : {product.brand}</p>
-            <div className="flex justify-between items-center gap-4 md:gap-10">
-              <p>Quantity</p>
-              <div className="text-base flex items-center divide-x-2 w-28 border border-solid border-gray-700 rounded">
-                <button
-                  className="w-full p-1 font-semibold"
-                  onClick={decreaseQuantity}
-                >
-                  -
-                </button>
-                <p className="w-full p-1 text-center font-semibold text-green">
-                  {quantity}
-                </p>
-                <button
-                  className="w-full p-1 font-semibold"
-                  onClick={increaseQuantity}
-                >
-                  +
-                </button>
-              </div>
+      {/* Product info */}
+      <h2 className="text-2xl font-semibold lg:text-3xl">{product.name}</h2>
+      <div className="my-5 flex justify-start items-start gap-10 md:gap-20">
+        <div className="text-sm flex flex-col gap-4 lg:gap-8 font-normal lg:text-base">
+          <p>Product id :{product.id}</p>
+          <p>Brand : {product.brand}</p>
+          <div className="flex justify-between items-center gap-4 md:gap-10">
+            <p>Quantity</p>
+            <div className="text-base flex items-center divide-x-2 w-28 border border-solid border-gray-700 rounded">
+              <button className="w-full p-1 font-semibold" onClick={() => quantity > 1 && setQuantity(quantity - 1)}>-</button>
+              <p className="w-full p-1 text-center font-semibold text-green">{quantity}</p>
+              <button className="w-full p-1 font-semibold" onClick={() => quantity < product.stock && setQuantity(quantity + 1)}>+</button>
             </div>
           </div>
-          <div className="self-end lg:self-start py-1 px-4 rounded border-2 border-solid border-secondary-button text-secondary-button font-semibold">
-            {product.stock} in stock
-          </div>
         </div>
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-light lg:text-base">
-              Product code:
-            </span>
-            <p className="text-sm font-light lg:text-base">
-              {product.refCode || (
-                <span className="text-gray-500">ABC-1234</span>
-              )}
-            </p>
-          </div>
-        </div>
-        <div className="flex justify-between items-center gap-1 md:justify-start md:gap-20">
-          <h2 className="text-2xl font-semibold lg:text-3xl">
-            <NairaSymbol />
-            {quantity * product.price}
-          </h2>
-
-          <button
-            className="outline-0 text-sm flex justify-center items-center gap-1"
-            onClick={() => handleAddToWishlist(product.id)}
-          >
-            <i className="bx bx-heart bx-sm"></i>
-            Add to Wishlist
-          </button>
-        </div>
-        <div className="my-5 flex items-center justify-start flex-wrap gap-4 md:gap-8 md:justify-start">
-          <button
-            className="w-full border-2 border-solid border-secondary-button text-secondary-button hover:bg-gray-100 hover:font-semibold transition-all ease-in duration-200 font-medium text-sm rounded flex justify-center items-center gap-3 py-2 px-4 md:w-fit"
-            onClick={() => handleAddToCart(product.id)}
-          >
-            <img src={IMAGES.icons.cartGreen} alt="cart" className="w-3" />
-            add to cart
-          </button>
-          <button
-            className="w-full font-medium text-white text-sm rounded border-2 border-solid border-green bg-green py-2 px-4 transition ease-in duration-200 hover:bg-dark-green md:w-fit"
-            onClick={() => {
-              if (loggedIn) {
-                navigate("/shopping-cart");
-              } else {
-                navigate("/login", {
-                  state: {
-                    previousUrl: location.pathname,
-                  },
-                });
-              }
-            }}
-          >
-            Checkout
-          </button>
-          <button
-            className="w-full font-medium text-green text-sm rounded border-2 border-solid border-light-green bg-transparent py-2 px-4 transition ease-in duration-200 hover:bg-light-green hover:text-white md:w-fit"
-            onClick={() => {
-              navigate("/products");
-            }}
-          >
-            Continue shopping
-          </button>
+        <div className="self-end lg:self-start py-1 px-4 rounded border-2 border-solid border-secondary-button text-secondary-button font-semibold">
+          {product.stock} in stock
         </div>
       </div>
 
-      {alert && alert.severity && (
-        <CustomAlert
-          open={alert.open}
-          details={alert}
-          close={handleCloseAlert}
-        />
-      )}
+      {/* Price & Wishlist */}
+      <div className="flex justify-between items-center gap-1 md:justify-start md:gap-20">
+        <h2 className="text-2xl font-semibold lg:text-3xl">
+          <NairaSymbol /> {quantity * product.price}
+        </h2>
+        <button className="outline-0 text-sm flex justify-center items-center gap-1" onClick={() => handleAddToWishlist(product.id)}>
+          <i className="bx bx-heart bx-sm"></i> Add to Wishlist
+        </button>
+      </div>
 
-      {toast && toast.severity && (
-        <CustomSnackbar
-          open={toast.open}
-          close={handleCloseToast}
-          toast={toast}
-        />
-      )}
+      {/* Action buttons */}
+      <div className="my-5 flex items-center justify-start flex-wrap gap-4 md:gap-8 md:justify-start">
+        <button
+          className="w-full border-2 border-solid border-secondary-button text-secondary-button hover:bg-gray-100 hover:font-semibold transition-all ease-in duration-200 font-medium text-sm rounded flex justify-center items-center gap-3 py-2 px-4 md:w-fit"
+          onClick={() => handleAddToCart(product.id)}
+        >
+          <img src={IMAGES.icons.cartGreen} alt="cart" className="w-3" />
+          add to cart
+        </button>
+
+        <button
+          className="w-full font-medium text-white text-sm rounded border-2 border-solid border-green bg-green py-2 px-4 transition ease-in duration-200 hover:bg-dark-green md:w-fit"
+          onClick={() => {
+            if (!loggedIn || !token) {
+              navigate("/login", { state: { previousUrl: "/shopping-cart" } });
+            } else {
+              navigate("/shopping-cart");
+            }
+          }}
+        >
+          Checkout
+        </button>
+
+        <button
+          className="w-full font-medium text-green text-sm rounded border-2 border-solid border-light-green bg-transparent py-2 px-4 transition ease-in duration-200 hover:bg-light-green hover:text-white md:w-fit"
+          onClick={() => navigate("/products")}
+        >
+          Continue shopping
+        </button>
+      </div>
+
+      {/* Alerts & Toasts */}
+      {alert.open && <CustomAlert open={alert.open} details={alert} close={handleCloseAlert} />}
+      {toast.open && <CustomSnackbar open={toast.open} close={handleCloseToast} toast={toast} />}
     </div>
   );
 }
 
 function Description({ descr }) {
   const [showMore, setShowMore] = useState(false);
-
   return (
     <div className="flex flex-col gap-6 my-4 text-sm font-light px-4 md:px-0 text-[#111]">
       <div className="w-2/4 h-14 bg-filter-green text-lg font-medium rounded-md flex justify-center items-center tracking-tight lg:text-[22px] lg:w-full">
         Description
       </div>
-
       {descr && (
         <div className="whitespace-break-spaces lg:text-base">
           {showMore ? descr : `${descr.substring(0, 800)}`}
-
           {descr.length >= 800 && (
             <div>
               <button
                 className="capitalize text-green font-semibold text-base flex justify-center items-center gap-1 py-2 px-0"
                 onClick={() => setShowMore(!showMore)}
               >
-                {showMore ? "Show less" : "Show more"}
-                <i className="bx bx-chevron-down bx-sm"></i>
+                {showMore ? "Show less" : "Show more"} <i className="bx bx-chevron-down bx-sm"></i>
               </button>
             </div>
           )}
@@ -468,59 +317,38 @@ function ProductDetails({ bestSelling, recentlyViewed, product, otherGadgets }) 
   return (
     <div className="mt-20">
       {product && (
-        <div className="flex flex-col gap-4 md:px-10 lg:hidden">
-          <ImagesPreviews files={product.images || images} />
-          <div className="w-4/5 border border-pagination rounded self-center my-3" />
-          <AboutProduct product={product} />
-          <Description descr={product.description || example} />
-        </div>
-      )}
-
-      {product && (
-        <div className="hidden lg:flex justify-between items-start gap-4 px-20 mb-12">
-          <div className="flex flex-col gap-4 w-[120%]">
+        <>
+          {/* Mobile layout */}
+          <div className="flex flex-col gap-4 md:px-10 lg:hidden">
             <ImagesPreviews files={product.images || images} />
             <div className="w-4/5 border border-pagination rounded self-center my-3" />
             <AboutProduct product={product} />
-          </div>
-          <div className="w-[80%]">
             <Description descr={product.description || example} />
           </div>
-        </div>
+
+          {/* Desktop layout */}
+          <div className="hidden lg:flex justify-between items-start gap-4 px-20 mb-12">
+            <div className="flex flex-col gap-4 w-[120%]">
+              <ImagesPreviews files={product.images || images} />
+              <div className="w-4/5 border border-pagination rounded self-center my-3" />
+              <AboutProduct product={product} />
+            </div>
+            <div className="w-[80%]">
+              <Description descr={product.description || example} />
+            </div>
+          </div>
+        </>
       )}
 
       <Banner />
 
+      {/* Sections */}
       <div className="mt-8 md:mt-12 px-4 md:px-12 lg:mt-24 lg:px-24">
-        {bestSelling && bestSelling.length > 0 && (
-          <Groups
-            heading="best selling products"
-            products={bestSelling}
-            seeMore
-          />
-        )}
+        {bestSelling?.length > 0 && <Groups heading="best selling products" products={bestSelling} seeMore />}
       </div>
-      {/* NEW: Other gadgets section (no see more) */}
       <div className="mt-8 md:mt-12 px-4 md:px-12 lg:mt-24 lg:px-24">
-        {otherGadgets && otherGadgets.length > 0 && (
-          <Groups
-            heading="other gadgets"
-            products={otherGadgets}
-            seeMore={false} // disable see more button
-          />
-        )}
+        {otherGadgets?.length > 0 && <Groups heading="other gadgets" products={otherGadgets} seeMore={false} />}
       </div>
-
-      {/* Recently viewed (still commented out for now) */}
-      {/* <div className="mt-8 px-4 md:px-12 lg:px-24">
-        {recentlyViewed && recentlyViewed.length > 0 && (
-          <Groups
-            heading="recently viewed"
-            products={recentlyViewed}
-            seeMore
-          />
-        )}
-      </div> */}
     </div>
   );
 }
@@ -528,245 +356,78 @@ function ProductDetails({ bestSelling, recentlyViewed, product, otherGadgets }) 
 function ProductDesc() {
   const [bestSelling, setBestSelling] = useState(null);
   const [recentlyViewed, setRecentlyViewed] = useState(null);
-  const [otherGadgets, setOtherGadgets] = useState(null); // NEW: other gadgets
-  const [values, setValues] = useState({
-    name: "",
-    productType: "",
-    category: "BRAND NEW",
-    description: "",
-    brand: "",
-    price: "",
-    stock: "",
-    availableOffers: "",
-    colour: "",
-    images: [],
-  });
+  const [otherGadgets, setOtherGadgets] = useState(null);
   const [product, setProduct] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [alert, setAlert] = useState({
-    open: false,
-    severity: "",
-    message: "",
-    title: "",
-  });
+  const [alert, setAlert] = useState({ open: false, severity: "", message: "", title: "" });
 
   const navigate = useNavigate();
   const params = useParams();
-
   const prodId = params.id;
 
-  const checkScreenSize = () => {
-    if (window.innerWidth >= 1500) {
-      return 5;
-    } else {
-      return 4;
-    }
-  };
+  const checkScreenSize = () => (window.innerWidth >= 1500 ? 5 : 4);
 
-  // NEW: fetch other gadgets
-  useEffect(() => {
-    const fetchOtherGadgets = async () => {
-      try {
-        const response = await fetch(
-          `${baseUrl}/products`, // assuming this gets all gadgets
-          {
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            }
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`Server responded with ${response.status}`);
-        }
-
-        const text = await response.text();
-        try {
-          const data = JSON.parse(text);
-          setOtherGadgets(Array.isArray(data) ? data : data?.content || []);
-        } catch (e) {
-          console.error('Invalid JSON in other gadgets:', text.substring(0, 100));
-          setOtherGadgets([]);
-        }
-      } catch (error) {
-        console.error('Error fetching other gadgets:', error);
-        setOtherGadgets([]);
-      }
-    };
-
-    fetchOtherGadgets();
-  }, []);
-
-
-  // Update the useEffect for product fetching
+  // Fetch product
   useEffect(() => {
     const fetchProduct = async () => {
       if (!prodId) return;
-
       setIsLoading(true);
       try {
-        const response = await fetch(`${baseUrl}/products/${prodId}`, {
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error(`Server responded with ${response.status}`);
-        }
-
-        const text = await response.text();
-        let data;
-        try {
-          data = JSON.parse(text);
-        } catch (e) {
-          console.error('Invalid JSON response:', text.substring(0, 100));
-          throw new Error('Invalid server response format');
-        }
-
-        // Validate product data
-        if (!data || typeof data !== 'object') {
-          throw new Error('Invalid product data received');
-        }
-
-        setProduct(data);
-
-        // Set default image if none provided
+        const res = await fetch(`${baseUrl}/products/${prodId}`);
+        if (!res.ok) throw new Error(`Server responded with ${res.status}`);
+        const data = await res.json();
         if (!data.images || data.images.length === 0) {
-          data.images = [{
-            image: IMAGES.productDesc.productMain,
-            id: 'default-image'
-          }];
+          data.images = [{ image: IMAGES.productDesc.productMain, id: "default-image" }];
         }
-
-      } catch (error) {
-        console.error('Error fetching product:', error);
-        setAlert({
-          open: true,
-          severity: 'error',
-          title: 'Error Loading Product',
-          message: 'Unable to load product details. Please try again later.'
-        });
-        navigate('/products');
+        setProduct(data);
+      } catch (err) {
+        setAlert({ open: true, severity: "error", title: "Error Loading Product", message: "Unable to load product details." });
+        navigate("/products");
       } finally {
         setIsLoading(false);
       }
     };
-
     fetchProduct();
   }, [prodId, navigate]);
 
-  // Update the best selling products fetch
+  // Fetch best selling
   useEffect(() => {
-    const fetchBestSelling = async () => {
-      try {
-        const response = await fetch(
-          `${baseUrl}/products/best-selling`, {
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          params: {
-            pageNo: 0,
-            pageSize: checkScreenSize()
-          }
-        }
-        );
-
-        if (!response.ok) {
-          throw new Error(`Server responded with ${response.status}`);
-        }
-
-        const text = await response.text();
-        try {
-          const data = JSON.parse(text);
-          setBestSelling(Array.isArray(data) ? data : data?.content || []);
-        } catch (e) {
-          console.error('Invalid JSON in best selling products:', text.substring(0, 100));
-          setBestSelling([]);
-        }
-
-      } catch (error) {
-        console.error('Error fetching best selling products:', error);
-        setBestSelling([]);
-      }
-    };
-
-    fetchBestSelling();
+    fetch(`${baseUrl}/products/best-selling`)
+      .then((res) => res.json())
+      .then((data) => setBestSelling(Array.isArray(data) ? data : data.content || []))
+      .catch(() => setBestSelling([]));
   }, []);
 
-  // Update the recently viewed products fetch
+  // Fetch other gadgets
   useEffect(() => {
-    const fetchRecentlyViewed = async () => {
-      try {
-        const response = await fetch(
-          `${baseUrl}/products/reviewed`, {
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          params: {
-            pageNo: 0,
-            pageSize: checkScreenSize()
-          }
-        }
-        );
+    fetch(`${baseUrl}/products`)
+      .then((res) => res.json())
+      .then((data) => setOtherGadgets(Array.isArray(data) ? data : data.content || []))
+      .catch(() => setOtherGadgets([]));
+  }, []);
 
-        if (!response.ok) {
-          throw new Error(`Server responded with ${response.status}`);
-        }
-
-        const text = await response.text();
-        try {
-          const data = JSON.parse(text);
-          setRecentlyViewed(Array.isArray(data) ? data : data?.content || []);
-        } catch (e) {
-          console.error('Invalid JSON in recently viewed:', text.substring(0, 100));
-          setRecentlyViewed([]);
-        }
-
-      } catch (error) {
-        console.error('Error fetching recently viewed products:', error);
-        setRecentlyViewed([]);
-      }
-    };
-
-    fetchRecentlyViewed();
+  // Fetch recently viewed
+  useEffect(() => {
+    fetch(`${baseUrl}/products/reviewed`)
+      .then((res) => res.json())
+      .then((data) => setRecentlyViewed(Array.isArray(data) ? data : data.content || []))
+      .catch(() => setRecentlyViewed([]));
   }, []);
 
   return (
     <div className="my-10">
-      <div
-        className="h-28 bg-filter-green"
-        style={{
-          backgroundImage: `radial-gradient(circle, #009F7F, #63BB8280, #63BB8280, #63BB8280)`,
-        }}
-      >
+      {/* Header */}
+      <div className="h-28 bg-filter-green" style={{ backgroundImage: `radial-gradient(circle, #009F7F, #63BB8280)` }}>
         <div className="h-full flex items-center gap-5 px-4 relative md:px-12 lg:px-24">
-          <button
-            className="rounded-full outline-none bg-transparent flex items-center text-lg lg:text-[22px] font-medium"
-            onClick={() => navigate("/products")}
-          >
-            <i className="bx bx-chevron-left bx-md"></i>
-            Back
+          <button className="rounded-full outline-none bg-transparent flex items-center text-lg lg:text-[22px] font-medium" onClick={() => navigate("/products")}>
+            <i className="bx bx-chevron-left bx-md"></i> Back
           </button>
-
-          <h2 className="capitalize text-3xl lg:text-[45px] font-bold absolute top-1/3 left-1/3 md:left-[45%]">
-            phones
-          </h2>
+          <h2 className="capitalize text-3xl lg:text-[45px] font-bold absolute top-1/3 left-1/3 md:left-[45%]">phones</h2>
         </div>
       </div>
 
       {isLoading && <Loading />}
-
-      <ProductDetails
-        bestSelling={bestSelling}
-        recentlyViewed={recentlyViewed}
-        otherGadgets={otherGadgets} // NEW: pass other gadgets
-        product={product}
-      />
+      <ProductDetails bestSelling={bestSelling} recentlyViewed={recentlyViewed} otherGadgets={otherGadgets} product={product} />
     </div>
   );
 }

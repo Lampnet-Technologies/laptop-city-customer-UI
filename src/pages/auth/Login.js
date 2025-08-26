@@ -8,7 +8,7 @@ const baseUrl = process.env.REACT_APP_BASE_URL;
 const loginAPI = `${baseUrl}/login`;
 
 function Login() {
-  const [loggedIn, setLoggedIn] = useContext(LoginContext);
+   const { loggedIn, setLoggedIn, token, setToken } = useContext(LoginContext);
   const [values, setValues] = useState({
     usernameOrEmail: "",
     password: "",

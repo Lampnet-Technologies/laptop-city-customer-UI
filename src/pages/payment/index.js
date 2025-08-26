@@ -136,7 +136,7 @@ function CustomizedSteppers({ active }) {
 }
 
 function Payment() {
-  const [loggedIn, setLoggedIn] = useContext(LoginContext);
+   const { loggedIn, setLoggedIn, token, setToken } = useContext(LoginContext);
   const [cart, setCart] = useContext(UserCart);
   const [componentToRender, setComponentToRender] =
     useState("shipping-address");
@@ -152,7 +152,7 @@ function Payment() {
     if (!loggedIn) {
       navigate("/login");
     }
-    if (!location.state && location.state?.previousURL != "/shopping-cart") {
+    if (!location.state && location.state?.previousURL !== "/shopping-cart") {
       navigate("/shopping-cart");
     }
   }, []);

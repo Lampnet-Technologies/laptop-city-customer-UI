@@ -120,7 +120,7 @@ function ProductLoadingFlex({ count = 8 }) {
 function ProductsListing() {
   // ==================== CONTEXT & STATE ====================
 
-  const { loggedIn, token } = useContext(LoginContext);
+  const { loggedIn, setLoggedIn, token, setToken } = useContext(LoginContext);
   const [cartDep, setCartDep] = useContext(UserCartDependency);
 
   // UI State

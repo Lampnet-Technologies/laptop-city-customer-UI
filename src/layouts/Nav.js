@@ -133,7 +133,7 @@ function CustomLink({ to, children, ...props }) {
 }
 
 function Nav() {
-  const [loggedIn, setLoggedIn] = useContext(LoginContext);
+  const { loggedIn, setLoggedIn, token, setToken } = useContext(LoginContext);
   const [profile, setProfile] = useContext(UserProfileContext);
   const [cart, setCart] = useContext(UserCart);
   const [clicked, setClicked] = useState(false);
