@@ -17,7 +17,7 @@ function ShippingAddress({ goTo }) {
     address: "",
     state: "",
     city: "",
-    zipCode: "100001", // default value
+    zipCode: "",
     phone: "",
     countryCode: "+234",
   });
@@ -53,6 +53,12 @@ function ShippingAddress({ goTo }) {
       .finally(() => setIsLoadingStates(false));
   }, [location.pathname]);
 
+  const normalizeState = (state) => {
+  if (!state) return state;
+  return state.replace(/ State$/i, "").trim();
+};
+
+
   useEffect(() => {
     if (values.state && states.includes(values.state)) {
       setIsLoadingCities(true);
@@ -67,7 +73,9 @@ function ShippingAddress({ goTo }) {
         .then((res) => res.json())
         .then((result) => {
           if (result.data && Array.isArray(result.data)) {
-            setCities(result.data);
+            // Sort cities alphabetically for better UX
+            const sortedCities = result.data.sort((a, b) => a.localeCompare(b));
+            setCities(sortedCities);
           } else {
             setCities([]);
             console.warn("Cities data missing or malformed:", result);
@@ -84,46 +92,83 @@ function ShippingAddress({ goTo }) {
     setValues({ ...values, [prop]: event.target.value });
   };
 
-  const validatePhoneNumber = (phone, countryCode) => {
+  const validateAndFormatPhoneNumber = (phone, countryCode) => {
     // Remove all non-digit characters
     let cleanPhone = phone.replace(/\D/g, '');
     
+    console.log("Phone validation input:", { phone, countryCode, cleanPhone });
+    
     // Handle Nigerian phone numbers specifically
     if (countryCode === '+234') {
-      // Remove leading zero if present
-      if (cleanPhone.startsWith('0')) {
-        cleanPhone = cleanPhone.substring(1);
-      }
-      
-      // Remove country code if already included
-      if (cleanPhone.startsWith('234')) {
-        cleanPhone = cleanPhone.substring(3);
-      }
+    // Strip leading zero or duplicate country code
+    if (cleanPhone.startsWith("234")) cleanPhone = cleanPhone.slice(3);
+    if (cleanPhone.startsWith("0")) cleanPhone = cleanPhone.slice(1);
       
       // Should now have exactly 10 digits
       if (cleanPhone.length === 10) {
-        return `+234${cleanPhone}`;
+        const formatted = `+234${cleanPhone}`;
+        console.log("Nigerian phone formatted:", formatted);
+        return formatted;
       } else {
-        throw new Error(`Invalid Nigerian phone number. Expected 10 digits, got ${cleanPhone.length}. Please enter format: 8012345678`);
+        throw new Error(`Invalid Nigerian phone number. Expected 10 digits after country code, got ${cleanPhone.length}. Please enter format: 8012345678 (without +234)`);
       }
     }
     
-    // For other countries, basic validation
-    if (countryCode === '+1' && cleanPhone.length === 10) {
-      return `+1${cleanPhone}`;
+ /*     For US numbers
+    if (countryCode === '+1') {
+      if (cleanPhone.length === 10) {
+        return `+1${cleanPhone}`;
+      } else {
+        throw new Error(`Invalid US phone number. Expected 10 digits, got ${cleanPhone.length}.`);
+      }
     }
     
-    if (countryCode === '+44' && cleanPhone.length >= 10) {
-      return `+44${cleanPhone}`;
+    For UK numbers
+    if (countryCode === '+44') {
+      if (cleanPhone.startsWith('0')) {
+        cleanPhone = cleanPhone.substring(1);
+      }
+      if (cleanPhone.length >= 10 && cleanPhone.length <= 11) {
+        return `+44${cleanPhone}`;
+      } else {
+        throw new Error(`Invalid UK phone number. Expected 10-11 digits, got ${cleanPhone.length}.`);
+      }
     }
-    
+     */
     // Fallback - return as formatted but may still fail validation
     return `${countryCode}${cleanPhone}`;
   };
 
-  // Add function to normalize city names
-  const normalizeCityName = (cityName) => {
-    return cityName.trim();
+  const validateCity = (cityName, availableCities) => {
+    const trimmedCity = cityName.trim();
+    
+    console.log("City validation:", {
+      input: cityName,
+      trimmed: trimmedCity,
+      availableCities: availableCities.slice(0, 5),
+      totalCities: availableCities.length
+    });
+    
+    // Exact match (case-sensitive)
+    if (availableCities.includes(trimmedCity)) {
+      return trimmedCity;
+    }
+    
+    // Case-insensitive match
+    const caseInsensitiveMatch = availableCities.find(
+      city => city.toLowerCase() === trimmedCity.toLowerCase()
+    );
+    
+    if (caseInsensitiveMatch) {
+      console.log("Found case-insensitive match:", caseInsensitiveMatch);
+      return caseInsensitiveMatch;
+    }
+    
+    throw new Error(
+      `Invalid city: "${trimmedCity}". Please select exactly from the dropdown. ` +
+      `Available options include: ${availableCities.slice(0, 5).join(', ')}` +
+      `${availableCities.length > 5 ? ` and ${availableCities.length - 5} more` : ''}`
+    );
   };
 
   const handleSubmit = async (e) => {
@@ -131,67 +176,55 @@ function ShippingAddress({ goTo }) {
     setSubmitting(true);
 
     try {
-      // Debug: Log current form values
-      console.log("=== DEBUGGING FORM SUBMISSION ===");
-      console.log("Current form values:", values);
-      console.log("Available cities count:", cities.length);
-      console.log("First 10 cities:", cities.slice(0, 10));
-      console.log("Available states count:", states.length);
+      console.log("=== FORM SUBMISSION DEBUG ===");
+      console.log("Form values:", values);
+      console.log("Available cities:", cities.length, cities.slice(0, 10));
+      console.log("Available states:", states.length);
 
       // Validate required fields
-      const requiredFields = {
-        firstName: values.firstName?.trim(),
-        lastName: values.lastName?.trim(),
-        address: values.address?.trim(),
-        state: values.state?.trim(),
-        city: values.city?.trim(),
-        phone: values.phone?.trim()
-      };
-
-      const missingFields = Object.entries(requiredFields)
-        .filter(([key, value]) => !value)
-        .map(([key]) => key);
+      const requiredFields = ['firstName', 'lastName', 'address', 'state', 'city', 'phone'];
+      const missingFields = requiredFields.filter(field => !values[field]?.trim());
 
       if (missingFields.length > 0) {
-        throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+        throw new Error(`Please fill in all required fields: ${missingFields.join(', ')}`);
       }
 
       // Validate and format phone number
-      const formattedPhone = validatePhoneNumber(values.phone, values.countryCode);
-      console.log("Phone validation:");
-      console.log("  Original:", values.phone);
-      console.log("  Country code:", values.countryCode);
-      console.log("  Formatted:", formattedPhone);
+      let formattedPhone;
+      try {
+        formattedPhone = validateAndFormatPhoneNumber(values.phone, values.countryCode);
+        console.log("Phone validation successful:", formattedPhone);
+      } catch (phoneError) {
+        console.error("Phone validation failed:", phoneError.message);
+        throw phoneError;
+      }
       
-      // Normalize and validate city
-      const normalizedCity = normalizeCityName(values.city);
-      console.log("City validation:");
-      console.log("  Selected city:", `"${values.city}"`);
-      console.log("  Normalized city:", `"${normalizedCity}"`);
-      console.log("  City exists in list:", cities.includes(normalizedCity));
-      
-      // Check if city exists (case-sensitive check)
-      const cityExists = cities.some(city => city.trim() === normalizedCity);
-      if (!cityExists) {
-        console.log("Available cities:", cities);
-        throw new Error(`Invalid city: "${normalizedCity}". Please select from the dropdown. Available options: ${cities.slice(0, 10).join(', ')}${cities.length > 10 ? `... and ${cities.length - 10} more` : ''}`);
+      // Validate city selection
+      let validatedCity;
+      try {
+        validatedCity = validateCity(values.city, cities);
+        console.log("City validation successful:", validatedCity);
+      } catch (cityError) {
+        console.error("City validation failed:", cityError.message);
+        throw cityError;
       }
 
-      // Build the exact payload the API expects
+      // Build payload matching the exact API specification from Swagger
       const payload = {
-        firstName: requiredFields.firstName,
-        lastName: requiredFields.lastName,
-        email: values.email?.trim() || "",
-        address: requiredFields.address,
-        state: requiredFields.state,
-        city: normalizedCity,
-        zipCode: values.zipCode?.trim() || "100001",
+        firstName: values.firstName.trim(),
+        lastName: values.lastName.trim(),
+        email: values.email.trim() || "", // Email is optional based on your form
+        address: values.address.trim(),
+        state: normalizeState(values.state.trim()),
+        city: validatedCity,
+        zipCode: values.zipCode.trim() || "", // ZipCode might be optional
         phone: formattedPhone,
       };
 
-      console.log("=== FINAL PAYLOAD ===");
+      console.log("=== API PAYLOAD ===");
       console.log(JSON.stringify(payload, null, 2));
 
+      // Check authentication
       const token = accessToken();
       if (!token) {
         throw new Error("Authentication token not found. Please log in again.");
@@ -199,41 +232,50 @@ function ShippingAddress({ goTo }) {
 
       console.log("Making API request to:", createSenderAddressUrl);
       
-      const res = await fetch(createSenderAddressUrl, {
+      const response = await fetch(createSenderAddressUrl, {
         method: "POST",
         headers: {
-          "content-type": "application/json",
-          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
       });
 
-      console.log("API Response status:", res.status);
-      console.log("API Response headers:", Object.fromEntries(res.headers.entries()));
+      console.log("API Response status:", response.status);
+      console.log("API Response headers:", Object.fromEntries(response.headers.entries()));
 
-      const responseData = await res.json();
-      console.log("API Response data:", responseData);
+      let responseData;
+      try {
+        responseData = await response.json();
+        console.log("API Response data:", responseData);
+      } catch (parseError) {
+        console.error("Failed to parse response JSON:", parseError);
+        throw new Error("Invalid response format from server");
+      }
 
-      if (!res.ok) {
-        console.error("=== API ERROR DETAILS ===");
-        console.error("Status:", res.status);
+      if (!response.ok) {
+        console.error("=== API ERROR ===");
+        console.error("Status:", response.status);
         console.error("Response:", responseData);
         
-        // Provide specific error messages
-        let errorMessage = "Failed to save shipping address: ";
-        if (responseData.message) {
-          errorMessage += responseData.message;
-          
-          // Add specific guidance based on error message
-          if (responseData.message.includes('phone format')) {
-            errorMessage += `\n\nPhone troubleshooting:\n- Your phone: "${formattedPhone}"\n- For Nigeria: Use format +234XXXXXXXXXX (10 digits after +234)\n- Example: +2348012345678`;
-          }
-          
-          if (responseData.message.includes('valid city')) {
-            errorMessage += `\n\nCity troubleshooting:\n- Your city: "${normalizedCity}"\n- Must select from dropdown\n- Available: ${cities.slice(0, 5).join(', ')}`;
-          }
+        // Handle specific error cases
+        let errorMessage = "Failed to save shipping address";
+        
+        if (responseData?.message) {
+          errorMessage = responseData.message;
+        } else if (responseData?.error) {
+          errorMessage = responseData.error;
         } else {
-          errorMessage += `HTTP ${res.status}`;
+          errorMessage += `: HTTP ${response.status}`;
+        }
+        
+        // Add troubleshooting info for common issues
+        if (errorMessage.includes('phone format') || errorMessage.includes('phone')) {
+          errorMessage += `\n\nPhone troubleshooting:\n- Your phone: "${formattedPhone}"\n- For Nigeria: Enter 10 digits (e.g., 8012345678)\n- System will add +234 automatically`;
+        }
+        
+        if (errorMessage.includes('city') || errorMessage.includes('City')) {
+          errorMessage += `\n\nCity troubleshooting:\n- Your city: "${validatedCity}"\n- Must select exactly from dropdown\n- Available: ${cities.slice(0, 5).join(', ')}${cities.length > 5 ? '...' : ''}`;
         }
         
         throw new Error(errorMessage);
@@ -242,7 +284,7 @@ function ShippingAddress({ goTo }) {
       console.log("=== SUCCESS ===");
       console.log("Address created successfully:", responseData);
 
-      // Update PlaceOrderContext with the shipping address
+      // Update context with the new address data
       setPlaceOrder((prev) => ({
         ...prev,
         firstName: payload.firstName,
@@ -255,21 +297,26 @@ function ShippingAddress({ goTo }) {
         phoneNumber: payload.phone,
         shippingAddress: {
           ...payload,
-          address_id: responseData.address_id,
+          address_id: responseData.address_id || responseData.id, // Handle different response formats
         },
       }));
 
-      // Move to next step
+      // Navigate to next step
       if (goTo) {
         goTo("shipping-method");
+      } else {
+        console.log("No goTo function provided");
       }
 
       alert("Shipping address saved successfully!");
 
     } catch (error) {
       console.error("=== SUBMISSION ERROR ===");
-      console.error("Error details:", error);
-      alert(error.message || "An unexpected error occurred. Please try again.");
+      console.error("Error:", error);
+      
+      // Show user-friendly error message
+      const userMessage = error.message || "An unexpected error occurred. Please try again.";
+      alert(userMessage);
     } finally {
       setSubmitting(false);
     }
@@ -347,7 +394,7 @@ function ShippingAddress({ goTo }) {
           </option>
           {states.map((state, i) => (
             <option key={i} value={state}>
-              {state.replace(" State", "")}
+              {state}
             </option>
           ))}
         </select>
@@ -359,7 +406,7 @@ function ShippingAddress({ goTo }) {
           value={values.city}
           onChange={handleChange("city")}
           className="w-full h-11 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
-          disabled={!values.state}
+          disabled={!values.state || isLoadingCities}
         >
           <option value="" disabled>
             {isLoadingCities ? "Loading cities..." : "Select City *"}
@@ -386,13 +433,14 @@ function ShippingAddress({ goTo }) {
           </select>
           <input
             required
-            placeholder="Phone Number * (e.g. 8012345678)"
+            placeholder="Phone Number * (10 digits for Nigeria)"
             name="phone"
             type="tel"
             id="phone"
             value={values.phone}
             onChange={handleChange("phone")}
             className="w-2/3 h-11 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
+            maxLength={values.countryCode === '+234' ? 11 : 15}
           />
         </div>
 
@@ -407,19 +455,21 @@ function ShippingAddress({ goTo }) {
         />
       </div>
 
-      {/* Validation Messages */}
-      <div className="text-sm text-gray-600 space-y-1">
-        <p>📱 Phone format: For Nigeria (+234), enter 10 digits (e.g. 8012345678)</p>
-        <p>🏙️ City: Please select from the dropdown list only</p>
+      {/* Improved Validation Messages */}
+      <div className="text-sm text-gray-600 space-y-1 bg-blue-50 p-3 rounded">
+        <p className="font-medium text-gray-800">📋 Required Information:</p>
+        <p>📱 <strong>Phone:</strong> For Nigeria (+234), enter exactly 10 digits (e.g., 8100915397)</p>
+        <p>🏙️ <strong>City:</strong> Must select exactly from the dropdown after choosing state</p>
+        <p>📮 <strong>Address:</strong> Include street number, street name, and area</p>
       </div>
 
       <button
         type="submit"
-        disabled={submitting}
-        className="inline-block w-full bg-green my-6 p-4 rounded outline-0 font-semibold text-white text-sm disabled:bg-gray-400 disabled:cursor-not-allowed"
+        disabled={submitting || isLoadingCities}
+        className="inline-block w-full bg-green my-6 p-4 rounded outline-0 font-semibold text-white text-sm disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
         style={{ marginTop: "2.5rem" }}
       >
-        {submitting ? "Saving..." : "Next"}
+        {submitting ? "Saving Address..." : isLoadingCities ? "Loading Cities..." : "Save & Continue"}
       </button>
     </form>
   );

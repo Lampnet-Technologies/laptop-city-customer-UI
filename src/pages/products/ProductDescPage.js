@@ -17,10 +17,6 @@ const images = [
 
 const example = `The smartphone is powered by a Mediatek Helio G96 Octa-core processor and Mali-G57 MC2 GPU. It comes in a big screen that has a 6.95 inches display IPS LCD capacitive touchscreen with a resolution of 1080 x 2460 pixels.
 
-The phone supports Dual SIM (Nano-SIM, dual stand-by). Infinix Note 11 Pro features quad camera that consists of 64 MP (wide) + 13 MP (telephoto) + 2 MP (depth) with Quad-LED flash, panorama, and HDR.
-
-The front camera consists of a single camera: 16 MP (wide) and the device is integrated with a loudspeaker and a 3.5mm jack. The smartphone features Bluetooth 5.0, GPS with A-GPS, Radio, and USB Type-C 2.0, USB On-The-Go. The sensors include Fingerprint (side-mounted), accelerometer, gyro, proximity, and compass.
-
 DISPLAY
 Type: IPS LCD, 120Hz
 Size: 6.95 inches, 114.7 cm2 (~84.5% screen-to-body ratio)
@@ -38,9 +34,9 @@ Internal: 128GB 8GB RAM
 UFS 2.2
 
 MAIN CAMERA - Triple
-64 MP, f/1.7, (wide), 1/1.72", 0.8µm, PDAF
-13 MP, f/2.5, (telephoto), 1/3.1", 1.12µm, AF
-2 MP, f/2.4, (depth)
+64 MP, f/1.7, (wide), PDAF
+13 MP, (telephoto), AF
+2 MP, (depth)
 Features: Quad-LED flash, HDR, panorama
 Video: 1440p@30fps
 
@@ -49,22 +45,18 @@ SELFIE CAMERA - Single
 Video: 1080p@30fps
 
 SOUND
-Loudspeaker: Yes, with dual speakers
+Loudspeaker: Yes, dual speakers
 3.5mm jack: Yes
 
 COMMS
-WLAN: Wi-Fi 802.11 a/b/g/n/ac, dual-band, Wi-Fi Direct, hotspot
-Bluetooth: 5.0, A2DP, LE
-GPS: Yes, with A-GPS
-NFC: No
+WLAN: Wi-Fi 802.11 a/b/g/n/ac
+Bluetooth: 5.0
+GPS: Yes
 Radio: FM radio
-USB: USB Type-C 2.0, USB On-The-Go
-
-FEATURES
-Sensors: Fingerprint (side-mounted), accelerometer, gyro, proximity, compass
+USB: USB Type-C 2.0
 
 BATTERY
-Type: Li-Po 5000 mAh, non-removable
+Type: Li-Po 5000 mAh
 Charging: Fast Charging 33W`;
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -72,16 +64,12 @@ const baseUrl = process.env.REACT_APP_BASE_URL;
 function ImagesPreviews({ files }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const arrowNext = (arr) => {
-    if (arr.length - 1 !== currentIndex) {
-      setCurrentIndex((prev) => prev + 1);
-    }
+  const arrowNext = () => {
+    if (files.length - 1 !== currentIndex) setCurrentIndex((prev) => prev + 1);
   };
 
-  const arrowPrev = (arr) => {
-    if (currentIndex !== 0) {
-      setCurrentIndex((prev) => prev - 1);
-    }
+  const arrowPrev = () => {
+    if (currentIndex !== 0) setCurrentIndex((prev) => prev - 1);
   };
 
   if (!files || files.length === 0) return null;
@@ -92,47 +80,45 @@ function ImagesPreviews({ files }) {
         {/* Mobile navigation */}
         <div className="lg:hidden">
           <i
-            onClick={() => arrowPrev(files)}
-            className="bx bx-chevron-left bx-lg text-gray-400 font-normal cursor-pointer absolute top-1/4 left-2"
+            onClick={arrowPrev}
+            className="bx bx-chevron-left bx-lg text-gray-400 cursor-pointer absolute top-1/4 left-2"
             style={{ color: currentIndex !== 0 ? "#009F7F" : "#9ca3af" }}
           ></i>
           <i
-            onClick={() => arrowNext(files)}
-            className="bx bx-chevron-right bx-lg text-green font-normal cursor-pointer absolute top-1/4 right-2"
+            onClick={arrowNext}
+            className="bx bx-chevron-right bx-lg cursor-pointer absolute top-1/4 right-2"
             style={{
-              color:
-                currentIndex === files.length - 1 ? "#9ca3af" : "#009F7F",
+              color: currentIndex === files.length - 1 ? "#9ca3af" : "#009F7F",
             }}
           ></i>
         </div>
 
         {/* Main image */}
         <div className="flex justify-center items-center">
-          <div className="h-60 w-4/5 mx-auto object-contain flex justify-center items-center md:w-80 lg:h-[360px] lg:w-full">
+          <div className="h-60 w-4/5 mx-auto flex justify-center items-center md:w-80 lg:h-[360px] lg:w-full">
             <img
               src={files[currentIndex].image}
               alt="product"
-              className="max-w-full max-h-full object-fill"
+              className="max-w-full max-h-full object-contain"
             />
           </div>
         </div>
 
         {/* Thumbnails */}
-        <div className="bg-[#ECF3F9] rounded p-2 flex justify-between items-center gap-4 md:rounded-lg md:justify-around md:py-6 lg:py-11 lg:flex-col lg:w-48 lg:min-h-[500px]">
+        <div className="bg-[#ECF3F9] rounded p-2 flex justify-between items-center gap-4 md:rounded-lg md:py-6 lg:py-11 lg:flex-col lg:w-48 lg:min-h-[500px]">
           {files.map((image, index) => (
             <div
               key={index}
-              className="h-24 w-28 rounded py-4 flex justify-center items-center lg:rounded-md lg:w-32 lg:h-28"
+              className="h-24 w-28 rounded py-4 flex justify-center items-center lg:rounded-md lg:w-32 lg:h-28 cursor-pointer"
               style={{
-                border:
-                  currentIndex === index ? "1px solid #009F7F" : "none",
+                border: currentIndex === index ? "2px solid #009F7F" : "none",
               }}
               onClick={() => setCurrentIndex(index)}
             >
               <img
                 src={image.image}
                 alt={`image-${index + 1}`}
-                className="max-w-full max-h-full"
+                className="max-w-full max-h-full object-contain"
               />
             </div>
           ))}
@@ -142,19 +128,18 @@ function ImagesPreviews({ files }) {
       {/* Desktop navigation */}
       <div className="hidden lg:flex justify-center items-center gap-6 mt-10 lg:mt-20">
         <i
-          onClick={() => arrowPrev(files)}
-          className="bx bx-chevron-left bx-lg text-gray-400 font-normal cursor-pointer"
+          onClick={arrowPrev}
+          className="bx bx-chevron-left bx-lg cursor-pointer"
           style={{ color: currentIndex !== 0 ? "#009F7F" : "#9ca3af" }}
         ></i>
         <div>
           {currentIndex + 1} / {files.length}
         </div>
         <i
-          onClick={() => arrowNext(files)}
-          className="bx bx-chevron-right bx-lg text-green font-normal cursor-pointer"
+          onClick={arrowNext}
+          className="bx bx-chevron-right bx-lg cursor-pointer"
           style={{
-            color:
-              currentIndex === files.length - 1 ? "#9ca3af" : "#009F7F",
+            color: currentIndex === files.length - 1 ? "#9ca3af" : "#009F7F",
           }}
         ></i>
       </div>
@@ -223,44 +208,44 @@ function AboutProduct({ product }) {
       <h2 className="text-2xl font-semibold lg:text-3xl">{product.name}</h2>
       <div className="my-5 flex justify-start items-start gap-10 md:gap-20">
         <div className="text-sm flex flex-col gap-4 lg:gap-8 font-normal lg:text-base">
-          <p>Product id :{product.id}</p>
-          <p>Brand : {product.brand}</p>
+          <p>Product id: {product.id}</p>
+          <p>Brand: {product.brand}</p>
           <div className="flex justify-between items-center gap-4 md:gap-10">
             <p>Quantity</p>
-            <div className="text-base flex items-center divide-x-2 w-28 border border-solid border-gray-700 rounded">
+            <div className="text-base flex items-center divide-x-2 w-28 border border-gray-700 rounded">
               <button className="w-full p-1 font-semibold" onClick={() => quantity > 1 && setQuantity(quantity - 1)}>-</button>
               <p className="w-full p-1 text-center font-semibold text-green">{quantity}</p>
               <button className="w-full p-1 font-semibold" onClick={() => quantity < product.stock && setQuantity(quantity + 1)}>+</button>
             </div>
           </div>
         </div>
-        <div className="self-end lg:self-start py-1 px-4 rounded border-2 border-solid border-secondary-button text-secondary-button font-semibold">
+        <div className="self-end lg:self-start py-1 px-4 rounded border-2 border-secondary-button text-secondary-button font-semibold">
           {product.stock} in stock
         </div>
       </div>
 
       {/* Price & Wishlist */}
-      <div className="flex justify-between items-center gap-1 md:justify-start md:gap-20">
+      <div className="flex justify-between items-center gap-1 md:gap-20">
         <h2 className="text-2xl font-semibold lg:text-3xl">
           <NairaSymbol /> {quantity * product.price}
         </h2>
-        <button className="outline-0 text-sm flex justify-center items-center gap-1" onClick={() => handleAddToWishlist(product.id)}>
+        <button className="text-sm flex items-center gap-1" onClick={() => handleAddToWishlist(product.id)}>
           <i className="bx bx-heart bx-sm"></i> Add to Wishlist
         </button>
       </div>
 
       {/* Action buttons */}
-      <div className="my-5 flex items-center justify-start flex-wrap gap-4 md:gap-8 md:justify-start">
+      <div className="my-5 flex flex-wrap gap-4 md:gap-8">
         <button
-          className="w-full border-2 border-solid border-secondary-button text-secondary-button hover:bg-gray-100 hover:font-semibold transition-all ease-in duration-200 font-medium text-sm rounded flex justify-center items-center gap-3 py-2 px-4 md:w-fit"
+          className="w-full border-2 border-secondary-button text-secondary-button hover:bg-gray-100 hover:font-semibold transition-all text-sm rounded flex items-center gap-3 py-2 px-4 md:w-fit"
           onClick={() => handleAddToCart(product.id)}
         >
           <img src={IMAGES.icons.cartGreen} alt="cart" className="w-3" />
-          add to cart
+          Add to cart
         </button>
 
         <button
-          className="w-full font-medium text-white text-sm rounded border-2 border-solid border-green bg-green py-2 px-4 transition ease-in duration-200 hover:bg-dark-green md:w-fit"
+          className="w-full text-white text-sm rounded border-2 border-green bg-green py-2 px-4 hover:bg-dark-green md:w-fit"
           onClick={() => {
             if (!loggedIn || !token) {
               navigate("/login", { state: { previousUrl: "/shopping-cart" } });
@@ -273,7 +258,7 @@ function AboutProduct({ product }) {
         </button>
 
         <button
-          className="w-full font-medium text-green text-sm rounded border-2 border-solid border-light-green bg-transparent py-2 px-4 transition ease-in duration-200 hover:bg-light-green hover:text-white md:w-fit"
+          className="w-full text-green text-sm rounded border-2 border-light-green py-2 px-4 hover:bg-light-green hover:text-white md:w-fit"
           onClick={() => navigate("/products")}
         >
           Continue shopping
@@ -295,15 +280,16 @@ function Description({ descr }) {
         Description
       </div>
       {descr && (
-        <div className="whitespace-break-spaces lg:text-base">
+        <div className="whitespace-pre-wrap lg:text-base">
           {showMore ? descr : `${descr.substring(0, 800)}`}
           {descr.length >= 800 && (
             <div>
               <button
-                className="capitalize text-green font-semibold text-base flex justify-center items-center gap-1 py-2 px-0"
+                className="capitalize text-green font-semibold text-base flex items-center gap-1 py-2"
                 onClick={() => setShowMore(!showMore)}
               >
-                {showMore ? "Show less" : "Show more"} <i className="bx bx-chevron-down bx-sm"></i>
+                {showMore ? "Show less" : "Show more"}{" "}
+                <i className="bx bx-chevron-down bx-sm"></i>
               </button>
             </div>
           )}
@@ -314,6 +300,12 @@ function Description({ descr }) {
 }
 
 function ProductDetails({ bestSelling, recentlyViewed, product, otherGadgets }) {
+
+  const handleProductClick = (id) => {
+    navigate(`/product/${id}`);
+  };
+  const navigate = useNavigate();
+
   return (
     <div className="mt-20">
       {product && (
@@ -344,10 +336,10 @@ function ProductDetails({ bestSelling, recentlyViewed, product, otherGadgets }) 
 
       {/* Sections */}
       <div className="mt-8 md:mt-12 px-4 md:px-12 lg:mt-24 lg:px-24">
-        {bestSelling?.length > 0 && <Groups heading="best selling products" products={bestSelling} seeMore />}
+        {bestSelling?.length > 0 && <Groups heading="best selling products" products={bestSelling} onProductClick={handleProductClick} seeMore />}
       </div>
       <div className="mt-8 md:mt-12 px-4 md:px-12 lg:mt-24 lg:px-24">
-        {otherGadgets?.length > 0 && <Groups heading="other gadgets" products={otherGadgets} seeMore={false} />}
+        {otherGadgets?.length > 0 && <Groups heading="other gadgets" products={otherGadgets} onProductClick={handleProductClick} seeMore={false} />}
       </div>
     </div>
   );
@@ -364,8 +356,6 @@ function ProductDesc() {
   const navigate = useNavigate();
   const params = useParams();
   const prodId = params.id;
-
-  const checkScreenSize = () => (window.innerWidth >= 1500 ? 5 : 4);
 
   // Fetch product
   useEffect(() => {
@@ -389,6 +379,7 @@ function ProductDesc() {
     };
     fetchProduct();
   }, [prodId, navigate]);
+
 
   // Fetch best selling
   useEffect(() => {
@@ -419,7 +410,7 @@ function ProductDesc() {
       {/* Header */}
       <div className="h-28 bg-filter-green" style={{ backgroundImage: `radial-gradient(circle, #009F7F, #63BB8280)` }}>
         <div className="h-full flex items-center gap-5 px-4 relative md:px-12 lg:px-24">
-          <button className="rounded-full outline-none bg-transparent flex items-center text-lg lg:text-[22px] font-medium" onClick={() => navigate("/products")}>
+          <button className="rounded-full bg-transparent flex items-center text-lg lg:text-[22px] font-medium" onClick={() => navigate("/products")}>
             <i className="bx bx-chevron-left bx-md"></i> Back
           </button>
           <h2 className="capitalize text-3xl lg:text-[45px] font-bold absolute top-1/3 left-1/3 md:left-[45%]">phones</h2>
@@ -427,7 +418,7 @@ function ProductDesc() {
       </div>
 
       {isLoading && <Loading />}
-      <ProductDetails bestSelling={bestSelling} recentlyViewed={recentlyViewed} otherGadgets={otherGadgets} product={product} />
+      <ProductDetails bestSelling={bestSelling} /* recentlyViewed={recentlyViewed} */ otherGadgets={otherGadgets} product={product} />
     </div>
   );
 }
