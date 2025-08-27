@@ -94,45 +94,64 @@ function PersonalInfo() {
         updatedAvatar = await getCloudinaryURL(uploadedFile.file);
       }
 
-      const dataToSend = { ...profile, ...values, avatar: updatedAvatar };
+      // Build proper update payload - only include password if it's provided
+      const dataToSend = {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        username: values.username,
+        email: values.email,
+        avatar: updatedAvatar,
+        // Include other existing profile fields
+        address: profile.address || "",
+        city: profile.city || "",
+        state: profile.state || "",
+        phoneNumber: profile.phoneNumber || "",
+        country: profile.country || "",
+      };
 
-      fetch(`${baseUrl}/profiles/edit-profile`, {
+      // Only include password if user entered one
+      if (values.password && values.password.trim() !== "") {
+        dataToSend.password = values.password;
+      }
+
+      const response = await fetch(`${baseUrl}/profiles/edit-profile`, {
         method: "PUT",
         headers: {
           "content-type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(dataToSend),
-      })
-        .then((res) => {
-          if (res.ok) {
-            setAlert({
-              ...alert,
-              open: true,
-              severity: "success",
-              title: "Profile Updated Successfully",
-            });
-            setCartDep(1);
-          } else {
-            throw new Error("Failed to update profile");
-          }
-        })
-        .catch((error) => {
-          setAlert({
-            ...alert,
-            open: true,
-            severity: "error",
-            title: "Failed to update profile",
-            message: error.message,
-          });
+      });
+
+      if (response.ok) {
+        // Update the profile context with new data
+        const updatedProfile = { ...profile, ...dataToSend };
+        setProfile(updatedProfile);
+
+        setAlert({
+          open: true,
+          severity: "success",
+          title: "Profile Updated Successfully",
+          message: "Your changes have been saved.",
         });
+
+        // Force refresh of profile data
+        setCartDep(prev => prev + 1);
+
+        // Clear password field after successful update
+        setValues(prev => ({ ...prev, password: "" }));
+        setUploadedFile(null);
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update profile");
+      }
     } catch (err) {
+      console.error("Update error:", err);
       setAlert({
-        ...alert,
         open: true,
         severity: "error",
-        title: "Something went wrong",
-        message: err.message,
+        title: "Update Failed",
+        message: err.message || "Something went wrong while updating your profile",
       });
     }
   };
@@ -147,7 +166,7 @@ function PersonalInfo() {
         />
       )}
 
-      <form className="px-4 py-8 md:px-10 lg:px-[100px] xl:px-[120px] md:py-4">
+      <form className="px-4 py-8 md:px-10 lg:px-[100px] xl:px-[120px] md:py-4" onSubmit={handleSubmit}>
         <div className="flex flex-col-reverse xl:flex-row gap-6 xl:gap-12 justify-between items-start">
           <div className="w-full xl:flex-1">
             {/* First Name */}
@@ -209,7 +228,7 @@ function PersonalInfo() {
             {/* Password */}
             <div className="flex flex-col gap-3 mb-4 lg:gap-4 lg:mb-5">
               <label className="text-sm font-medium" htmlFor="password">
-                Password
+                Password (leave blank to keep current)
               </label>
               <div className="relative">
                 <input
@@ -217,6 +236,7 @@ function PersonalInfo() {
                   type={showPassword ? "text" : "password"}
                   value={values.password || ""}
                   onChange={handleChange("password")}
+                  placeholder="Enter new password or leave blank"
                   className="w-full h-11 lg:h-14 px-6 lg:px-11 rounded bg-[#ECF3F9] p-3 outline-0 font-normal text-sm lg:text-base"
                 />
                 <button
@@ -253,7 +273,7 @@ function PersonalInfo() {
                 <img
                   src={values.avatar}
                   alt={values.firstName}
-                  className="w-full h-full max-w-full max-h-full rounded"
+                  className="w-full h-full object-cover rounded"
                 />
               )}
             </div>
@@ -280,9 +300,8 @@ function PersonalInfo() {
 
         <div className="text-center my-8">
           <button
-            type="button"
-            className="bg-transparent outline-0 font-semibold text-green tracking-tight underline lg:text-lg"
-            onClick={handleSubmit}
+            type="submit"
+            className="bg-transparent outline-0 font-semibold text-green tracking-tight underline lg:text-lg hover:bg-green hover:text-white px-4 py-2 rounded transition-colors"
           >
             Save changes
           </button>

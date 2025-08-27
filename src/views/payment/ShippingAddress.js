@@ -2,8 +2,9 @@ import { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { PlaceOrderContext } from "../../App";
 
-const createSenderAddressUrl =
-  "https://apps-1.lampnets.com/ecommb-staging/shipping/sender-address";
+const baseUrl = process.env.REACT_APP_BASE_URL;
+
+const createSenderAddressUrl = `${baseUrl}/shipping/sender-address`;
 
 const accessToken = () => localStorage.getItem("token");
 
@@ -16,7 +17,7 @@ function ShippingAddress({ goTo }) {
     address: "",
     state: "",
     city: "",
-    zipCode: "",
+    zipCode: "100001", // default value
     phone: "",
     countryCode: "+234",
   });
@@ -77,7 +78,7 @@ function ShippingAddress({ goTo }) {
         })
         .finally(() => setIsLoadingCities(false));
     }
-  }, [values.state]);
+  }, [values.state, states]);
 
   const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value });
@@ -87,46 +88,73 @@ function ShippingAddress({ goTo }) {
     e.preventDefault();
     setSubmitting(true);
 
+    // Build the payload according to API specification
     const payload = {
-      firstName: values.firstName,
-      lastName: values.lastName,
-      email: values.email,
-      address: values.address,
+      firstName: values.firstName.trim(),
+      lastName: values.lastName.trim(),
+      email: values.email.trim(),
+      address: values.address.trim(),
       state: values.state,
       city: values.city,
       zipCode: values.zipCode,
-      phone: `${values.countryCode}${values.phone}`,
+      phone: `${values.countryCode}${values.phone}`.replace(/\s+/g, ''), // Remove spaces
     };
 
+    console.log("Sending payload:", payload); // Debug log
+
     try {
+      const token = accessToken();
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
       const res = await fetch(createSenderAddressUrl, {
         method: "POST",
         headers: {
           "content-type": "application/json",
-          Authorization: "Bearer " + accessToken(),
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
       });
 
+      console.log("Response status:", res.status); // Debug log
+
       if (!res.ok) {
-        throw new Error(`Failed: ${res.status}`);
+        const errorData = await res.json();
+        console.error("API Error:", errorData);
+        throw new Error(errorData.message || `HTTP ${res.status}: Failed to save shipping address`);
       }
 
       const data = await res.json();
+      console.log("Success response:", data); // Debug log
 
-      // save into PlaceOrderContext
-      setPlaceOrder({
-        ...placeOrder,
+      // Update PlaceOrderContext with the shipping address
+      setPlaceOrder((prev) => ({
+        ...prev,
+        firstName: payload.firstName,
+        lastName: payload.lastName,
+        email: payload.email,
+        streetAddress: payload.address,
+        state: payload.state,
+        city: payload.city,
+        zipCode: payload.zipCode,
+        phoneNumber: payload.phone,
         shippingAddress: {
           ...payload,
-          address_id: data.address_id, // ✅ store address_id from API
+          address_id: data.address_id, // Store address_id from API response
         },
-      });
+      }));
 
-      goTo("shipping-method"); // move to next step
+      // Move to next step
+      if (goTo) {
+        goTo("shipping-method");
+      }
+
+      alert("Shipping address saved successfully!");
+
     } catch (error) {
-      console.error("Shipping address error:", error.message);
-      alert("Failed to save shipping address. Please try again.");
+      console.error("Shipping address error:", error);
+      alert(`Failed to save shipping address: ${error.message}`);
     } finally {
       setSubmitting(false);
     }
@@ -180,7 +208,7 @@ function ShippingAddress({ goTo }) {
       <div className="">
         <input
           required
-          placeholder="Street Address"
+          placeholder="Street Address *"
           name="address"
           type="text"
           id="address"
@@ -190,7 +218,7 @@ function ShippingAddress({ goTo }) {
         />
       </div>
 
-      <div className="flex justify-between gap-6  md:gap-11 lg:gap-20">
+      <div className="flex justify-between gap-6 md:gap-11 lg:gap-20">
         <select
           required
           name="state"
@@ -200,7 +228,7 @@ function ShippingAddress({ goTo }) {
           className="w-full h-11 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
         >
           <option value="" disabled>
-            {isLoadingStates ? "Loading states..." : "State"}
+            {isLoadingStates ? "Loading states..." : "Select State *"}
           </option>
           {states.map((state, i) => (
             <option key={i} value={state}>
@@ -216,9 +244,10 @@ function ShippingAddress({ goTo }) {
           value={values.city}
           onChange={handleChange("city")}
           className="w-full h-11 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
+          disabled={!values.state}
         >
           <option value="" disabled>
-            {isLoadingCities ? "Loading cities..." : "City"}
+            {isLoadingCities ? "Loading cities..." : "Select City *"}
           </option>
           {cities.map((city, i) => (
             <option key={i} value={city}>
@@ -228,11 +257,21 @@ function ShippingAddress({ goTo }) {
         </select>
       </div>
 
-      <div className="flex justify-between gap-6  md:gap-11 lg:gap-20">
+      <div className="flex justify-between gap-6 md:gap-11 lg:gap-20">
         <div className="w-full flex gap-2">
+          <select
+            name="countryCode"
+            value={values.countryCode}
+            onChange={handleChange("countryCode")}
+            className="w-1/3 h-11 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
+          >
+            <option value="+234">🇳🇬 +234</option>
+            <option value="+1">🇺🇸 +1</option>
+            <option value="+44">🇬🇧 +44</option>
+          </select>
           <input
             required
-            placeholder="Phone Number"
+            placeholder="Phone Number *"
             name="phone"
             type="tel"
             id="phone"
@@ -241,12 +280,22 @@ function ShippingAddress({ goTo }) {
             className="w-2/3 h-11 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
           />
         </div>
+
+        <input
+          placeholder="Zip Code"
+          name="zipCode"
+          type="text"
+          id="zipCode"
+          value={values.zipCode}
+          onChange={handleChange("zipCode")}
+          className="w-full h-11 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
+        />
       </div>
 
       <button
         type="submit"
         disabled={submitting}
-        className="inline-block w-full bg-green my-6 p-4 rounded outline-0 font-semibold text-white text-sm"
+        className="inline-block w-full bg-green my-6 p-4 rounded outline-0 font-semibold text-white text-sm disabled:bg-gray-400 disabled:cursor-not-allowed"
         style={{ marginTop: "2.5rem" }}
       >
         {submitting ? "Saving..." : "Next"}

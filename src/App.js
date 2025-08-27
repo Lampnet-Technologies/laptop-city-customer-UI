@@ -61,9 +61,9 @@ function App() {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
 
   // ✅ Other global states
-  const [profile, setProfile] = useState("");
+  const [profile, setProfile] = useState(null); // Initialize as null instead of empty string
   const [cart, setCart] = useState({ cartItems: null, total: "" });
-  const [cartDep, setCartDep] = useState();
+  const [cartDep, setCartDep] = useState(0); // Initialize with 0
   const [discount, setDiscount] = useState(0);
 
   // Default Nigeria ZIP to prevent checkout issues
@@ -82,42 +82,84 @@ function App() {
 
   // ✅ Fetch user profile if logged in
   useEffect(() => {
-    if (loggedIn && token) {
-      fetch(`${baseUrl}/profiles/my-profile`, {
-        headers: { Authorization: "Bearer " + token },
-      })
-        .then((res) => res.json())
-        .then((result) => {
-          setProfile(result);
-        })
-        .catch((error) => {
-          console.log("Error fetching profile:", error);
-        });
-    }
+    const fetchProfile = async () => {
+      if (loggedIn && token) {
+        try {
+          const response = await fetch(`${baseUrl}/profiles/my-profile`, {
+            headers: { 
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json"
+            },
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            setProfile(result);
+          } else if (response.status === 401) {
+            // Token expired or invalid
+            localStorage.removeItem("token");
+            setLoggedIn(false);
+            setToken(null);
+            setProfile(null);
+          } else {
+            console.error("Failed to fetch profile:", response.status);
+          }
+        } catch (error) {
+          console.error("Error fetching profile:", error);
+        }
+      } else {
+        setProfile(null);
+      }
+    };
+
+    fetchProfile();
   }, [loggedIn, token, cartDep]);
 
   // ✅ Fetch user cart if logged in
   useEffect(() => {
-    if (loggedIn && token) {
-      fetch(`${baseUrl}/cart-items/my-cart`, {
-        headers: {
-          "content-type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-      })
-        .then((res) => res.json())
-        .then((result) => {
-          setCart({
-            ...cart,
-            cartItems: result.cartItems,
-            total: result.total,
+    const fetchCart = async () => {
+      if (loggedIn && token) {
+        try {
+          const response = await fetch(`${baseUrl}/cart-items/my-cart`, {
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`,
+            },
           });
-        })
-        .catch((error) => {
-          console.error("Error fetching cart:", error.message);
-        });
-    }
+
+          if (response.ok) {
+            const result = await response.json();
+            setCart({
+              cartItems: result.cartItems,
+              total: result.total,
+            });
+          } else if (response.status === 401) {
+            // Token expired or invalid
+            localStorage.removeItem("token");
+            setLoggedIn(false);
+            setToken(null);
+          } else {
+            console.error("Failed to fetch cart:", response.status);
+          }
+        } catch (error) {
+          console.error("Error fetching cart:", error);
+        }
+      } else {
+        setCart({ cartItems: null, total: "" });
+      }
+    };
+
+    fetchCart();
   }, [loggedIn, token, cartDep]);
+
+  // Sync localStorage with state
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", token);
+    } else {
+      localStorage.removeItem("token");
+    }
+  }, [token]);
 
   return (
     <LoginContext.Provider value={{ loggedIn, setLoggedIn, token, setToken }}>

@@ -22,7 +22,7 @@ function ShippingMethod({ goTo, back }) {
       setLoading(false);
       return;
     }
-    
+
 
     fetch(`${baseUrl}/shipping/rate`, {
       method: "POST",

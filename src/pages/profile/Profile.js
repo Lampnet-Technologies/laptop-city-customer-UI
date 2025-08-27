@@ -6,7 +6,7 @@ import { LoginContext, UserProfileContext } from "../../App";
 
 function Profile() {
   const { loggedIn, setLoggedIn, token, setToken } = useContext(LoginContext);
-  const { profile, setProfile } = useContext(UserProfileContext);
+  const [profile, setProfile] = useContext(UserProfileContext); // Fixed: destructure as array
 
   const navigate = useNavigate();
 
@@ -22,7 +22,7 @@ function Profile() {
 
       <div className="my-10 md:my-20">
         <h1 className="px-2 text-2xl text-center font-semibold capitalize mb-12 tracking-tight flex items-center justify-center gap-2 flex-wrap">
-          <span className="text-green">Welcome</span> "{profile?.username}"!{" "}
+          <span className="text-green">Welcome</span> {profile?.username}!{" "}
           {profile?.avatar ? (
             <img
               src={profile.avatar}
