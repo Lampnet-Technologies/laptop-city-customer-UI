@@ -84,30 +84,121 @@ function ShippingAddress({ goTo }) {
     setValues({ ...values, [prop]: event.target.value });
   };
 
+  const validatePhoneNumber = (phone, countryCode) => {
+    // Remove all non-digit characters
+    let cleanPhone = phone.replace(/\D/g, '');
+    
+    // Handle Nigerian phone numbers specifically
+    if (countryCode === '+234') {
+      // Remove leading zero if present
+      if (cleanPhone.startsWith('0')) {
+        cleanPhone = cleanPhone.substring(1);
+      }
+      
+      // Remove country code if already included
+      if (cleanPhone.startsWith('234')) {
+        cleanPhone = cleanPhone.substring(3);
+      }
+      
+      // Should now have exactly 10 digits
+      if (cleanPhone.length === 10) {
+        return `+234${cleanPhone}`;
+      } else {
+        throw new Error(`Invalid Nigerian phone number. Expected 10 digits, got ${cleanPhone.length}. Please enter format: 8012345678`);
+      }
+    }
+    
+    // For other countries, basic validation
+    if (countryCode === '+1' && cleanPhone.length === 10) {
+      return `+1${cleanPhone}`;
+    }
+    
+    if (countryCode === '+44' && cleanPhone.length >= 10) {
+      return `+44${cleanPhone}`;
+    }
+    
+    // Fallback - return as formatted but may still fail validation
+    return `${countryCode}${cleanPhone}`;
+  };
+
+  // Add function to normalize city names
+  const normalizeCityName = (cityName) => {
+    return cityName.trim();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
 
-    // Build the payload according to API specification
-    const payload = {
-      firstName: values.firstName.trim(),
-      lastName: values.lastName.trim(),
-      email: values.email.trim(),
-      address: values.address.trim(),
-      state: values.state,
-      city: values.city,
-      zipCode: values.zipCode,
-      phone: `${values.countryCode}${values.phone}`.replace(/\s+/g, ''), // Remove spaces
-    };
-
-    console.log("Sending payload:", payload); // Debug log
-
     try {
-      const token = accessToken();
-      if (!token) {
-        throw new Error("No authentication token found");
+      // Debug: Log current form values
+      console.log("=== DEBUGGING FORM SUBMISSION ===");
+      console.log("Current form values:", values);
+      console.log("Available cities count:", cities.length);
+      console.log("First 10 cities:", cities.slice(0, 10));
+      console.log("Available states count:", states.length);
+
+      // Validate required fields
+      const requiredFields = {
+        firstName: values.firstName?.trim(),
+        lastName: values.lastName?.trim(),
+        address: values.address?.trim(),
+        state: values.state?.trim(),
+        city: values.city?.trim(),
+        phone: values.phone?.trim()
+      };
+
+      const missingFields = Object.entries(requiredFields)
+        .filter(([key, value]) => !value)
+        .map(([key]) => key);
+
+      if (missingFields.length > 0) {
+        throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
       }
 
+      // Validate and format phone number
+      const formattedPhone = validatePhoneNumber(values.phone, values.countryCode);
+      console.log("Phone validation:");
+      console.log("  Original:", values.phone);
+      console.log("  Country code:", values.countryCode);
+      console.log("  Formatted:", formattedPhone);
+      
+      // Normalize and validate city
+      const normalizedCity = normalizeCityName(values.city);
+      console.log("City validation:");
+      console.log("  Selected city:", `"${values.city}"`);
+      console.log("  Normalized city:", `"${normalizedCity}"`);
+      console.log("  City exists in list:", cities.includes(normalizedCity));
+      
+      // Check if city exists (case-sensitive check)
+      const cityExists = cities.some(city => city.trim() === normalizedCity);
+      if (!cityExists) {
+        console.log("Available cities:", cities);
+        throw new Error(`Invalid city: "${normalizedCity}". Please select from the dropdown. Available options: ${cities.slice(0, 10).join(', ')}${cities.length > 10 ? `... and ${cities.length - 10} more` : ''}`);
+      }
+
+      // Build the exact payload the API expects
+      const payload = {
+        firstName: requiredFields.firstName,
+        lastName: requiredFields.lastName,
+        email: values.email?.trim() || "",
+        address: requiredFields.address,
+        state: requiredFields.state,
+        city: normalizedCity,
+        zipCode: values.zipCode?.trim() || "100001",
+        phone: formattedPhone,
+      };
+
+      console.log("=== FINAL PAYLOAD ===");
+      console.log(JSON.stringify(payload, null, 2));
+
+      const token = accessToken();
+      if (!token) {
+        throw new Error("Authentication token not found. Please log in again.");
+      }
+
+      console.log("Making API request to:", createSenderAddressUrl);
+      
       const res = await fetch(createSenderAddressUrl, {
         method: "POST",
         headers: {
@@ -117,16 +208,39 @@ function ShippingAddress({ goTo }) {
         body: JSON.stringify(payload),
       });
 
-      console.log("Response status:", res.status); // Debug log
+      console.log("API Response status:", res.status);
+      console.log("API Response headers:", Object.fromEntries(res.headers.entries()));
+
+      const responseData = await res.json();
+      console.log("API Response data:", responseData);
 
       if (!res.ok) {
-        const errorData = await res.json();
-        console.error("API Error:", errorData);
-        throw new Error(errorData.message || `HTTP ${res.status}: Failed to save shipping address`);
+        console.error("=== API ERROR DETAILS ===");
+        console.error("Status:", res.status);
+        console.error("Response:", responseData);
+        
+        // Provide specific error messages
+        let errorMessage = "Failed to save shipping address: ";
+        if (responseData.message) {
+          errorMessage += responseData.message;
+          
+          // Add specific guidance based on error message
+          if (responseData.message.includes('phone format')) {
+            errorMessage += `\n\nPhone troubleshooting:\n- Your phone: "${formattedPhone}"\n- For Nigeria: Use format +234XXXXXXXXXX (10 digits after +234)\n- Example: +2348012345678`;
+          }
+          
+          if (responseData.message.includes('valid city')) {
+            errorMessage += `\n\nCity troubleshooting:\n- Your city: "${normalizedCity}"\n- Must select from dropdown\n- Available: ${cities.slice(0, 5).join(', ')}`;
+          }
+        } else {
+          errorMessage += `HTTP ${res.status}`;
+        }
+        
+        throw new Error(errorMessage);
       }
 
-      const data = await res.json();
-      console.log("Success response:", data); // Debug log
+      console.log("=== SUCCESS ===");
+      console.log("Address created successfully:", responseData);
 
       // Update PlaceOrderContext with the shipping address
       setPlaceOrder((prev) => ({
@@ -141,7 +255,7 @@ function ShippingAddress({ goTo }) {
         phoneNumber: payload.phone,
         shippingAddress: {
           ...payload,
-          address_id: data.address_id, // Store address_id from API response
+          address_id: responseData.address_id,
         },
       }));
 
@@ -153,8 +267,9 @@ function ShippingAddress({ goTo }) {
       alert("Shipping address saved successfully!");
 
     } catch (error) {
-      console.error("Shipping address error:", error);
-      alert(`Failed to save shipping address: ${error.message}`);
+      console.error("=== SUBMISSION ERROR ===");
+      console.error("Error details:", error);
+      alert(error.message || "An unexpected error occurred. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -271,7 +386,7 @@ function ShippingAddress({ goTo }) {
           </select>
           <input
             required
-            placeholder="Phone Number *"
+            placeholder="Phone Number * (e.g. 8012345678)"
             name="phone"
             type="tel"
             id="phone"
@@ -290,6 +405,12 @@ function ShippingAddress({ goTo }) {
           onChange={handleChange("zipCode")}
           className="w-full h-11 bg-transparent border-b-2 border-b-solid border-b-gray-300 py-1 outline-0 font-light text-sm"
         />
+      </div>
+
+      {/* Validation Messages */}
+      <div className="text-sm text-gray-600 space-y-1">
+        <p>📱 Phone format: For Nigeria (+234), enter 10 digits (e.g. 8012345678)</p>
+        <p>🏙️ City: Please select from the dropdown list only</p>
       </div>
 
       <button
