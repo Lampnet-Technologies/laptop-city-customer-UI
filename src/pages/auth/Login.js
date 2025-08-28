@@ -8,7 +8,8 @@ const baseUrl = process.env.REACT_APP_BASE_URL;
 const loginAPI = `${baseUrl}/login`;
 
 function Login() {
-   const { loggedIn, setLoggedIn, token, setToken } = useContext(LoginContext);
+  const { loggedIn, setLoggedIn, setToken, isLoading: globalLoading, refreshUserData } = useContext(LoginContext);
+  
   const [values, setValues] = useState({
     usernameOrEmail: "",
     password: "",
@@ -63,9 +64,15 @@ function Login() {
 
       const result = await res.json();
 
-      // Store token & update context
+      // ✅ Update both localStorage and context state immediately
       localStorage.setItem("token", result.accessToken);
+      setToken(result.accessToken); // This triggers the data fetch in App.js
       setLoggedIn(true);
+
+      // ✅ Optional: Manually trigger data refresh for immediate effect
+      if (refreshUserData) {
+        await refreshUserData();
+      }
 
       // Show success alert
       setAlert({
@@ -91,6 +98,9 @@ function Login() {
       setLoading(false);
     }
   };
+
+  // Show loading state during data fetching after login
+  const isProcessing = loading || globalLoading;
 
   return (
     <div className="my-10 md:my-16 lg:my-20">
@@ -122,7 +132,8 @@ function Login() {
               id="usernameOrEmail"
               value={values.usernameOrEmail}
               onChange={handleChange("usernameOrEmail")}
-              className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 outline-0 font-light text-sm"
+              disabled={isProcessing}
+              className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 outline-0 font-light text-sm disabled:opacity-50"
             />
           </div>
 
@@ -139,12 +150,14 @@ function Login() {
                 value={values.password}
                 onChange={handleChange("password")}
                 autoComplete="current-password"
-                className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 pr-12 outline-0 font-light text-sm"
+                disabled={isProcessing}
+                className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 pr-12 outline-0 font-light text-sm disabled:opacity-50"
               />
               <button
                 type="button"
                 onClick={handleShowPassword}
-                className="outline-0 text-green absolute top-1/4 right-[3%] cursor-pointer"
+                disabled={isProcessing}
+                className="outline-0 text-green absolute top-1/4 right-[3%] cursor-pointer disabled:opacity-50"
               >
                 {showPassword ? (
                   <i className="bx bx-hide bx-sm text-[#6D7D8B]"></i>
@@ -163,15 +176,15 @@ function Login() {
 
           <div className="mt-14 flex flex-col items-center gap-10 text-sm font-normal md:text-base md:gap-12 lg:gap-16">
             <button
-              disabled={loading}
-              className="capitalize font-semibold text-white text-sm lg:text-base md:px-16 lg:py-4 lg:px-[86px] rounded bg-green py-[11px] px-12 hover:bg-dark-green"
+              disabled={isProcessing}
+              className="capitalize font-semibold text-white text-sm lg:text-base md:px-16 lg:py-4 lg:px-[86px] rounded bg-green py-[11px] px-12 hover:bg-dark-green disabled:opacity-50 disabled:cursor-not-allowed transition-opacity duration-200"
               type="submit"
             >
-              {loading ? "Logging in..." : "Login"}
+              {loading ? "Logging in..." : globalLoading ? "Loading your data..." : "Login"}
             </button>
 
             <p>
-              Don’t have an account?{" "}
+              Don't have an account?{" "}
               <Link to="/signup" className="text-green font-semibold">
                 Sign up
               </Link>{" "}

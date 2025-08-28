@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState, useCallback } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ScrollToTop from "./utils/ScrollToTop";
 import { Nav, Footer } from "./layouts";
@@ -35,7 +35,7 @@ const baseUrl = process.env.REACT_APP_BASE_URL;
 
 /**
  * Contexts for global state
- * - LoginContext → holds login state + token
+ * - LoginContext → holds login state + token + loading states
  * - UserProfileContext → stores user profile
  * - UserCart → stores cart items and total
  * - UserCartDependency → used for refreshing cart after add/remove
@@ -45,6 +45,7 @@ const baseUrl = process.env.REACT_APP_BASE_URL;
 export const LoginContext = createContext({
   loggedIn: false,
   token: null,
+  isLoading: false,
   setLoggedIn: () => {},
   setToken: () => {},
 });
@@ -59,11 +60,12 @@ function App() {
   // ✅ Login state + token pulled from localStorage
   const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem("token"));
   const [token, setToken] = useState(localStorage.getItem("token") || null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // ✅ Other global states
-  const [profile, setProfile] = useState(null); // Initialize as null instead of empty string
+  const [profile, setProfile] = useState(null);
   const [cart, setCart] = useState({ cartItems: null, total: "" });
-  const [cartDep, setCartDep] = useState(0); // Initialize with 0
+  const [cartDep, setCartDep] = useState(0);
   const [discount, setDiscount] = useState(0);
 
   // Default Nigeria ZIP to prevent checkout issues
@@ -75,84 +77,86 @@ function App() {
     streetAddress: "",
     state: "",
     city: "",
-    zipCode: "100001", // ✅ Default Nigerian ZIP
+    zipCode: "100001",
     phoneNumber: "",
     shippingMethodId: "",
   });
 
-  // ✅ Fetch user profile if logged in
-  useEffect(() => {
-    const fetchProfile = async () => {
-      if (loggedIn && token) {
-        try {
-          const response = await fetch(`${baseUrl}/profiles/my-profile`, {
-            headers: { 
-              "Authorization": `Bearer ${token}`,
-              "Content-Type": "application/json"
-            },
-          });
+  // ✅ Centralized function to handle token expiry
+  const handleTokenExpiry = useCallback(() => {
+    localStorage.removeItem("token");
+    setLoggedIn(false);
+    setToken(null);
+    setProfile(null);
+    setCart({ cartItems: null, total: "" });
+    setIsLoading(false);
+  }, []);
 
-          if (response.ok) {
-            const result = await response.json();
-            setProfile(result);
-          } else if (response.status === 401) {
-            // Token expired or invalid
-            localStorage.removeItem("token");
-            setLoggedIn(false);
-            setToken(null);
-            setProfile(null);
-          } else {
-            console.error("Failed to fetch profile:", response.status);
-          }
-        } catch (error) {
-          console.error("Error fetching profile:", error);
-        }
+  // ✅ Optimized function to fetch both profile and cart data simultaneously
+  const fetchUserData = useCallback(async () => {
+    if (!loggedIn || !token) {
+      setProfile(null);
+      setCart({ cartItems: null, total: "" });
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      // Fetch both profile and cart data simultaneously
+      const [profileResponse, cartResponse] = await Promise.all([
+        fetch(`${baseUrl}/profiles/my-profile`, {
+          headers: { 
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+        }),
+        fetch(`${baseUrl}/cart-items/my-cart`, {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        })
+      ]);
+
+      // Handle profile response
+      if (profileResponse.ok) {
+        const profileResult = await profileResponse.json();
+        setProfile(profileResult);
+      } else if (profileResponse.status === 401) {
+        handleTokenExpiry();
+        return;
       } else {
-        setProfile(null);
+        console.error("Failed to fetch profile:", profileResponse.status);
       }
-    };
 
-    fetchProfile();
-  }, [loggedIn, token, cartDep]);
-
-  // ✅ Fetch user cart if logged in
-  useEffect(() => {
-    const fetchCart = async () => {
-      if (loggedIn && token) {
-        try {
-          const response = await fetch(`${baseUrl}/cart-items/my-cart`, {
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`,
-            },
-          });
-
-          if (response.ok) {
-            const result = await response.json();
-            setCart({
-              cartItems: result.cartItems,
-              total: result.total,
-            });
-          } else if (response.status === 401) {
-            // Token expired or invalid
-            localStorage.removeItem("token");
-            setLoggedIn(false);
-            setToken(null);
-          } else {
-            console.error("Failed to fetch cart:", response.status);
-          }
-        } catch (error) {
-          console.error("Error fetching cart:", error);
-        }
+      // Handle cart response
+      if (cartResponse.ok) {
+        const cartResult = await cartResponse.json();
+        setCart({
+          cartItems: cartResult.cartItems,
+          total: cartResult.total,
+        });
+      } else if (cartResponse.status === 401) {
+        handleTokenExpiry();
+        return;
       } else {
-        setCart({ cartItems: null, total: "" });
+        console.error("Failed to fetch cart:", cartResponse.status);
       }
-    };
 
-    fetchCart();
-  }, [loggedIn, token, cartDep]);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [loggedIn, token, baseUrl, handleTokenExpiry]);
 
-  // Sync localStorage with state
+  // ✅ Fetch user data when login state or cartDep changes
+  useEffect(() => {
+    fetchUserData();
+  }, [fetchUserData, cartDep]);
+
+  // ✅ Sync localStorage with token state
   useEffect(() => {
     if (token) {
       localStorage.setItem("token", token);
@@ -161,8 +165,18 @@ function App() {
     }
   }, [token]);
 
+  // ✅ Enhanced login context with loading state
+  const loginContextValue = {
+    loggedIn,
+    setLoggedIn,
+    token,
+    setToken,
+    isLoading,
+    refreshUserData: fetchUserData, // Allow components to trigger refresh
+  };
+
   return (
-    <LoginContext.Provider value={{ loggedIn, setLoggedIn, token, setToken }}>
+    <LoginContext.Provider value={loginContextValue}>
       <UserProfileContext.Provider value={[profile, setProfile]}>
         <UserCart.Provider value={[cart, setCart]}>
           <UserCartDependency.Provider value={[cartDep, setCartDep]}>
