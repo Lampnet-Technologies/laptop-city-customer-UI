@@ -147,6 +147,26 @@ function ImagesPreviews({ files }) {
   );
 }
 
+// Add this skeleton component near the top
+function ProductSkeleton() {
+  return (
+    <div className="animate-pulse p-4 flex flex-col gap-6">
+      <div className="h-60 w-full bg-gray-200 rounded" />
+      <div className="space-y-4">
+        <div className="h-6 bg-gray-200 rounded w-3/4" />
+        <div className="h-4 bg-gray-200 rounded w-1/2" />
+        <div className="h-4 bg-gray-200 rounded w-1/4" />
+      </div>
+      <div className="flex gap-4 mt-6">
+        <div className="h-10 w-24 bg-gray-200 rounded" />
+        <div className="h-10 w-24 bg-gray-200 rounded" />
+        <div className="h-10 w-24 bg-gray-200 rounded" />
+      </div>
+    </div>
+  );
+}
+
+
 function AboutProduct({ product }) {
   const { loggedIn, token } = useContext(LoginContext);
   const [cartDep, setCartDep] = useContext(UserCartDependency);
@@ -417,8 +437,17 @@ function ProductDesc() {
         </div>
       </div>
 
-      {isLoading && <Loading />}
-      <ProductDetails bestSelling={bestSelling} /* recentlyViewed={recentlyViewed} */ otherGadgets={otherGadgets} product={product} />
+      {/* 👇 Replaced isLoading with Skeleton */}
+      {isLoading ? (
+        <ProductSkeleton />
+      ) : (
+        <ProductDetails
+          bestSelling={bestSelling}
+          /* recentlyViewed={recentlyViewed} */
+          otherGadgets={otherGadgets}
+          product={product}
+        />
+      )}
     </div>
   );
 }

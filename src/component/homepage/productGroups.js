@@ -51,7 +51,6 @@ function SearchBar({ onSearch, loading }) {
         className="flex flex-row items-center justify-center gap-3 w-full max-w-3xl"
       >
         <div className="flex items-center w-full bg-white border-2 border-[#BBC8D4] rounded-lg px-4 h-[45px] md:h-[56px]">
-          <i className="display-hidden bx-sm text-[#94A3B1] mr-2"></i>
           <input
             id="searchGadget"
             type="text"
@@ -286,7 +285,7 @@ function ProductGroups() {
         }
 
         setLoading(true);
-        const response = await fetch(`${baseUrl}/products/pagination/active`, {
+        const response = await fetch(`${baseUrl}/products/homepage?limit=6`, {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
@@ -297,19 +296,13 @@ function ProductGroups() {
           throw new Error(`Server responded with ${response.status}`);
 
         const data = await response.json();
-        const content = data.content || [];
 
-        const grouped = { laptops: [], phones: [], otherGadgets: [] };
-        content.forEach((p) => {
-          const type = (p.productType || "").trim().toLowerCase();
-          if (type.includes("laptop") || type.includes("notebook")) {
-            grouped.laptops.push(p);
-          } else if (type.includes("phone") || type.includes("mobile")) {
-            grouped.phones.push(p);
-          } else {
-            grouped.otherGadgets.push(p);
-          }
-        });
+        // ✅ Backend already groups the products
+        const grouped = {
+          laptops: data.laptops || [],
+          phones: data.smartPhones || [],
+          otherGadgets: data.otherGadgets || [],
+        };
 
         productCache = {
           data: grouped,
