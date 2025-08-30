@@ -34,9 +34,8 @@ function NavDropdown({ submenus, dropdown, closeDropdown, closeNav }) {
 
   return (
     <ul
-      className={`${
-        dropdown ? "block" : "hidden"
-      } navDropdown transition-all ease-in duration-500 z-20 absolute top-14 left-0 md:left-[-20%] lg:left-[-15%] bg-white border-[0.5px] border-green rounded-md py-2 md:py-4 md:space-y-2`}
+      className={`${dropdown ? "block" : "hidden"
+        } navDropdown transition-all ease-in duration-500 z-20 absolute top-14 left-0 md:left-[-20%] lg:left-[-15%] bg-white border-[0.5px] border-green rounded-md py-2 md:py-4 md:space-y-2`}
     >
       {submenus.map((submenu, index) => (
         <li
@@ -54,7 +53,7 @@ function NavDropdown({ submenus, dropdown, closeDropdown, closeNav }) {
               pathname: "/products",
               search: `?filter=${submenu.param}`,
             }}
-            // onClick={openModal}
+          // onClick={openModal}
           >
             {submenu.title}
           </Link>
@@ -244,7 +243,7 @@ function Nav() {
                     <li
                       onClick={() => {
                         setShowCategoryMenu(false);
-                        navigate("/product-type");
+                        navigate("/product-type?condition=new");
                         // s?filter=new_product
                       }}
                       className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all p-2"
@@ -254,7 +253,7 @@ function Nav() {
                     <li
                       onClick={() => {
                         setShowCategoryMenu(false);
-                        navigate("/product-type");
+                        navigate("/product-type?condition=used");
                         // s?filter=used_products
                       }}
                       className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all p-2"
@@ -300,12 +299,12 @@ function Nav() {
             <ul
               id="mobileNav"
               className={clicked ? "#mobileNav activeMenu" : "#mobileNav"}
-              // className="flex items-center justify-between gap-4 list-none"
+            // className="flex items-center justify-between gap-4 list-none"
             >
               <CustomLink onClick={handleCloseNav} to="/">
                 Home
               </CustomLink>
-             <div className="relative">
+              <div className="relative">
                 <button
                   onClick={() => setShowCategoryMenu(!showCategoryMenu)}
                   className="flex hover:text-[#20AA8F] transition-all items-center gap-1"
@@ -318,7 +317,7 @@ function Nav() {
                     <li
                       onClick={() => {
                         setShowCategoryMenu(false);
-                        navigate("/product-type");
+                        navigate("/product-type?condition=new");
                         // s?filter=new_products
                       }}
                       className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all p-2"
@@ -328,8 +327,8 @@ function Nav() {
                     <li
                       onClick={() => {
                         setShowCategoryMenu(false);
-                        navigate("/product-type");
-                        // ?filter=used_products
+                        navigate("/product-type?condition=used");
+                        // s?filter=used_products
                       }}
                       className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all p-2"
                     >
@@ -443,7 +442,7 @@ function Nav() {
                     <li
                       onClick={() => {
                         setShowCategoryMenu(false);
-                        navigate("/product-type");
+                        navigate("/product-type?condition=new");
                         // s?filter=new_products
                       }}
                       className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all p-2"
@@ -453,8 +452,8 @@ function Nav() {
                     <li
                       onClick={() => {
                         setShowCategoryMenu(false);
-                        navigate("/product-type");
-                        // ?filter=used_products
+                        navigate("/product-type?condition=used");
+                        // s?filter=used_products
                       }}
                       className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all p-2"
                     >
@@ -544,7 +543,7 @@ function Nav() {
 
             <ul className="flex items-center justify-between gap-4 lg:gap-8 list-none whitespace-nowrap">
               <CustomLink to="/">Home</CustomLink>
-             <div className="relative">
+              <div className="relative">
                 <button
                   onClick={() => setShowCategoryMenu(!showCategoryMenu)}
                   className="flex hover:text-[#20AA8F] transition-all items-center gap-1"
@@ -557,8 +556,7 @@ function Nav() {
                     <li
                       onClick={() => {
                         setShowCategoryMenu(false);
-                        navigate("/product-type");
-                        // s?filter=new_products
+                        navigate("/product-type?condition=new"); // s?filter=new_products
                       }}
                       className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all p-2"
                     >
@@ -567,14 +565,14 @@ function Nav() {
                     <li
                       onClick={() => {
                         setShowCategoryMenu(false);
-                        navigate("/product-type");
-                        // ?filter=used_products
+                        navigate("/product-type?condition=used"); // s?filter=used_products
                       }}
                       className="cursor-pointer text-sm hover:bg-[#009F7F] hover:text-white transition-all p-2"
                     >
                       Used Product
                     </li>
                   </ul>
+
                 )}
               </div>
               {/* <CustomLink to="/login">track orders</CustomLink> */}

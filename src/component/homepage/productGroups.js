@@ -86,34 +86,38 @@ function ProductContainer({ product, onClick }) {
 
   return (
     <div
-      className="w-full aspect-[4/5] rounded-lg flex flex-col justify-between cursor-pointer border border-[#DADADA] hover:shadow-lg transition-shadow duration-300 bg-white"
+      className="w-full h-[240px] rounded-lg flex flex-col justify-between cursor-pointer border border-[#DADADA] hover:shadow-lg transition-shadow duration-300 bg-white"
       onClick={() => onClick(product.id)}
     >
-      <div className="flex-1 rounded-t-lg bg-[#F8F9FA] flex justify-center items-center relative p-2">
-        {product.images?.length > 0 ? (
-          <img
-            loading="lazy"
-            src={product.images[0].image || product.images[0]}
-            alt={product.name || "Product"}
-            className="max-w-full max-h-full object-contain"
-            onError={(e) => {
-              e.target.src = IMAGES.icons.cartGreen;
-              e.target.className = "max-w-full max-h-full w-[40px] h-[40px]";
-            }}
-          />
-        ) : (
-          <img
-            src={IMAGES.icons.cartGreen}
-            alt="no product"
-            className="w-[40px] h-[40px]"
-          />
-        )}
+      {/* Image Section - Fixed height for complete uniformity */}
+      <div className="h-[140px] rounded-t-lg bg-[#F8F9FA] flex justify-center items-center relative p-2">
+        <div className="w-full h-full flex items-center justify-center">
+          {product.images?.length > 0 ? (
+            <img
+              loading="lazy"
+              src={product.images[0].image || product.images[0]}
+              alt={product.name || "Product"}
+              className="w-full h-full object-contain max-w-[120px] max-h-[120px]"
+              onError={(e) => {
+                e.target.src = IMAGES.icons.cartGreen;
+                e.target.className = "w-[40px] h-[40px] object-contain";
+              }}
+            />
+          ) : (
+            <img
+              src={IMAGES.icons.cartGreen}
+              alt="no product"
+              className="w-[40px] h-[40px]"
+            />
+          )}
+        </div>
         <div className="absolute top-2 right-2 bg-green text-white font-medium capitalize px-2 py-0.5 rounded-sm text-[10px]">
           {getConditionText(product)}
         </div>
       </div>
 
-      <div className="flex flex-col gap-1 p-2 min-h-[80px] justify-between">
+      {/* Product Info Section - Fixed height for uniformity */}
+      <div className="flex flex-col gap-1 p-2 h-[80px] justify-between">
         <p
           className="text-xs font-medium capitalize line-clamp-2 leading-tight"
           title={product.name}
@@ -212,6 +216,10 @@ function ConditionModal({ isVisible, onSelect, onClose }) {
     if (e.target.id === "body") onClose();
   };
 
+  const handleSelect = (condition) => {
+    onSelect(condition); // pass the condition to the parent
+  };
+
   return (
     <div
       id="body"
@@ -220,17 +228,17 @@ function ConditionModal({ isVisible, onSelect, onClose }) {
     >
       <div className="relative w-full max-w-md mx-4 bg-white rounded-lg p-6">
         <h3 className="text-lg font-bold text-green text-center mb-6">
-          Select Condition
+          {/* Select Condition */}
         </h3>
         <div className="grid grid-cols-2 gap-3">
           <button
-            onClick={() => onSelect("new")}
+            onClick={() => handleSelect("new")}
             className="bg-green text-white py-3 px-4 rounded-lg hover:bg-dark-green transition-colors font-medium"
           >
             New
           </button>
           <button
-            onClick={() => onSelect("used")}
+            onClick={() => handleSelect("used")}
             className="bg-green text-white py-3 px-4 rounded-lg hover:bg-dark-green transition-colors font-medium"
           >
             Used
@@ -397,6 +405,7 @@ function ProductGroups() {
         onSeeMore={() => handleSeeMore("otherGadgets")}
         onProductClick={handleProductClick}
         loading={loading}
+        showAsGrid
       />
 
       {/* Modals */}

@@ -30,20 +30,11 @@ const baseUrl = process.env.REACT_APP_BASE_URL;
 
 // ==================== CACHING UTILITIES ====================
 
-/**
- * Simple in-memory cache with TTL (Time To Live)
- * Stores API responses to reduce backend calls and improve performance
- */
 class SimpleCache {
   constructor() {
     this.cache = new Map();
   }
 
-  /**
-   * Get cached data if it exists and hasn't expired
-   * @param {string} key - Cache key
-   * @returns {any|null} - Cached data or null if expired/not found
-   */
   get(key) {
     const item = this.cache.get(key);
     if (!item) return null;
@@ -56,12 +47,6 @@ class SimpleCache {
     return item.data;
   }
 
-  /**
-   * Set cache data with expiration time
-   * @param {string} key - Cache key
-   * @param {any} data - Data to cache
-   * @param {number} ttl - Time to live in milliseconds (default: 5 minutes)
-   */
   set(key, data, ttl = 5 * 60 * 1000) {
     this.cache.set(key, {
       data,
@@ -69,9 +54,6 @@ class SimpleCache {
     });
   }
 
-  /**
-   * Clear all cached data
-   */
   clear() {
     this.cache.clear();
   }
@@ -82,27 +64,19 @@ const apiCache = new SimpleCache();
 
 // ==================== LOADING COMPONENTS ====================
 
-/**
- * Loading skeleton for products in flex layout
- * Shows animated placeholders while products load
- * @param {Object} props
- * @param {number} props.count - Number of skeleton items to show
- */
-function ProductLoadingFlex({ count = 8 }) {
+function ProductLoadingFlex({ count = 20 }) {
   return (
     <div className="flex flex-wrap gap-1">
       {Array.from({ length: count }, (_, index) => (
         <div
           key={index}
-          className="flex-shrink-0 w-[calc(50%-2px)] sm:w-[calc(33.333%-3px)] md:w-[calc(25%-3px)] lg:w-[calc(20%-4px)] aspect-[4/5] rounded-lg border border-[#DADADA] animate-pulse bg-white"
+          className="flex-shrink-0 w-[calc(50%-2px)] sm:w-[calc(33.333%-3px)] md:w-[calc(25%-3px)] lg:w-[calc(20%-4px)] h-[240px] rounded-lg border border-[#DADADA] animate-pulse bg-white"
         >
-          {/* Product image placeholder */}
-          <div className="flex-1 rounded-t-lg bg-gray-200 flex justify-center items-center relative p-2">
+          <div className="h-[140px] rounded-t-lg bg-gray-200 flex justify-center items-center relative p-2">
             <div className="w-10 h-10 bg-gray-300 rounded animate-pulse"></div>
             <div className="absolute top-2 right-2 w-8 h-4 bg-gray-300 rounded-sm animate-pulse"></div>
           </div>
-          {/* Product details placeholder */}
-          <div className="flex flex-col gap-2 p-2 min-h-[80px] justify-between">
+          <div className="flex flex-col gap-2 p-2 h-[80px] justify-between">
             <div className="space-y-1">
               <div className="h-3 bg-gray-300 rounded w-3/4 animate-pulse"></div>
               <div className="h-3 bg-gray-300 rounded w-1/2 animate-pulse"></div>
@@ -120,7 +94,7 @@ function ProductLoadingFlex({ count = 8 }) {
 function ProductsListing() {
   // ==================== CONTEXT & STATE ====================
 
-  const { loggedIn, setLoggedIn, token, setToken } = useContext(LoginContext);
+  const { loggedIn, token } = useContext(LoginContext);
   const [cartDep, setCartDep] = useContext(UserCartDependency);
 
   // UI State
@@ -148,18 +122,28 @@ function ProductsListing() {
   const navigate = useNavigate();
 
   // URL parameters
-  const brandQuery = new URLSearchParams(location.search).get("brand");
-  const myFilter = new URLSearchParams(location.search).get("filter");
+  const urlParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
+  const brandQuery = urlParams.get("brand");
+  const typeQuery = urlParams.get("type");
+  const conditionQuery = urlParams.get("condition");
+  const myFilter = urlParams.get("filter");
 
   // ==================== MEMOIZED VALUES ====================
 
-  /**
-   * Generate cache key based on current filters and search parameters
-   * This ensures we cache different combinations separately
-   */
+  // Current filter state for cache key and pagination reset detection
+  const filterState = useMemo(() => ({
+    brandId,
+    categoryId,
+    productTypeId,
+    myFilter
+  }), [brandId, categoryId, productTypeId, myFilter]);
+
   const cacheKey = useMemo(() => {
     return `products_${currentPage}_${brandId}_${categoryId}_${productTypeId}_${myFilter || 'none'}`;
   }, [currentPage, brandId, categoryId, productTypeId, myFilter]);
+
+  // Track if filters have changed to reset pagination
+  const [prevFilterState, setPrevFilterState] = useState(filterState);
 
   // ==================== EVENT HANDLERS ====================
 
@@ -173,13 +157,6 @@ function ProductsListing() {
 
   // ==================== API UTILITIES ====================
 
-  /**
-   * Enhanced fetch wrapper with caching and error handling
-   * @param {string} url - API endpoint URL
-   * @param {string} cacheKey - Cache key for storing response
-   * @param {number} cacheTTL - Cache time to live in milliseconds
-   * @returns {Promise<Object>} - Object with products array and totalPages
-   */
   const fetchProducts = useCallback(async (url, cacheKey, cacheTTL = 5 * 60 * 1000) => {
     // Check cache first
     const cached = apiCache.get(cacheKey);
@@ -193,8 +170,7 @@ function ProductsListing() {
       const response = await fetch(url, {
         headers: {
           Accept: "application/json",
-          // Add cache control headers to leverage browser caching
-          'Cache-Control': 'public, max-age=300' // 5 minutes browser cache
+          'Cache-Control': 'public, max-age=300'
         }
       });
 
@@ -231,11 +207,6 @@ function ProductsListing() {
 
   // ==================== SEARCH FUNCTIONALITY ====================
 
-  /**
-   * Handle search functionality with caching
-   * @param {string} searchTerm - Search query
-   * @param {number} page - Page number (default: 0)
-   */
   const handleSearch = useCallback(async (searchTerm, page = 0) => {
     if (!searchTerm?.trim()) return;
 
@@ -266,10 +237,6 @@ function ProductsListing() {
 
   // ==================== PRODUCT LOADING ====================
 
-  /**
-   * Load products with filters, includes caching for better performance
-   * @param {number} page - Page number (default: 0)
-   */
   const loadProducts = useCallback(async (page = 0) => {
     setIsLoading(true);
 
@@ -308,13 +275,8 @@ function ProductsListing() {
     }
   }, [fetchProducts, baseUrl, brandId, categoryId, productTypeId]);
 
-  // ==================== CART FUNCTIONALITY ====================
+  // ==================== CART & WISHLIST FUNCTIONALITY ====================
 
-  /**
-   * Add product to cart (guest or authenticated user)
-   * Handles both localStorage for guests and API calls for logged-in users
-   * @param {Object} product - Product object to add to cart
-   */
   const handleAddToCart = useCallback(async (product) => {
     // Guest user - use localStorage
     if (!loggedIn) {
@@ -378,12 +340,6 @@ function ProductsListing() {
     }
   }, [loggedIn, token, baseUrl, setCartDep]);
 
-  // ==================== WISHLIST FUNCTIONALITY ====================
-
-  /**
-   * Add product to wishlist (requires authentication)
-   * @param {Object} product - Product object to add to wishlist
-   */
   const handleAddToWishlist = useCallback(async (product) => {
     if (!token) {
       setAlert({
@@ -424,63 +380,121 @@ function ProductsListing() {
     }
   }, [token, baseUrl, navigate]);
 
-  // ==================== BRAND QUERY HANDLING ====================
+  // ==================== FILTER RESOLUTION EFFECTS ====================
 
-  /**
-   * If the URL contains a brand name (brandQuery), fetch the corresponding brandId
-   * from the /brands API. This ensures the filter works even if backend needs brandId.
-   */
+  // Resolve brand name to brandId
   useEffect(() => {
-    if (!brandQuery) return;
+    if (!brandQuery) {
+      setBrandId("");
+      return;
+    }
 
     const fetchBrandId = async () => {
       try {
-        const cacheKey = "all_brands";
-        let brands = apiCache.get(cacheKey);
-
+        let brands = apiCache.get("all_brands");
         if (!brands) {
-          const response = await fetch(`${baseUrl}/brands`, {
-            headers: { Accept: "application/json" },
-          });
-          if (!response.ok) throw new Error(`Failed to fetch brands: ${response.status}`);
+          const response = await fetch(`${baseUrl}/brands`);
           brands = await response.json();
-          apiCache.set(cacheKey, brands, 10 * 60 * 1000); // cache for 10 min
+          apiCache.set("all_brands", brands, 10 * 60 * 1000);
         }
 
-        // Find brand by name (case-insensitive)
         const brand = brands.find(
           (b) => b.name.toLowerCase() === brandQuery.toLowerCase()
         );
-        if (brand) setBrandId(brand.id);
-        else console.warn(`Brand not found for name: ${brandQuery}`);
-      } catch (error) {
-        console.error("Error fetching brand ID from brandQuery:", error);
+        setBrandId(brand ? brand.id : "");
+        if (!brand) console.warn("Brand not found for query:", brandQuery);
+      } catch (err) {
+        console.error("Error fetching brand:", err);
+        setBrandId("");
       }
     };
-
     fetchBrandId();
-  }, [brandQuery]);
+  }, [brandQuery, baseUrl]);
 
+  // Resolve product type name to productTypeId
+  useEffect(() => {
+    if (!typeQuery) {
+      setProductTypeId("");
+      return;
+    }
+
+    const fetchProductTypeId = async () => {
+      try {
+        let types = apiCache.get("all_types");
+        if (!types) {
+          const response = await fetch(`${baseUrl}/product-types`);
+          types = await response.json();
+          apiCache.set("all_types", types, 10 * 60 * 1000);
+        }
+        const type = types.find(
+          (t) => t.name.toLowerCase() === typeQuery.toLowerCase()
+        );
+        setProductTypeId(type ? type.id : "");
+        if (!type) console.warn("Product type not found for query:", typeQuery);
+      } catch (err) {
+        console.error("Error fetching product types:", err);
+        setProductTypeId("");
+      }
+    };
+    fetchProductTypeId();
+  }, [typeQuery, baseUrl]);
+
+  // Resolve condition to categoryId
+  useEffect(() => {
+    if (!conditionQuery) {
+      setCategoryId("");
+      return;
+    }
+
+    const fetchCategoryId = async () => {
+      try {
+        let categories = apiCache.get("all_categories");
+        if (!categories) {
+          const res = await fetch(`${baseUrl}/categories`);
+          categories = await res.json();
+          apiCache.set("all_categories", categories, 10 * 60 * 1000);
+        }
+        const cat = categories.find(
+          (c) => c.name.toLowerCase() === conditionQuery.toLowerCase()
+        );
+        setCategoryId(cat ? cat.id : "");
+        if (!cat) console.warn("Unknown condition category:", conditionQuery);
+      } catch (err) {
+        console.error("Error resolving category ID:", err);
+        setCategoryId("");
+      }
+    };
+    fetchCategoryId();
+  }, [conditionQuery, baseUrl]);
 
   // ==================== PAGINATION ====================
 
-  /**
-   * Handle page change in pagination
-   * @param {Event} event - Pagination click event
-   * @param {number} page - New page number (1-based)
-   */
   const handleChangePage = useCallback((event, page) => {
     setCurrentPage(page - 1);
-    // Smooth scroll to top of products section
     window.scroll({ top: 400, behavior: "smooth" });
   }, []);
 
-  // ==================== EFFECTS ====================
+  // ==================== FILTER CHANGE DETECTION & PAGINATION RESET ====================
 
-  /**
-   * Main effect to load products based on current state
-   * Switches between search and normal product loading
-   */
+  // Reset page to 0 when filters change
+  useEffect(() => {
+    const hasFilterChanged = (
+      prevFilterState.brandId !== filterState.brandId ||
+      prevFilterState.categoryId !== filterState.categoryId ||
+      prevFilterState.productTypeId !== filterState.productTypeId ||
+      prevFilterState.myFilter !== filterState.myFilter
+    );
+
+    if (hasFilterChanged && currentPage !== 0) {
+      console.log('🔄 Filters changed, resetting to page 0');
+      setCurrentPage(0);
+    }
+
+    setPrevFilterState(filterState);
+  }, [filterState, prevFilterState, currentPage]);
+
+  // ==================== MAIN DATA LOADING EFFECT ====================
+
   useEffect(() => {
     if (myFilter) {
       handleSearch(myFilter, currentPage);
@@ -538,8 +552,14 @@ function ProductsListing() {
                   />
 
                   <div className="text-center mt-2">
-                    <LaptopCityButton onClick={() => loadProducts(0)} className="text-sm py-2 px-4">
-                      Search
+                    <LaptopCityButton 
+                      onClick={() => {
+                        setCurrentPage(0); // Reset page when manually applying filters
+                        loadProducts(0);
+                      }} 
+                      className="text-sm py-2 px-4"
+                    >
+                      Apply Filters
                     </LaptopCityButton>
                   </div>
                 </div>
@@ -572,12 +592,13 @@ function ProductsListing() {
                   <div className="text-center mt-4">
                     <LaptopCityButton
                       onClick={() => {
+                        setCurrentPage(0); // Reset page when applying mobile filters
                         loadProducts(0);
                         setShowFilters(false);
                       }}
                       className="text-sm py-2 px-4"
                     >
-                      Apply
+                      Apply Filters
                     </LaptopCityButton>
                   </div>
                 </div>
@@ -587,17 +608,15 @@ function ProductsListing() {
             {/* ==================== MAIN CONTENT AREA ==================== */}
             <div className="flex-grow">
 
-              {/* Search box - sticky on scroll */}
+              {/* Search box */}
               <div className="top-[9%] z-20 bg-white mb-4">
                 <SearchBox className="w-full" show={handleOpen} search={handleSearch} />
               </div>
 
               {/* ==================== PRODUCTS DISPLAY ==================== */}
               {isLoading ? (
-                // Loading state - show skeleton
                 <ProductLoadingFlex count={20} />
               ) : !products || products.length === 0 ? (
-                // Empty state - no products found
                 <EmptyState
                   message={
                     brandQuery
@@ -608,7 +627,6 @@ function ProductsListing() {
                   }
                 />
               ) : (
-                // Products display - flex layout with minimal spacing
                 <div className="flex flex-wrap gap-1">
                   {products.map((product) => (
                     <div
@@ -626,7 +644,7 @@ function ProductsListing() {
               )}
 
               {/* ==================== PAGINATION ==================== */}
-              {totalPages > 1 && (
+              {!isLoading && totalPages > 1 && (
                 <div className="mt-6 mb-4 flex justify-center">
                   <ThemeProvider theme={theme}>
                     <Pagination
@@ -636,6 +654,8 @@ function ProductsListing() {
                       color="primary"
                       size="large"
                       onChange={handleChangePage}
+                      showFirstButton
+                      showLastButton
                       renderItem={(item) => (
                         <PaginationItem
                           sx={{
