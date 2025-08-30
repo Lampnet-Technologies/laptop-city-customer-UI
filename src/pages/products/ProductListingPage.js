@@ -278,77 +278,52 @@ function ProductsListing() {
   // ==================== CART & WISHLIST FUNCTIONALITY ====================
 
   const handleAddToCart = useCallback(async (product) => {
-    // Guest user - use localStorage
-    if (!loggedIn) {
-      try {
-        const guestCart = JSON.parse(localStorage.getItem("guestCart") || "[]");
-        const existingItem = guestCart.find((item) => item.productId === product.id);
-
-        if (existingItem) {
-          existingItem.quantity += 1;
-        } else {
-          guestCart.push({ productId: product.id, quantity: 1, product });
-        }
-
-        localStorage.setItem("guestCart", JSON.stringify(guestCart));
-        setCartDep((prev) => prev + 1);
-
-        setAlert({
-          open: true,
-          severity: "success",
-          title: "Success",
-          message: "Product added to cart",
-        });
-      } catch (error) {
-        setAlert({
-          open: true,
-          severity: "error",
-          title: "Error",
-          message: "Failed to add product to cart",
-        });
-      }
+    // Check if user is logged in
+    if (!loggedIn || !token) {
+      navigate("/login", { state: { previousUrl: location.pathname } });
       return;
     }
 
-    // Authenticated user - use API
     try {
-      const response = await fetch(`${baseUrl}/cart/add`, {
+      const response = await fetch(`${baseUrl}/cart-items/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ productId: product.id, quantity: 1 }),
+        body: JSON.stringify({
+          productId: product.id,
+          quantity: 1
+        }),
       });
 
-      if (!response.ok) throw new Error("Failed to add to cart");
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
 
-      setCartDep((prev) => prev + 1);
+      // Update cart dependency to trigger cart updates
+      setCartDep(product.id);
+
       setAlert({
         open: true,
         severity: "success",
-        title: "Success",
-        message: "Product added to cart",
+        title: "1 item added to cart",
+        message: `${product.name} added to cart`,
       });
     } catch (error) {
       setAlert({
         open: true,
         severity: "error",
-        title: "Error",
-        message: "Failed to add product to cart",
+        title: "Failed to add to cart",
+        message: error.message || "Unable to add item to cart",
       });
     }
-  }, [loggedIn, token, baseUrl, setCartDep]);
+  }, [loggedIn, token, baseUrl, navigate, location.pathname, setCartDep]);
 
   const handleAddToWishlist = useCallback(async (product) => {
-    if (!token) {
-      setAlert({
-        open: true,
-        severity: "info",
-        title: "Login Required",
-        message: "Please log in to add items to your wishlist",
-      });
-      navigate("/login");
+    // Check if user is logged in
+    if (!loggedIn || !token) {
+      navigate("/login", { state: { previousUrl: location.pathname } });
       return;
     }
 
@@ -359,26 +334,32 @@ function ProductsListing() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ productId: product.id }),
+        body: JSON.stringify({
+          basketId: 1,
+          productId: product.id,
+          quantity: 1
+        }),
       });
 
-      if (!response.ok) throw new Error("Failed to add to wishlist");
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
 
       setAlert({
         open: true,
         severity: "success",
-        title: "Added to Wishlist!",
-        message: `${product.name} has been added to your wishlist`,
+        title: "Added to wishlist",
+        message: `${product.name} added to wishlist`,
       });
     } catch (error) {
       setAlert({
         open: true,
         severity: "error",
         title: "Failed to add to wishlist",
-        message: error.message || "Unable to add item to wishlist. Please try again.",
+        message: error.message || "Unable to add item to wishlist",
       });
     }
-  }, [token, baseUrl, navigate]);
+  }, [loggedIn, token, baseUrl, navigate, location.pathname]);
 
   // ==================== FILTER RESOLUTION EFFECTS ====================
 
@@ -552,11 +533,11 @@ function ProductsListing() {
                   />
 
                   <div className="text-center mt-2">
-                    <LaptopCityButton 
+                    <LaptopCityButton
                       onClick={() => {
                         setCurrentPage(0); // Reset page when manually applying filters
                         loadProducts(0);
-                      }} 
+                      }}
                       className="text-sm py-2 px-4"
                     >
                       Apply Filters
