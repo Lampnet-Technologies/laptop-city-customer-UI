@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import IMAGES from "../../assets";
-import ProductTypesModal from "../../views/popup_modals/productTypes";
-import BrandsModal from "../../views/popup_modals/brands";
 import LaptopCityButton from "../../component/button";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -228,7 +226,7 @@ function ConditionModal({ isVisible, onSelect, onClose }) {
     >
       <div className="relative w-full max-w-md mx-4 bg-white rounded-lg p-6">
         <h3 className="text-lg font-bold text-green text-center mb-6">
-          {/* Select Condition */}
+          Select Condition
         </h3>
         <div className="grid grid-cols-2 gap-3">
           <button
@@ -266,10 +264,7 @@ function ProductGroups() {
   const [error, setError] = useState(null);
 
   const [conditionModalVisible, setConditionModalVisible] = useState(false);
-  const [productTypeModalVisible, setProductTypeModalVisible] = useState(false);
-  const [brandModalVisible, setBrandModalVisible] = useState(false);
   const [selectedType, setSelectedType] = useState(null);
-  const [selectedCondition, setSelectedCondition] = useState(null);
 
   const navigate = useNavigate();
 
@@ -305,7 +300,7 @@ function ProductGroups() {
 
         const data = await response.json();
 
-        // ✅ Backend already groups the products
+        // Backend already groups the products
         const grouped = {
           laptops: data.laptops || [],
           phones: data.smartPhones || [],
@@ -346,15 +341,35 @@ function ProductGroups() {
     setConditionModalVisible(true);
   };
 
-  const handleConditionSelect = (condition) => {
-    setSelectedCondition(condition);
+  const handleConditionSelect = async (condition) => {
     setConditionModalVisible(false);
-    setProductTypeModalVisible(true);
+    
+    try {
+      // Map the selected type to the appropriate product type name for API lookup
+      const productTypeNameMap = {
+        laptops: 'laptops',
+        phones: 'smartphones', 
+        otherGadgets: 'other gadgets'
+      };
+      
+      const productTypeName = productTypeNameMap[selectedType];
+      
+      // Use simple string-based navigation that your products page can handle
+      // This will let your existing products page logic resolve the IDs
+      navigate(`/products?type=${encodeURIComponent(productTypeName)}&condition=${encodeURIComponent(condition)}`);
+      
+    } catch (error) {
+      console.error("Error with navigation:", error);
+      // Fallback navigation
+      navigate(`/products`);
+    }
+    
+    // Reset state
+    setSelectedType(null);
   };
 
-  const handleProductTypeClose = () => {
-    setProductTypeModalVisible(false);
-    setSelectedCondition(null);
+  const handleConditionModalClose = () => {
+    setConditionModalVisible(false);
     setSelectedType(null);
   };
 
@@ -379,7 +394,7 @@ function ProductGroups() {
 
   return (
     <div className="mt-12 mb-8 px-3 space-y-6 md:mx-8 lg:mt-16 lg:mx-16">
-      {/* 🔍 Single SearchBar */}
+      {/* Single SearchBar */}
       <SearchBar onSearch={handleSearch} loading={false} />
 
       {/* Groups */}
@@ -408,19 +423,11 @@ function ProductGroups() {
         showAsGrid
       />
 
-      {/* Modals */}
+      {/* Modal */}
       <ConditionModal
         isVisible={conditionModalVisible}
         onSelect={handleConditionSelect}
-        onClose={() => setConditionModalVisible(false)}
-      />
-      <ProductTypesModal
-        isVisible={productTypeModalVisible}
-        onClose={handleProductTypeClose}
-      />
-      <BrandsModal
-        isVisible={brandModalVisible}
-        onClose={() => setBrandModalVisible(false)}
+        onClose={handleConditionModalClose}
       />
     </div>
   );

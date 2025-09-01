@@ -2,7 +2,7 @@ import { useEffect, useState, useContext } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import IMAGES from "../../assets";
 import { Banner } from "../../component/homepage";
-import { Groups } from "../../component/homepage/productGroups";
+import { ProductPlaceholder } from "../../component/homepage/productGroups";
 import NairaSymbol from "../../component/nairaSymbol";
 import { LoginContext, UserCartDependency } from "../../App";
 import Loading from "../../component/loading";
@@ -24,6 +24,7 @@ Resolution: 1080 x 2460 pixels (~387 ppi density)
 
 PLATFORM
 OS: Android 11, XOS 8
+Chipset: Mediatek Helio G96 (12 nm)
 Chipset: Mediatek Helio G96 (12 nm)
 CPU: Octa-core (2x2.05 GHz Cortex-A76 & 6x2.0 GHz Cortex-A55)
 GPU: Mali-G57 MC2
@@ -60,6 +61,20 @@ Type: Li-Po 5000 mAh
 Charging: Fast Charging 33W`;
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
+
+// Cache for different product categories with timestamps
+let productCaches = {
+  bestSelling: { data: null, timestamp: null, expiry: 5 * 60 * 1000 },
+  otherGadgets: { data: null, timestamp: null, expiry: 5 * 60 * 1000 },
+  recentlyViewed: { data: null, timestamp: null, expiry: 3 * 60 * 1000 },
+};
+
+const isCacheValid = (cacheKey) => {
+  const cache = productCaches[cacheKey];
+  return cache.data &&
+    cache.timestamp &&
+    Date.now() - cache.timestamp < cache.expiry;
+};
 
 function ImagesPreviews({ files }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -147,7 +162,7 @@ function ImagesPreviews({ files }) {
   );
 }
 
-// Add this skeleton component near the top
+// Enhanced skeleton component for the product details page
 function ProductSkeleton() {
   return (
     <div className="animate-pulse p-4 flex flex-col gap-6">
@@ -166,6 +181,127 @@ function ProductSkeleton() {
   );
 }
 
+// Enhanced Groups component with skeleton loading
+function GroupsWithSkeleton({ heading, products, onProductClick, loading, showSeeMore = true }) {
+  const renderPlaceholders = () =>
+    Array.from({ length: 4 }, (_, index) => (
+      <ProductPlaceholder key={`skeleton-${heading}-${index}`} />
+    ));
+
+  const renderProducts = () => {
+    if (loading) return renderPlaceholders();
+
+    if (!products || products.length === 0) {
+      return (
+        <div className="col-span-full bg-gray-50 rounded-lg p-6 text-center">
+          <div className="flex flex-col items-center gap-3">
+            <img
+              src={IMAGES.icons.cartGreen}
+              alt="No products"
+              className="w-12 h-12 opacity-50"
+            />
+            <p className="text-gray-600 font-medium">
+              No {heading.toLowerCase()} available
+            </p>
+            <p className="text-gray-500 text-sm">
+              Check back later for new products
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    return products.map((product) => (
+      <ProductContainer
+        key={product.id}
+        product={product}
+        onClick={onProductClick}
+      />
+    ));
+  };
+
+  return (
+    <div className="mb-6">
+      <div className="mb-3">
+        <h2 className="text-lg font-bold capitalize">{heading}</h2>
+      </div>
+
+      <div className="relative overflow-x-auto hide-scrollbar">
+        <div className="flex gap-3 pb-3 min-w-0">{renderProducts()}</div>
+      </div>
+
+      {!loading && products && products.length > 0 && showSeeMore && (
+        <div className="flex justify-end mt-3">
+          <button
+            onClick={() => {/* Add see more functionality if needed */ }}
+            className="text-green hover:text-dark-green transition-colors font-medium text-sm"
+          >
+            See more &gt;
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Product Container component to match the styling from productGroups
+function ProductContainer({ product, onClick }) {
+  const formatPrice = (price) =>
+    price ? price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "0";
+
+  const getConditionText = (p) => {
+    if (p.condition) return p.condition.toLowerCase() === "new" ? "new" : "used";
+    if (p.category) return p.category === "BRAND NEW" ? "new" : "used";
+    return "used";
+  };
+
+  return (
+    <div
+      className="w-full h-[240px] rounded-lg flex flex-col justify-between cursor-pointer border border-[#DADADA] hover:shadow-lg transition-shadow duration-300 bg-white min-w-[200px]"
+      onClick={() => onClick(product.id)}
+    >
+      {/* Image Section - Fixed height for complete uniformity */}
+      <div className="h-[140px] rounded-t-lg bg-[#F8F9FA] flex justify-center items-center relative p-2">
+        <div className="w-full h-full flex items-center justify-center">
+          {product.images?.length > 0 ? (
+            <img
+              loading="lazy"
+              src={product.images[0].image || product.images[0]}
+              alt={product.name || "Product"}
+              className="w-full h-full object-contain max-w-[120px] max-h-[120px]"
+              onError={(e) => {
+                e.target.src = IMAGES.icons.cartGreen;
+                e.target.className = "w-[40px] h-[40px] object-contain";
+              }}
+            />
+          ) : (
+            <img
+              src={IMAGES.icons.cartGreen}
+              alt="no product"
+              className="w-[40px] h-[40px]"
+            />
+          )}
+        </div>
+        <div className="absolute top-2 right-2 bg-green text-white font-medium capitalize px-2 py-0.5 rounded-sm text-[10px]">
+          {getConditionText(product)}
+        </div>
+      </div>
+
+      {/* Product Info Section - Fixed height for uniformity */}
+      <div className="flex flex-col gap-1 p-2 h-[80px] justify-between">
+        <p
+          className="text-xs font-medium capitalize line-clamp-2 leading-tight"
+          title={product.name}
+        >
+          {product.name || "Product Name"}
+        </p>
+        <p className="text-sm font-bold text-green">
+          &#8358;{formatPrice(product.price)}
+        </p>
+      </div>
+    </div>
+  );
+}
 
 function AboutProduct({ product }) {
   const { loggedIn, token } = useContext(LoginContext);
@@ -319,12 +455,12 @@ function Description({ descr }) {
   );
 }
 
-function ProductDetails({ bestSelling, recentlyViewed, product, otherGadgets }) {
+function ProductDetails({ bestSelling, bestSellingLoading, otherGadgets, otherGadgetsLoading, product }) {
+  const navigate = useNavigate();
 
   const handleProductClick = (id) => {
     navigate(`/product/${id}`);
   };
-  const navigate = useNavigate();
 
   return (
     <div className="mt-20">
@@ -354,12 +490,23 @@ function ProductDetails({ bestSelling, recentlyViewed, product, otherGadgets }) 
 
       <Banner />
 
-      {/* Sections */}
+      {/* Sections with skeleton loading */}
       <div className="mt-8 md:mt-12 px-4 md:px-12 lg:mt-24 lg:px-24">
-        {bestSelling?.length > 0 && <Groups heading="best selling products" products={bestSelling} onProductClick={handleProductClick} seeMore />}
+        <GroupsWithSkeleton
+          heading="best selling products"
+          products={bestSelling}
+          onProductClick={handleProductClick}
+          loading={bestSellingLoading}
+        />
       </div>
       <div className="mt-8 md:mt-12 px-4 md:px-12 lg:mt-24 lg:px-24">
-        {otherGadgets?.length > 0 && <Groups heading="other gadgets" products={otherGadgets} onProductClick={handleProductClick} seeMore={false} />}
+        <GroupsWithSkeleton
+          heading="other gadgets"
+          products={otherGadgets}
+          onProductClick={handleProductClick}
+          loading={otherGadgetsLoading}
+          showSeeMore={false}
+        />
       </div>
     </div>
   );
@@ -367,15 +514,60 @@ function ProductDetails({ bestSelling, recentlyViewed, product, otherGadgets }) 
 
 function ProductDesc() {
   const [bestSelling, setBestSelling] = useState(null);
+  const [bestSellingLoading, setBestSellingLoading] = useState(true);
   const [recentlyViewed, setRecentlyViewed] = useState(null);
   const [otherGadgets, setOtherGadgets] = useState(null);
+  const [otherGadgetsLoading, setOtherGadgetsLoading] = useState(true);
   const [product, setProduct] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [alert, setAlert] = useState({ open: false, severity: "", message: "", title: "" });
 
   const navigate = useNavigate();
+  const location = useLocation();
   const params = useParams();
   const prodId = params.id;
+
+  // Enhanced back button functionality
+  const handleBack = () => {
+    // Check if there's a state with a previous URL
+    if (location.state?.from) {
+      navigate(location.state.from);
+    } else if (window.history.length > 2) {
+      // If there's history, go back
+      navigate(-1);
+    } else {
+      // Fallback to products page
+      navigate("/products");
+    }
+  };
+
+  // Optimized fetch with caching and parallel requests
+  const fetchWithCache = async (url, cacheKey) => {
+    if (isCacheValid(cacheKey)) {
+      return productCaches[cacheKey].data;
+    }
+
+    const response = await fetch(url, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) throw new Error(`Server responded with ${response.status}`);
+
+    const data = await response.json();
+    const processedData = Array.isArray(data) ? data : data.content || [];
+
+    // Cache the result
+    productCaches[cacheKey] = {
+      data: processedData,
+      timestamp: Date.now(),
+      expiry: productCaches[cacheKey].expiry,
+    };
+
+    return processedData;
+  };
 
   // Fetch product
   useEffect(() => {
@@ -383,7 +575,12 @@ function ProductDesc() {
       if (!prodId) return;
       setIsLoading(true);
       try {
-        const res = await fetch(`${baseUrl}/products/${prodId}`);
+        const res = await fetch(`${baseUrl}/products/${prodId}`, {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        });
         if (!res.ok) throw new Error(`Server responded with ${res.status}`);
         const data = await res.json();
         if (!data.images || data.images.length === 0) {
@@ -391,7 +588,12 @@ function ProductDesc() {
         }
         setProduct(data);
       } catch (err) {
-        setAlert({ open: true, severity: "error", title: "Error Loading Product", message: "Unable to load product details." });
+        setAlert({
+          open: true,
+          severity: "error",
+          title: "Error Loading Product",
+          message: "Unable to load product details."
+        });
         navigate("/products");
       } finally {
         setIsLoading(false);
@@ -400,29 +602,48 @@ function ProductDesc() {
     fetchProduct();
   }, [prodId, navigate]);
 
-
-  // Fetch best selling
+  // Fetch other data in parallel with better error handling
   useEffect(() => {
-    fetch(`${baseUrl}/products/best-selling`)
-      .then((res) => res.json())
-      .then((data) => setBestSelling(Array.isArray(data) ? data : data.content || []))
-      .catch(() => setBestSelling([]));
-  }, []);
+    const fetchAllData = async () => {
+      // Start all requests simultaneously
+      const promises = [
+        fetchWithCache(`${baseUrl}/products/best-selling?limit=6`, 'bestSelling')
+          .then((data) => {
+            setBestSelling(data);
+            setBestSellingLoading(false);
+          })
+          .catch((err) => {
+            console.error("Failed to fetch best selling:", err);
+            setBestSelling([]);
+            setBestSellingLoading(false);
+          }),
 
-  // Fetch other gadgets
-  useEffect(() => {
-    fetch(`${baseUrl}/products`)
-      .then((res) => res.json())
-      .then((data) => setOtherGadgets(Array.isArray(data) ? data : data.content || []))
-      .catch(() => setOtherGadgets([]));
-  }, []);
+        fetchWithCache(`${baseUrl}/products?limit=8`, 'otherGadgets')
+          .then((data) => {
+            setOtherGadgets(data);
+            setOtherGadgetsLoading(false);
+          })
+          .catch((err) => {
+            console.error("Failed to fetch other gadgets:", err);
+            setOtherGadgets([]);
+            setOtherGadgetsLoading(false);
+          }),
 
-  // Fetch recently viewed
-  useEffect(() => {
-    fetch(`${baseUrl}/products/reviewed`)
-      .then((res) => res.json())
-      .then((data) => setRecentlyViewed(Array.isArray(data) ? data : data.content || []))
-      .catch(() => setRecentlyViewed([]));
+        fetchWithCache(`${baseUrl}/products/reviewed?limit=6`, 'recentlyViewed')
+          .then((data) => {
+            setRecentlyViewed(data);
+          })
+          .catch((err) => {
+            console.error("Failed to fetch recently viewed:", err);
+            setRecentlyViewed([]);
+          }),
+      ];
+
+      // Execute all promises
+      await Promise.allSettled(promises);
+    };
+
+    fetchAllData();
   }, []);
 
   return (
@@ -430,22 +651,37 @@ function ProductDesc() {
       {/* Header */}
       <div className="h-28 bg-filter-green" style={{ backgroundImage: `radial-gradient(circle, #009F7F, #63BB8280)` }}>
         <div className="h-full flex items-center gap-5 px-4 relative md:px-12 lg:px-24">
-          <button className="rounded-full bg-transparent flex items-center text-lg lg:text-[22px] font-medium" onClick={() => navigate("/products")}>
+          <button
+            className="rounded-full bg-transparent flex items-center text-lg lg:text-[22px] font-medium"
+            onClick={handleBack}
+          >
             <i className="bx bx-chevron-left bx-md"></i> Back
           </button>
-          <h2 className="capitalize text-3xl lg:text-[45px] font-bold absolute top-1/3 left-1/3 md:left-[45%]">phones</h2>
+          <h2 className="capitalize text-3xl lg:text-[45px] font-bold absolute top-1/3 left-1/3 md:left-[45%]">
+            {product?.category || 'Product'}
+          </h2>
         </div>
       </div>
 
-      {/* 👇 Replaced isLoading with Skeleton */}
+      {/* Product Details with Skeleton */}
       {isLoading ? (
         <ProductSkeleton />
       ) : (
         <ProductDetails
           bestSelling={bestSelling}
-          /* recentlyViewed={recentlyViewed} */
+          bestSellingLoading={bestSellingLoading}
           otherGadgets={otherGadgets}
+          otherGadgetsLoading={otherGadgetsLoading}
           product={product}
+        />
+      )}
+
+      {/* Alert */}
+      {alert.open && (
+        <CustomAlert
+          open={alert.open}
+          details={alert}
+          close={() => setAlert({ ...alert, open: false })}
         />
       )}
     </div>
