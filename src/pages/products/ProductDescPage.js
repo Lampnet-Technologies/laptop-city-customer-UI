@@ -236,7 +236,7 @@ function GroupsWithSkeleton({ heading, products, onProductClick, loading, showSe
             onClick={() => {/* Add see more functionality if needed */ }}
             className="text-green hover:text-dark-green transition-colors font-medium text-sm"
           >
-            See more &gt;
+           {/*  See more &gt; */}
           </button>
         </div>
       )}
