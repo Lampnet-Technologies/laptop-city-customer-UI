@@ -19,31 +19,49 @@ const methods = [
   // },
 ];
 
+// Move environment variables to the top and add validation
 const baseUrl = process.env.REACT_APP_BASE_URL;
+const paystackPublicKey = process.env.REACT_APP_PAYSTACK_PUBLIC_KEY;
 
-const accessToken = localStorage.getItem("token");
+// Validate environment variables
+if (!baseUrl) {
+  console.error('REACT_APP_BASE_URL is not defined in environment variables');
+}
+if (!paystackPublicKey) {
+  console.error('REACT_APP_PAYSTACK_PUBLIC_KEY is not defined in environment variables');
+}
 
+// Move accessToken inside component to ensure it gets fresh token
 function PaymentMethod({ cart, goTo, back }) {
   const [placeOrder, setPlaceOrder] = useContext(PlaceOrderContext);
-  const [responseData, setResponseData] = useContext(PlaceOrderResponseContext); // State variable to store response data
+  const [responseData, setResponseData] = useContext(PlaceOrderResponseContext);
   const [cartDep, setCartDep] = useContext(UserCartDependency);
   const [paymentType, setPaymentType] = useState("paystack");
 
   const navigate = useNavigate();
 
+  // Get fresh access token
+  const accessToken = localStorage.getItem("token");
+
   const config = {
-  reference: responseData.transactionId,
-  email: placeOrder.shippingAddress?.email || "",
-  amount: placeOrder.amountToPay * 100,
-  metadata: {
-    name: `${placeOrder.firstName} ${placeOrder.lastName}`,
-    phone: placeOrder.phoneNumber,
-  },
-  publicKey: process.env.REACT_APP_PAYSTACK_PUBLIC_KEY
-};
+    reference: responseData?.transactionId || `ref_${Date.now()}`, // Add fallback
+    email: placeOrder.shippingAddress?.email || placeOrder.email || "",
+    amount: (placeOrder.amountToPay || 0) * 100,
+    metadata: {
+      name: `${placeOrder.firstName || ''} ${placeOrder.lastName || ''}`,
+      phone: placeOrder.phoneNumber || '',
+    },
+    publicKey: paystackPublicKey
+  };
 
- console.log("PAYSTACK KEY", process.env.REACT_APP_PAYSTACK_PUBLIC_KEY);
-
+  // Debug logging - remove in production
+  console.log("Environment Variables Check:");
+  console.log("BASE_URL:", baseUrl);
+  console.log("PAYSTACK_PUBLIC_KEY:", paystackPublicKey ? `${paystackPublicKey.substring(0, 10)}...` : 'NOT SET');
+  console.log("Paystack Config:", {
+    ...config,
+    publicKey: config.publicKey ? `${config.publicKey.substring(0, 10)}...` : 'NOT SET'
+  });
 
   const handleChange = (e) => {
     setPaymentType(e.target.value);
@@ -52,18 +70,20 @@ function PaymentMethod({ cart, goTo, back }) {
   const onSuccess = (reference) => {
     const dataToSend = {
       ...placeOrder,
-      transactionId: responseData.transactionId,
-      orderNumber: responseData.orderNumber,
+      transactionId: responseData?.transactionId,
+      orderNumber: responseData?.orderNumber,
       message: reference.message,
       paymentStatus: reference.status,
       reference: reference.reference,
     };
 
+    console.log("Payment successful, sending data:", dataToSend);
+
     fetch(`${baseUrl}/orders/payment`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + accessToken,
+        Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify(dataToSend),
     })
@@ -73,39 +93,76 @@ function PaymentMethod({ cart, goTo, back }) {
             state: {
               cartAmount: cart.cartItems.length,
               cartTotal: cart.total,
-              orderNo: responseData.orderNumber,
+              orderNo: responseData?.orderNumber,
             },
           });
           setResponseData(null);
-          setCartDep(responseData.orderNumber);
+          setCartDep(responseData?.orderNumber);
         } else {
-          throw new Error("Network response was failed.");
+          throw new Error(`Network response failed: ${response.status}`);
         }
       })
       .catch((error) => {
-        console.log(error);
+        console.error("Payment completion error:", error);
+        alert("Payment was successful but there was an error completing the order. Please contact support.");
       });
   };
 
   const onClose = () => {
-    console.log("closed");
+    console.log("Payment modal closed");
   };
 
   const PaystackHookExample = () => {
     const initializePayment = usePaystackPayment(config);
+
+    // Check if we have required data before allowing payment
+    const canProceed = paystackPublicKey && responseData?.transactionId && placeOrder.amountToPay;
+
     return (
       <div className="w-full md:w-auto">
         <button
-          className="inline-block w-full md:w-48 bg-green p-2 rounded outline-0 font-semibold text-white text-sm capitalize"
+          className={`inline-block w-full md:w-48 p-2 rounded outline-0 font-semibold text-white text-sm capitalize ${canProceed
+              ? 'bg-green hover:bg-green-600'
+              : 'bg-gray-400 cursor-not-allowed'
+            }`}
           onClick={() => {
-            initializePayment(onSuccess, onClose);
+            if (canProceed) {
+              initializePayment(onSuccess, onClose);
+            } else {
+              console.error("Cannot proceed with payment:", {
+                hasPublicKey: !!paystackPublicKey,
+                hasTransactionId: !!responseData?.transactionId,
+                hasAmount: !!placeOrder.amountToPay
+              });
+              alert("Payment configuration error. Please try again or contact support.");
+            }
           }}
+          disabled={!canProceed}
         >
           complete payment
         </button>
       </div>
     );
   };
+
+  // Show error message if environment variables are missing
+  if (!baseUrl || !paystackPublicKey) {
+    return (
+      <div className="space-y-4 md:space-y-4 lg:space-y-6">
+        <h4 className="mb:5 font-medium text-lg text-red-600 md:text-xl lg:text-2xl lg:mb-10">
+          Configuration Error
+        </h4>
+        <div className="bg-red-50 border border-red-200 rounded p-4">
+          <p className="text-red-700">
+            Payment system is not properly configured. Please contact support.
+          </p>
+          <p className="text-sm text-red-600 mt-2">
+            Missing: {!baseUrl && "BASE_URL"} {!paystackPublicKey && "PAYSTACK_PUBLIC_KEY"}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4 md:space-y-4 lg:space-y-6">
@@ -168,7 +225,6 @@ function PaymentMethod({ cart, goTo, back }) {
           className="inline-block w-full md:w-48 bg-transparent border border-solid border-green p-2 rounded outline-0 font-semibold text-black text-sm"
           onClick={back}
         >
-          {" "}
           Back
         </button>
 
