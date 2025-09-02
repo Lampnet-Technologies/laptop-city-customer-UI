@@ -42,7 +42,7 @@ function PaymentMethod({ cart, goTo, back }) {
   publicKey: process.env.REACT_APP_PAYSTACK_PUBLIC_KEY
 };
 
-// console.log("PAYSTACK KEY", process.env.REACT_APP_PAYSTACK_PUBLIC_KEY);
+ console.log("PAYSTACK KEY", process.env.REACT_APP_PAYSTACK_PUBLIC_KEY);
 
 
   const handleChange = (e) => {
@@ -124,7 +124,7 @@ function PaymentMethod({ cart, goTo, back }) {
                   name="paymentMethod"
                   value={method.name}
                   id={method.name}
-                  checked={paymentType == method.name}
+                  checked={paymentType === method.name}
                   onChange={handleChange}
                   disabled={method.disabled}
                 />

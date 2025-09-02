@@ -3,10 +3,16 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { PlaceOrderContext } from "../../App";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
+const countriesApiUrl = process.env.REACT_APP_COUNTRIES_API_URL;
 
 const createSenderAddressUrl = `${baseUrl}/shipping/sender-address`;
 
 const accessToken = () => localStorage.getItem("token");
+
+// Validate environment variables
+if (!countriesApiUrl) {
+  console.error('REACT_APP_COUNTRIES_API_URL is not defined in environment variables');
+}
 
 function ShippingAddress({ goTo }) {
   const [placeOrder, setPlaceOrder] = useContext(PlaceOrderContext);
@@ -33,7 +39,7 @@ function ShippingAddress({ goTo }) {
 
   useEffect(() => {
     setIsLoadingStates(true);
-    fetch("https://countriesnow.space/api/v0.1/countries/states", {
+    fetch(`${countriesApiUrl}/states`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ country: "Nigeria" }),
@@ -54,9 +60,9 @@ function ShippingAddress({ goTo }) {
   }, [location.pathname]);
 
   const normalizeState = (state) => {
-  if (!state) return state;
-  return state.replace(/ State$/i, "").trim();
-};
+    if (!state) return state;
+    return state.replace(/ State$/i, "").trim();
+  };
 
 
   useEffect(() => {
@@ -65,7 +71,7 @@ function ShippingAddress({ goTo }) {
       setCities([]);
       setValues((prev) => ({ ...prev, city: "" })); // Reset city selection
 
-      fetch("https://countriesnow.space/api/v0.1/countries/state/cities", {
+      fetch(`${countriesApiUrl}/state/cities`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ country: "Nigeria", state: values.state }),
@@ -95,80 +101,76 @@ function ShippingAddress({ goTo }) {
   const validateAndFormatPhoneNumber = (phone, countryCode) => {
     // Remove all non-digit characters
     let cleanPhone = phone.replace(/\D/g, '');
-    
+
     console.log("Phone validation input:", { phone, countryCode, cleanPhone });
-    
+
     // Handle Nigerian phone numbers specifically
     if (countryCode === '+234') {
-    // Strip leading zero or duplicate country code
-    if (cleanPhone.startsWith("234")) cleanPhone = cleanPhone.slice(3);
-    if (cleanPhone.startsWith("0")) cleanPhone = cleanPhone.slice(1);
-      
+      // Strip leading zero or duplicate country code
+      if (cleanPhone.startsWith("234")) cleanPhone = cleanPhone.slice(3);
+      if (cleanPhone.startsWith("0")) cleanPhone = cleanPhone.slice(1);
+
       // Should now have exactly 10 digits
       if (cleanPhone.length === 10) {
         const formatted = `+234${cleanPhone}`;
         console.log("Nigerian phone formatted:", formatted);
         return formatted;
       } else {
-        throw new Error(`Invalid Nigerian phone number. Expected 10 digits after country code, got ${cleanPhone.length}. Please enter format: 8012345678 (without +234)`);
+        throw new Error(`Invalid phone number format. Please enter 10 digits for Nigerian numbers.`);
       }
     }
-    
- /*     For US numbers
-    if (countryCode === '+1') {
-      if (cleanPhone.length === 10) {
-        return `+1${cleanPhone}`;
-      } else {
-        throw new Error(`Invalid US phone number. Expected 10 digits, got ${cleanPhone.length}.`);
-      }
-    }
-    
-    For UK numbers
-    if (countryCode === '+44') {
-      if (cleanPhone.startsWith('0')) {
-        cleanPhone = cleanPhone.substring(1);
-      }
-      if (cleanPhone.length >= 10 && cleanPhone.length <= 11) {
-        return `+44${cleanPhone}`;
-      } else {
-        throw new Error(`Invalid UK phone number. Expected 10-11 digits, got ${cleanPhone.length}.`);
-      }
-    }
-     */
+
+    /*     For US numbers
+       if (countryCode === '+1') {
+         if (cleanPhone.length === 10) {
+           return `+1${cleanPhone}`;
+         } else {
+           throw new Error(`Invalid US phone number. Expected 10 digits, got ${cleanPhone.length}.`);
+         }
+       }
+       
+       For UK numbers
+       if (countryCode === '+44') {
+         if (cleanPhone.startsWith('0')) {
+           cleanPhone = cleanPhone.substring(1);
+         }
+         if (cleanPhone.length >= 10 && cleanPhone.length <= 11) {
+           return `+44${cleanPhone}`;
+         } else {
+           throw new Error(`Invalid UK phone number. Expected 10-11 digits, got ${cleanPhone.length}.`);
+         }
+       }
+        */
     // Fallback - return as formatted but may still fail validation
     return `${countryCode}${cleanPhone}`;
   };
 
   const validateCity = (cityName, availableCities) => {
     const trimmedCity = cityName.trim();
-    
+
     console.log("City validation:", {
       input: cityName,
       trimmed: trimmedCity,
       availableCities: availableCities.slice(0, 5),
       totalCities: availableCities.length
     });
-    
+
     // Exact match (case-sensitive)
     if (availableCities.includes(trimmedCity)) {
       return trimmedCity;
     }
-    
+
     // Case-insensitive match
     const caseInsensitiveMatch = availableCities.find(
       city => city.toLowerCase() === trimmedCity.toLowerCase()
     );
-    
+
     if (caseInsensitiveMatch) {
       console.log("Found case-insensitive match:", caseInsensitiveMatch);
       return caseInsensitiveMatch;
     }
-    
-    throw new Error(
-      `Invalid city: "${trimmedCity}". Please select exactly from the dropdown. ` +
-      `Available options include: ${availableCities.slice(0, 5).join(', ')}` +
-      `${availableCities.length > 5 ? ` and ${availableCities.length - 5} more` : ''}`
-    );
+
+    throw new Error(`Please select a valid city from the dropdown options that match your state and address.`);
   };
 
   const handleSubmit = async (e) => {
@@ -198,7 +200,7 @@ function ShippingAddress({ goTo }) {
         console.error("Phone validation failed:", phoneError.message);
         throw phoneError;
       }
-      
+
       // Validate city selection
       let validatedCity;
       try {
@@ -231,7 +233,7 @@ function ShippingAddress({ goTo }) {
       }
 
       console.log("Making API request to:", createSenderAddressUrl);
-      
+
       const response = await fetch(createSenderAddressUrl, {
         method: "POST",
         headers: {
@@ -257,27 +259,18 @@ function ShippingAddress({ goTo }) {
         console.error("=== API ERROR ===");
         console.error("Status:", response.status);
         console.error("Response:", responseData);
-        
-        // Handle specific error cases
+
+        // Handle specific error cases with shorter messages
         let errorMessage = "Failed to save shipping address";
-        
+
         if (responseData?.message) {
           errorMessage = responseData.message;
         } else if (responseData?.error) {
           errorMessage = responseData.error;
         } else {
-          errorMessage += `: HTTP ${response.status}`;
+          errorMessage += `: Error ${response.status}`;
         }
-        
-        // Add troubleshooting info for common issues
-        if (errorMessage.includes('phone format') || errorMessage.includes('phone')) {
-          errorMessage += `\n\nPhone troubleshooting:\n- Your phone: "${formattedPhone}"\n- For Nigeria: Enter 10 digits (e.g., 8012345678)\n- System will add +234 automatically`;
-        }
-        
-        if (errorMessage.includes('city') || errorMessage.includes('City')) {
-          errorMessage += `\n\nCity troubleshooting:\n- Your city: "${validatedCity}"\n- Must select exactly from dropdown\n- Available: ${cities.slice(0, 5).join(', ')}${cities.length > 5 ? '...' : ''}`;
-        }
-        
+
         throw new Error(errorMessage);
       }
 
@@ -313,7 +306,7 @@ function ShippingAddress({ goTo }) {
     } catch (error) {
       console.error("=== SUBMISSION ERROR ===");
       console.error("Error:", error);
-      
+
       // Show user-friendly error message
       const userMessage = error.message || "An unexpected error occurred. Please try again.";
       alert(userMessage);
@@ -455,12 +448,15 @@ function ShippingAddress({ goTo }) {
         />
       </div>
 
-      {/* Improved Validation Messages */}
+      {/* Updated User Guidance */}
       <div className="text-sm text-gray-600 space-y-1 bg-blue-50 p-3 rounded">
         <p className="font-medium text-gray-800">📋 Required Information:</p>
-        <p>📱 <strong>Phone:</strong> For Nigeria (+234), enter exactly 10 digits (e.g., 8100915397)</p>
-        <p>🏙️ <strong>City:</strong> Must select exactly from the dropdown after choosing state</p>
-        <p>📮 <strong>Address:</strong> Include street number, street name, and area</p>
+        <p>📱 <strong>Phone:</strong> For Nigeria (+234), enter exactly 10 digits (e.g., 8012345678)</p>
+        <p>🏙️ <strong>City & Address:</strong> Select city from dropdown (if not available, choose state name or nearest option). Address must match selected city for proper validation - use street number, name, and area only</p>
+        <p>📮 <strong>Zip Code:</strong> Optional - can be left blank</p>
+        <p className="pt-2 border-t border-gray-200 mt-2">
+          <strong>Need Help?</strong> Contact us: 📞 +234-901-647-2503 | ✉️ support@lampnets.com
+        </p>
       </div>
 
       <button
