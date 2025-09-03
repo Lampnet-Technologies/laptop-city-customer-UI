@@ -7,8 +7,22 @@ const baseUrl = process.env.REACT_APP_BASE_URL;
 const BrandsGrid = () => {
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentFilters, setCurrentFilters] = useState({
+    condition: null,
+    type: null
+  });
+  
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Extract and track current filters
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    setCurrentFilters({
+      condition: searchParams.get("condition"),
+      type: searchParams.get("type")
+    });
+  }, [location.search]);
 
   const handleBrandClick = (brandName) => {
     const searchParams = new URLSearchParams(location.search);
@@ -19,6 +33,7 @@ const BrandsGrid = () => {
     if (type) url += `&type=${encodeURIComponent(type)}`;
     if (condition) url += `&condition=${encodeURIComponent(condition)}`;
 
+    console.log('Navigating to products with:', { brand: brandName, type, condition });
     navigate(url);
   };
 
@@ -59,7 +74,22 @@ const BrandsGrid = () => {
         <h2 className="text-2xl text-center font-bold mb-4">
           Choose <span className="text-[#047D65]">Brand</span> of product
         </h2>
+        
+        {/* Display current filter context */}
+        <div className="text-center mb-6">
+          {currentFilters.condition && (
+            <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm mr-2">
+              {currentFilters.condition === 'new' ? 'New Products' : 'Used Products'}
+            </span>
+          )}
+          {currentFilters.type && (
+            <span className="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+              {currentFilters.type}
+            </span>
+          )}
+        </div>
       </div>
+      
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4 pb-[150px]">
         {brands.map((brand) => (
           <div

@@ -222,7 +222,7 @@ function ProductsListing() {
 
       setProducts(searchResults);
       setTotalPages(totalPages);
-      setCurrentPage(page);
+      setCurrentPage(page); 
     } catch (error) {
       setAlert({
         open: true,
