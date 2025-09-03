@@ -8,22 +8,19 @@ import {
 import { PlaceOrderContext } from "../../App";
 
 const accessToken = localStorage.getItem("token");
-
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
 function OrderReview({ cart, back, goTo }) {
   const [placeOrder, setPlaceOrder] = useContext(PlaceOrderContext);
-  const [discount, setDiscount] = useContext(CouponDiscount);
-  const [chosenMethodPrice, setChosenMethodPrice] =
-    useContext(ChosenMethodContext);
-  const [responseData, setResponseData] = useContext(PlaceOrderResponseContext); // State variable to store response data
+  const [discount] = useContext(CouponDiscount);
+  const [chosenMethodPrice] = useContext(ChosenMethodContext);
+  const [responseData, setResponseData] = useContext(PlaceOrderResponseContext);
   const [isLoading, setIsLoading] = useState(false);
 
   const VAT = "0.00";
 
   const sumTotal = () => {
     let sum = cart.total - discount + chosenMethodPrice;
-
     return Number(sum.toFixed(2));
   };
 
@@ -31,27 +28,56 @@ function OrderReview({ cart, back, goTo }) {
     e.preventDefault();
     setIsLoading(true);
 
+    // Build the payload for the order
+    const orderPayload = {
+      couponCode: placeOrder.couponCode || "",
+      firstName: placeOrder.firstName || "",
+      lastName: placeOrder.lastName || "",
+      email: placeOrder.email || "",
+      streetAddress: placeOrder.streetAddress || "",
+      state: placeOrder.state || "",
+      city: placeOrder.city || "",
+      zipCode: placeOrder.zipCode || "100001",
+      phoneNumber: placeOrder.phoneNumber || "",
+      shippingMethodId: placeOrder.shippingMethodId || 0,
+      deliveryAmount: chosenMethodPrice || 0,
+      orderItems: cart.cartItems || [],
+      totalAmount: sumTotal(),
+    };
+
+    console.log("Submitting order payload:", orderPayload);
+
     try {
-      const response = await fetch(
-        `${baseUrl}/orders/place-order`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + accessToken,
-          },
-        }
-      );
+      const response = await fetch(`${baseUrl}/orders/place-order`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(orderPayload),
+      });
+
+      const text = await response.text(); // read backend response (even for errors)
+
       if (response.ok) {
-        const data = await response.json();
-        setResponseData(data);
+        const data = JSON.parse(text || "{}");
+        console.log("Order placed successfully:", data);
+
+        setResponseData(data); // contains { message, orderNumber, transactionId }
         setPlaceOrder({ ...placeOrder, amountToPay: sumTotal() });
+
         goTo("payment-method");
       } else {
-        console.error("Fetch request failed");
+        console.error("Order placement failed:", response.status, text);
+        if (response.status === 401) {
+          alert("Session expired. Please log in again.");
+        } else {
+          alert("Failed to place order. Please try again.");
+        }
       }
     } catch (error) {
       console.error("Error occurred during fetch request:", error);
+      alert("Unexpected error. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -78,7 +104,7 @@ function OrderReview({ cart, back, goTo }) {
 
       <div className="space-y-2 border border-solid border-gray-300 p-3 rounded-2xl lg:px-6 lg:py-4">
         <h4 className="font-medium text-lg text-gray-700 lg:text-xl">
-          Order Review
+          Order Summary
         </h4>
 
         <table className="w-full text-sm font-normal lg:text-base">
@@ -136,7 +162,6 @@ function OrderReview({ cart, back, goTo }) {
           onClick={back}
           disabled={isLoading}
         >
-          {" "}
           Back
         </button>
 
