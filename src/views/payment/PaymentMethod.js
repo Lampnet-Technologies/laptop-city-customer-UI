@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import IMAGES from "../../assets";
 import { usePaystackPayment } from "react-paystack";
 import { PlaceOrderContext, UserCartDependency } from "../../App";
-import { PlaceOrderResponseContext } from "../../pages/payment";
+import { PlaceOrderResponseContext, ChosenMethodContext } from "../../pages/payment";
 
 const methods = [
   { name: "paystack", logo: `${IMAGES.payment.paystack}`, disabled: false },
@@ -24,18 +24,20 @@ function PaymentMethod({ cart, goTo, back }) {
   const [placeOrder] = useContext(PlaceOrderContext);
   const [responseData, setResponseData] = useContext(PlaceOrderResponseContext);
   const [cartDep, setCartDep] = useContext(UserCartDependency);
+  const [chosenMethodPrice] = useContext(ChosenMethodContext);
   const [paymentType, setPaymentType] = useState("paystack");
 
   const navigate = useNavigate();
   const accessToken = localStorage.getItem("token");
 
   const config = {
-    reference: responseData?.transactionId || `ref_${Date.now()}`,
+    reference: `paystack_${responseData?.transactionId || Date.now()}`, // Separate Paystack reference
     email: placeOrder.shippingAddress?.email || placeOrder.email || "",
     amount: (placeOrder.amountToPay || 0) * 100,
     metadata: {
       name: `${placeOrder.firstName || ""} ${placeOrder.lastName || ""}`,
       phone: placeOrder.phoneNumber || "",
+      transactionId: responseData?.transactionId, // Include your transactionId in metadata
     },
     publicKey: paystackPublicKey,
   };
@@ -45,29 +47,57 @@ function PaymentMethod({ cart, goTo, back }) {
   };
 
   const onSuccess = (reference) => {
-    // Build payload exactly as backend expects
+    console.log("=== PAYMENT SUCCESS DEBUG ===");
+    console.log("Paystack reference:", reference);
+    console.log("PlaceOrder context:", placeOrder);
+    console.log("Response data:", responseData);
+    console.log("Chosen method price:", chosenMethodPrice);
+
+    // Build payload with correct field mapping
     const dataToSend = {
-      carrierName: placeOrder.carrierName || "",
-      city: placeOrder.city || "",
+      // Use shippingAddress data as fallback
+      carrierName: placeOrder.shippingCarrier || placeOrder.carrierName || "",
+      city: placeOrder.shippingAddress?.city || placeOrder.city || "",
       couponCode: placeOrder.couponCode || "",
-      deliveryAmount: placeOrder.deliveryAmount || 0,
-      deliveryTime: placeOrder.deliveryTime || "",
-      email: placeOrder.email || "",
-      firstname: placeOrder.firstName || "",
-      lastname: placeOrder.lastName || "",
-      message: "", // no message from Paystack
+      deliveryAmount: chosenMethodPrice || placeOrder.deliveryAmount || 0, // Use the actual shipping cost
+      deliveryTime: placeOrder.estimatedDelivery || placeOrder.deliveryTime || "",
+      email: placeOrder.shippingAddress?.email || placeOrder.email || "",
+      firstname: placeOrder.shippingAddress?.firstName || placeOrder.firstName || "",
+      lastname: placeOrder.shippingAddress?.lastName || placeOrder.lastName || "",
+      message: reference.message || "", // Message from Paystack response
       orderNumber: responseData?.orderNumber || 0,
       paymentStatus: "success", // Paystack onSuccess means success
-      phoneNumber: placeOrder.phoneNumber || "",
+      phoneNumber: placeOrder.shippingAddress?.phone || placeOrder.phoneNumber || "",
       reference: reference.reference, // Paystack reference
       shippingMethodId: placeOrder.shippingMethodId || 0,
-      state: placeOrder.state || "",
-      streetAddress: placeOrder.streetAddress || "",
-      transactionId: reference.reference, // same as reference unless backend expects transaction field
-      zipCode: placeOrder.zipCode || "",
+      state: placeOrder.shippingAddress?.state || placeOrder.state || "",
+      streetAddress: placeOrder.shippingAddress?.address || placeOrder.streetAddress || "",
+      transactionId: responseData?.transactionId, // Use the transaction ID from OrderReview, NOT Paystack reference
+      zipCode: placeOrder.shippingAddress?.zipCode || placeOrder.zipCode || "",
     };
 
-    console.log("Payment successful, sending data to backend:", dataToSend);
+    console.log("=== FINAL PAYLOAD TO BACKEND ===");
+    console.log(JSON.stringify(dataToSend, null, 2));
+
+    // Validate required fields before sending
+    const requiredFields = ['firstname', 'lastname', 'email', 'streetAddress', 'city', 'state', 'phoneNumber'];
+    const missingFields = requiredFields.filter(field => !dataToSend[field]);
+
+    if (missingFields.length > 0) {
+      console.error("Missing required fields:", missingFields);
+      alert(`Missing required information: ${missingFields.join(', ')}. Please go back and complete your details.`);
+      return;
+    }
+
+    // Log additional debugging info
+    console.log("=== REQUEST DETAILS ===");
+    console.log("URL:", `${baseUrl}/orders/payment`);
+    console.log("Method: POST");
+    console.log("Headers:", {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${accessToken ? accessToken.substring(0, 20) + '...' : 'null'}`,
+    });
+    console.log("Payload size:", JSON.stringify(dataToSend).length, "bytes");
 
     fetch(`${baseUrl}/orders/payment`, {
       method: "POST",
@@ -79,14 +109,31 @@ function PaymentMethod({ cart, goTo, back }) {
     })
       .then(async (response) => {
         const text = await response.text(); // read body for error logging
+
+        console.log("=== BACKEND RESPONSE ===");
+        console.log("Status:", response.status);
+        console.log("Response text:", text);
+
         if (!response.ok) {
           console.error("Backend error response:", text);
-          throw new Error(`Network response failed: ${response.status} - ${text}`);
+
+          // Try to parse error details
+          let errorDetails = "";
+          try {
+            const errorData = JSON.parse(text);
+            errorDetails = errorData.message || errorData.error || "Unknown error";
+          } catch (e) {
+            errorDetails = text;
+          }
+
+          throw new Error(`Backend error (${response.status}): ${errorDetails}`);
         }
         return JSON.parse(text || "{}");
       })
       .then((data) => {
         console.log("Order completion success:", data);
+
+        // Navigate to success page
         navigate("/payment/successful", {
           state: {
             cartAmount: cart.cartItems.length,
@@ -94,13 +141,15 @@ function PaymentMethod({ cart, goTo, back }) {
             orderNo: responseData?.orderNumber,
           },
         });
+
+        // Clean up contexts
         setResponseData(null);
         setCartDep(responseData?.orderNumber);
       })
       .catch((error) => {
         console.error("Payment completion error:", error);
         alert(
-          "Payment was successful but there was an error completing the order. Please contact support."
+          "Payment was successful but there was an error completing the order. Please contact support with this reference: " + reference.reference
         );
       });
   };
@@ -112,35 +161,58 @@ function PaymentMethod({ cart, goTo, back }) {
   const PaystackHookExample = () => {
     const initializePayment = usePaystackPayment(config);
 
-    const canProceed =
-      paystackPublicKey && responseData?.transactionId && placeOrder.amountToPay;
+    const canProceed = () => {
+      const hasPublicKey = !!paystackPublicKey;
+      const hasTransactionId = !!responseData?.transactionId;
+      const hasAmount = !!(placeOrder.amountToPay && placeOrder.amountToPay > 0);
+      const hasEmail = !!(placeOrder.shippingAddress?.email || placeOrder.email);
+
+      return hasPublicKey && hasTransactionId && hasAmount && hasEmail;
+    };
 
     return (
       <div className="w-full md:w-auto">
         <button
-          className={`inline-block w-full md:w-48 p-2 rounded outline-0 font-semibold text-white text-sm capitalize ${
-            canProceed
+          className={`inline-block w-full md:w-48 p-2 rounded outline-0 font-semibold text-white text-sm capitalize transition-colors ${canProceed()
               ? "bg-green hover:bg-green-600"
               : "bg-gray-400 cursor-not-allowed"
-          }`}
+            }`}
           onClick={() => {
-            if (canProceed) {
+            if (canProceed()) {
+              console.log("=== PAYSTACK CONFIG ===");
+              console.log("Config:", config);
               initializePayment(onSuccess, onClose);
             } else {
               console.error("Cannot proceed with payment:", {
                 hasPublicKey: !!paystackPublicKey,
                 hasTransactionId: !!responseData?.transactionId,
-                hasAmount: !!placeOrder.amountToPay,
+                hasAmount: !!(placeOrder.amountToPay && placeOrder.amountToPay > 0),
+                hasEmail: !!(placeOrder.shippingAddress?.email || placeOrder.email),
+                config: config,
               });
               alert(
-                "Payment configuration error. Please try again or contact support."
+                "Payment configuration error. Please ensure all required information is provided."
               );
             }
           }}
-          disabled={!canProceed}
+          disabled={!canProceed()}
         >
           complete payment
         </button>
+
+        {/* Debug info - remove in production */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="mt-4 p-3 bg-gray-100 rounded text-xs">
+            <h6 className="font-semibold mb-2">Payment Debug:</h6>
+            <div className="space-y-1">
+              <p>Amount: ₦{placeOrder.amountToPay || 0}</p>
+              <p>Email: {placeOrder.shippingAddress?.email || placeOrder.email || 'Missing'}</p>
+              <p>Transaction ID: {responseData?.transactionId || 'Missing'}</p>
+              <p>Order Number: {responseData?.orderNumber || 'Missing'}</p>
+              <p>Can Proceed: {canProceed() ? 'Yes' : 'No'}</p>
+            </div>
+          </div>
+        )}
       </div>
     );
   };
@@ -218,7 +290,7 @@ function PaymentMethod({ cart, goTo, back }) {
       >
         <button
           type="button"
-          className="inline-block w-full md:w-48 bg-transparent border border-solid border-green p-2 rounded outline-0 font-semibold text-black text-sm"
+          className="inline-block w-full md:w-48 bg-transparent border border-solid border-green p-2 rounded outline-0 font-semibold text-black text-sm hover:bg-green hover:text-white transition-colors"
           onClick={back}
         >
           Back
