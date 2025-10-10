@@ -1,12 +1,12 @@
-import React, { useEffect, useContext } from "react";
+import { useEffect, useContext } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { Banner } from "../../component/homepage";
 import ProfileMenu from "./ProfileMenu";
 import { LoginContext, UserProfileContext } from "../../App";
 
 function Profile() {
-  const [loggedIn, setLoggedIn] = useContext(LoginContext);
-  const [profile, setProfile] = useContext(UserProfileContext);
+  const { loggedIn, setLoggedIn, token, setToken } = useContext(LoginContext);
+  const [profile, setProfile] = useContext(UserProfileContext); // Fixed: destructure as array
 
   const navigate = useNavigate();
 
@@ -14,7 +14,7 @@ function Profile() {
     if (!loggedIn) {
       navigate("/login");
     }
-  });
+  }, [loggedIn, navigate]);
 
   return (
     <div className="my-10 md:my-20">
@@ -22,7 +22,7 @@ function Profile() {
 
       <div className="my-10 md:my-20">
         <h1 className="px-2 text-2xl text-center font-semibold capitalize mb-12 tracking-tight flex items-center justify-center gap-2 flex-wrap">
-          <span className="text-green">Welcome</span> "{profile?.username}"!{" "}
+          <span className="text-green">Welcome</span> {profile?.username}!{" "}
           {profile?.avatar ? (
             <img
               src={profile.avatar}
@@ -40,7 +40,6 @@ function Profile() {
 
         <div className="hidden md:flex md:justify-between xl:justify-start md:gap-12 xl:gap-20 items-start pl-6 md:pr-12 xl:pr-24">
           <ProfileMenu />
-
           <Outlet />
         </div>
       </div>

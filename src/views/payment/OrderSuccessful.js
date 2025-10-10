@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LoginContext } from "../../App";
 
 function OrderSuccessful() {
-  const [loggedIn, setLoggedIn] = useContext(LoginContext);
+  const { loggedIn, setLoggedIn, token, setToken } = useContext(LoginContext);
   const [values, setValues] = useState({
     cartAmount: "",
     cartTotal: "",

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import EmptyOrders from "./EmptyOrders";
 import RenderedOrders from "./RenderedOrders";
 import { useNavigate } from "react-router-dom";
@@ -39,6 +39,8 @@ const localOrders = [
   },
 ];
 
+const baseUrl = process.env.REACT_APP_BASE_URL;
+
 // const accessToken = localStorage.getItem("token");
 
 function MyOrders() {
@@ -59,14 +61,14 @@ function MyOrders() {
   useEffect(() => {
     const accessToken = localStorage.getItem("token");
 
-    fetch("https://apps-1.lampnets.com/ecommb-staging/orders/my-orders", {
+    fetch(`${baseUrl}/orders/my-orders`, {
       headers: {
         "content-type": "application/json",
         Authorization: "Bearer " + accessToken,
       },
     })
       .then((res) => {
-        if (res.status != 200) {
+        if (res.status !== 200) {
           setAlert({
             ...alert,
             open: true,

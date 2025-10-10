@@ -1,19 +1,8 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
 import IMAGES from "../../assets";
-import LaptopCityButton from "../button";
 
 export default function Hero() {
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const navigate = useNavigate();
-
-  const showSearchResult = (searchTerm) => {
-    const encoded = encodeURI(searchTerm);
-
-    navigate(`/products?filter=${searchTerm}`);
-  };
-
+ 
   return (
     <div className="flex flex-col justify-between gap-12 md:flex-row md:pl-12 lg:pl-24 lg:gap-0 lg:items-center">
       <div className="w-full flex flex-col justify-between gap-6 px-4 md:px-0 md:justify-start">
@@ -24,26 +13,7 @@ export default function Hero() {
         <p className="lg:text-[22px]">
           We ensure maximum satisfaction for all our customers....
         </p>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            showSearchResult(searchTerm);
-          }}
-          className="flex justify-between gap-5 mt-4 md:w-fit"
-        >
-          <div className="h-10 rounded p-3 lg:px-4 lg:h-auto lg:w-80 flex w-full justify-between items-center gap-8 border-solid border-2 border-[#BBC8D4]">
-            <i className="bx bx-search bx-sm text-[#94A3B1]"></i>
-            <input
-              id="searchGadget"
-              type="text"
-              placeholder="Search for gadgets..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="placeholder:text-[#BBC8D4] inline-block h-full text-xs md:text-sm lg:text-base lg:font-semibold outline-none w-full"
-            />
-          </div>
-          <LaptopCityButton>search</LaptopCityButton>
-        </form>
+       
       </div>
 
       <div

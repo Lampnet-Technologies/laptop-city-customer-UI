@@ -4,7 +4,7 @@ import { ProductTypesModal } from "../../views/popup_modals";
 import { useNavigate } from "react-router-dom";
 
 function Categories() {
-  // const [showModal, setShowModal] = useState(false);
+  /* // const [showModal, setShowModal] = useState(false); */
   const [isHovering, setIsHovering] = useState(false);
   const [isHovering2, setIsHovering2] = useState(false);
 
@@ -43,7 +43,7 @@ function Categories() {
             }}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            onClick={() => navigate(`/products?filter=new_products`)}
+            onClick={() => navigate("/products?condition=new")}
           >
             <h2 className="text-inherit text-white font-semibold capitalize lg:font-bold">
               new products
@@ -59,7 +59,7 @@ function Categories() {
             }}
             onMouseEnter={handleMouseEnter2}
             onMouseLeave={handleMouseLeave2}
-            onClick={() => navigate(`/products?filter=used_products`)}
+            onClick={() => navigate("/products?condition=used")}
           >
             <h2 className="text-inherit text-white font-semibold capitalize lg:font-bold">
               used products

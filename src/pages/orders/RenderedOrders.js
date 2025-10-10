@@ -1,4 +1,4 @@
-import React from "react";
+
 import NairaSymbol from "../../component/nairaSymbol";
 
 const statusObj = {

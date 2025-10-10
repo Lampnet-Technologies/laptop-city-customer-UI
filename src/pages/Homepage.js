@@ -1,6 +1,7 @@
 import React, { lazy, Suspense } from "react";
 import { Hero, Banner, Categories, ProductGroups } from "../component/homepage";
 import Loading from "../component/loading";
+import Search from "../component/homepage/Search";
 
 // const Hero = lazy(() => import("../component/homepage/hero"));
 // const Banner = lazy(() => import("../component/homepage/banner"));
@@ -13,7 +14,8 @@ function Homepage() {
       {/* <Suspense fallback={null}> */}
       <Hero />
       <Banner />
-      <Categories />
+      {/* <Search /> */}
+      {/* <Categories /> */}
       <ProductGroups />
       {/* </Suspense> */}
     </div>

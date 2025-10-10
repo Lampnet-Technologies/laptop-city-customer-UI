@@ -1,3 +1,41 @@
+# Laptop City Customer UI
+
+## Setup Instructions
+
+1. Clone the repository
+2. Copy `.env.example` to `.env`:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+4. Start the development server:
+
+   ```bash
+   npm start
+   ```
+
+## Environment Variables
+
+Make sure to set up the following environment variables:
+
+- `REACT_APP_BASE_URL`: API base URL (required)
+
+## Common Issues
+
+If products are not loading:
+
+1. Check your `.env` file exists and has the correct API URL
+2. Clear your browser cache and localStorage
+3. Try the fallback endpoint if main endpoint fails
+4. Check network tab for API errors
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

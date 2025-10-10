@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState, useCallback } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ScrollToTop from "./utils/ScrollToTop";
 import { Nav, Footer } from "./layouts";
@@ -27,8 +27,29 @@ import ProductsListing from "./pages/products/ProductListingPage";
 import ProductDesc from "./pages/products/ProductDescPage";
 import { MyWishlists } from "./pages/wishlist";
 import BlogDetails from "./component/blogDetails";
+import BrandsGrid from "./pages/products/Brands";
+import ProductTypesOverlay from "./pages/products/ProductType";
 
-export const LoginContext = createContext();
+// Import Base URL from environment variables
+const baseUrl = process.env.REACT_APP_BASE_URL;
+
+/**
+ * Contexts for global state
+ * - LoginContext → holds login state + token + loading states
+ * - UserProfileContext → stores user profile
+ * - UserCart → stores cart items and total
+ * - UserCartDependency → used for refreshing cart after add/remove
+ * - PlaceOrderContext → order state when checking out
+ * - CouponDiscount → coupon discount applied at checkout
+ */
+export const LoginContext = createContext({
+  loggedIn: false,
+  token: null,
+  isLoading: false,
+  setLoggedIn: () => {},
+  setToken: () => {},
+});
+
 export const UserProfileContext = createContext();
 export const UserCart = createContext();
 export const UserCartDependency = createContext();
@@ -36,11 +57,18 @@ export const PlaceOrderContext = createContext();
 export const CouponDiscount = createContext();
 
 function App() {
-  const [loggedIn, setLoggedIn] = useState(localStorage.token ? true : false);
-  const [profile, setProfile] = useState("");
+  // ✅ Login state + token pulled from localStorage
+  const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem("token"));
+  const [token, setToken] = useState(localStorage.getItem("token") || null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // ✅ Other global states
+  const [profile, setProfile] = useState(null);
   const [cart, setCart] = useState({ cartItems: null, total: "" });
-  const [cartDep, setCartDep] = useState();
+  const [cartDep, setCartDep] = useState(0);
   const [discount, setDiscount] = useState(0);
+
+  // Default Nigeria ZIP to prevent checkout issues
   const [placeOrder, setPlaceOrder] = useState({
     couponCode: "",
     firstName: "",
@@ -49,60 +77,106 @@ function App() {
     streetAddress: "",
     state: "",
     city: "",
-    zipCode: "",
+    zipCode: "100001",
     phoneNumber: "",
     shippingMethodId: "",
   });
 
-  useEffect(() => {
-    const accessToken = localStorage.getItem("token");
+  // ✅ Centralized function to handle token expiry
+  const handleTokenExpiry = useCallback(() => {
+    localStorage.removeItem("token");
+    setLoggedIn(false);
+    setToken(null);
+    setProfile(null);
+    setCart({ cartItems: null, total: "" });
+    setIsLoading(false);
+  }, []);
 
-    if (loggedIn) {
-      fetch("https://apps-1.lampnets.com/ecommb-staging/profiles/my-profile", {
-        headers: {
-          Authorization: "Bearer " + accessToken,
-        },
-      })
-        .then((res) => {
-          return res.json();
-        })
-        .then((result) => {
-          setProfile(result);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+  // ✅ Optimized function to fetch both profile and cart data simultaneously
+  const fetchUserData = useCallback(async () => {
+    if (!loggedIn || !token) {
+      setProfile(null);
+      setCart({ cartItems: null, total: "" });
+      return;
     }
-  }, [loggedIn, cartDep]);
 
-  useEffect(() => {
-    const accessToken = localStorage.getItem("token");
+    setIsLoading(true);
+    
+    try {
+      // Fetch both profile and cart data simultaneously
+      const [profileResponse, cartResponse] = await Promise.all([
+        fetch(`${baseUrl}/profiles/my-profile`, {
+          headers: { 
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+        }),
+        fetch(`${baseUrl}/cart-items/my-cart`, {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        })
+      ]);
 
-    if (loggedIn) {
-      fetch("https://apps-1.lampnets.com/ecommb-staging/cart-items/my-cart", {
-        headers: {
-          "content-type": "application/json",
-          Authorization: "Bearer " + accessToken,
-        },
-      })
-        .then((res) => {
-          return res.json();
-        })
-        .then((result) => {
-          setCart({
-            ...cart,
-            cartItems: result.cartItems,
-            total: result.total,
-          });
-        })
-        .catch((error) => {
-          console.error(error.message);
+      // Handle profile response
+      if (profileResponse.ok) {
+        const profileResult = await profileResponse.json();
+        setProfile(profileResult);
+      } else if (profileResponse.status === 401) {
+        handleTokenExpiry();
+        return;
+      } else {
+        console.error("Failed to fetch profile:", profileResponse.status);
+      }
+
+      // Handle cart response
+      if (cartResponse.ok) {
+        const cartResult = await cartResponse.json();
+        setCart({
+          cartItems: cartResult.cartItems,
+          total: cartResult.total,
         });
+      } else if (cartResponse.status === 401) {
+        handleTokenExpiry();
+        return;
+      } else {
+        console.error("Failed to fetch cart:", cartResponse.status);
+      }
+
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    } finally {
+      setIsLoading(false);
     }
-  }, [loggedIn, cartDep]);
+  }, [loggedIn, token, baseUrl, handleTokenExpiry]);
+
+  // ✅ Fetch user data when login state or cartDep changes
+  useEffect(() => {
+    fetchUserData();
+  }, [fetchUserData, cartDep]);
+
+  // ✅ Sync localStorage with token state
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", token);
+    } else {
+      localStorage.removeItem("token");
+    }
+  }, [token]);
+
+  // ✅ Enhanced login context with loading state
+  const loginContextValue = {
+    loggedIn,
+    setLoggedIn,
+    token,
+    setToken,
+    isLoading,
+    refreshUserData: fetchUserData, // Allow components to trigger refresh
+  };
 
   return (
-    <LoginContext.Provider value={[loggedIn, setLoggedIn]}>
+    <LoginContext.Provider value={loginContextValue}>
       <UserProfileContext.Provider value={[profile, setProfile]}>
         <UserCart.Provider value={[cart, setCart]}>
           <UserCartDependency.Provider value={[cartDep, setCartDep]}>
@@ -117,19 +191,14 @@ function App() {
                       <Routes>
                         <Route path="/" element={<Homepage />} />
                         <Route path="/products" element={<ProductsListing />} />
-                        <Route
-                          path="/product-desc/:id"
-                          element={<ProductDesc />}
-                        />
+                        <Route path="/product/:id" element={<ProductDesc />} />
                         <Route path="/blog" element={<Blog />} />
                         <Route path="/blog/:id" element={<BlogDetails />} />
-                        {/* <Route
-                          path="/blog/:slug"
-                          element={<SingleBlogPost />}
-                        /> */}
+                        {/* <Route path="/blog/:slug" element={<SingleBlogPost />} /> */}
 
                         <Route path="/login" element={<Login />} />
                         <Route path="/signup" element={<SignUp />} />
+
                         <Route element={<Profile />}>
                           <Route path="/profile" element={<ProfileMenu />} />
                           <Route element={<ProfileInfo />}>
@@ -156,6 +225,7 @@ function App() {
                           </Route>
                           <Route path="/wishlist" element={<MyWishlists />} />
                         </Route>
+
                         <Route path="/payment" element={<Payment />} />
                         <Route
                           path="/payment/successful"
@@ -165,6 +235,7 @@ function App() {
                           path="/track-order/:id"
                           element={<TrackOrder />}
                         />
+
                         <Route element={<Company />}>
                           <Route path="/about" element={<About />} />
                           <Route
@@ -175,7 +246,13 @@ function App() {
                             path="/privacy-policy"
                             element={<PrivacyPolicy />}
                           />
+                          <Route
+                            path="/product-type"
+                            element={<ProductTypesOverlay />}
+                          />
+                          <Route path="/brands" element={<BrandsGrid />} />
                         </Route>
+
                         <Route path="*" element={<PageNotFound />} />
                       </Routes>
                     </div>

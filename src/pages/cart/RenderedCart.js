@@ -14,6 +14,11 @@ function RenderedCart({
   const [couponCode, setCouponCode] = useState("");
   const navigate = useNavigate();
 
+  // Unified product click handler
+  const handleProductClick = (id) => {
+    navigate(`/product/${id}`);
+  };
+
   return (
     <div className=" mt-6 mb-24 space-y-4 lg:space-y-6">
       <div className="w-[95%] md:w-[70%] lg:w-[60%] mx-auto mb-10 space-y-3 border border-solid border-gray-300 p-3 rounded-2xl lg:px-6 lg:py-4">
@@ -70,7 +75,7 @@ function RenderedCart({
             <div
               className="w-[95%] mx-auto rounded shadow-sm shadow-gray-400 p-4 space-y-6 lg:space-y-4 lg:pb-6 lg:px-8 cursor-pointer"
               key={item.id}
-              onClick={() => navigate(`/product-desc/${item.product.id}`)}
+              onClick={() => handleProductClick(item.product.id)}
             >
               <div className="flex justify-start items-start gap-2 md:gap-4">
                 <div className="w-1/5 max-w-24 h-20 lg:h-32 flex justify-center items-center">
@@ -101,7 +106,6 @@ function RenderedCart({
                   className="flex justify-between items-center gap-2 uppercase text-green font-semibold text-sm lg:text-base"
                   onClick={(e) => {
                     e.stopPropagation();
-
                     remove(item.id);
                   }}
                 >
@@ -112,18 +116,18 @@ function RenderedCart({
                   className="text-base flex items-center divide-x-2 w-28 lg:w-40 lg:py-1 border border-solid border-gray-700 rounded lg:rounded-md"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <button
+                  {/* <button
                     className="w-full px-1 py-0.5 font-semibold"
                     onClick={() =>
                       decrQty(item.quantity, item.id, item.product.id)
                     }
                   >
                     -
-                  </button>
+                  </button> */}
                   <p className="w-full px-1 py-0.5 font-semibold text-center text-green">
                     {item.quantity}
                   </p>
-                  <button
+                 {/*  <button
                     className="w-full px-1 py-0.5 font-semibold"
                     onClick={() =>
                       incrQty(
@@ -135,7 +139,7 @@ function RenderedCart({
                     }
                   >
                     +
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </div>

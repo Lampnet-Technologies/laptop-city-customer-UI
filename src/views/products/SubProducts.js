@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Groups } from "../../component/homepage/productGroups";
+
+const baseUrl = process.env.REACT_APP_BASE_URL;
 
 function SubProducts() {
   const [bestSelling, setBestSelling] = useState(null);
@@ -15,7 +17,7 @@ function SubProducts() {
 
   useEffect(() => {
     fetch(
-      `https://apps-1.lampnets.com/ecommb-staging/products/best-selling?pageNo=0&pageSize=${checkScreenSize()}`
+      `${baseUrl}/products/best-selling?pageNo=0&pageSize=${checkScreenSize()}`
     )
       .then((res) => {
         return res.json();
@@ -30,7 +32,7 @@ function SubProducts() {
 
   useEffect(() => {
     fetch(
-      `https://apps-1.lampnets.com/ecommb-staging/products/reviewed?pageNo=0&pageSize=${checkScreenSize()}&sortBy=createdOn&sortDir=desc`
+      `${baseUrl}/products/reviewed?pageNo=0&pageSize=${checkScreenSize()}&sortBy=createdOn&sortDir=desc`
     )
       .then((res) => {
         return res.json();
