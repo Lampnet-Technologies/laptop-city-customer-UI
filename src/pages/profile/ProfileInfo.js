@@ -1,4 +1,4 @@
-import React from "react";
+
 import { Link, NavLink, Outlet } from "react-router-dom";
 import PersonalInfo from "./PersonalInfo";
 import ContactInfo from "./ContactInfo";

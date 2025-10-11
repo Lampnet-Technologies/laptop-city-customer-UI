@@ -43,7 +43,7 @@ const activeStyles = ({ isActive }) => {
 };
 
 function ProfileMenu() {
-  const [loggedIn, setLoggedIn] = useContext(LoginContext);
+   const { loggedIn, setLoggedIn, token, setToken } = useContext(LoginContext);
   const [openAlert, setOpenAlert] = useState(false);
 
   const navigate = useNavigate();

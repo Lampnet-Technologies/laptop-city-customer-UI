@@ -1,125 +1,135 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import IMAGES from "../../assets";
 import NairaSymbol from "../../component/nairaSymbol";
 
-function ProductContainer({ product, addToCart }) {
+function ProductContainer({ product, addToCart, addToWishlist }) {
   const navigate = useNavigate();
 
-  const handleProductDesc = (id) => {
-    navigate("/product-desc/" + id);
+  const handleProductClick = (id) => {
+    navigate(`/product/${id}`);
+  };
+
+  const formatPrice = (price) =>
+    price ? price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "0";
+
+  const getConditionText = (p) => {
+    if (p.condition) return p.condition.toLowerCase() === "new" ? "new" : "used";
+    if (p.category) return p.category === "BRAND NEW" ? "new" : "used";
+    return "used";
   };
 
   return (
-    <div
-      className="w-[170px] h-56 rounded flex flex-col justify-between cursor-pointer border-[#DADADA] border-tiny border-solid md:w-52 lg:w-60 lg:h-[300px] transition-all ease-in-out duration-500 hover:scale-105"
-      onClick={() => handleProductDesc(product.id)}
+    <div 
+      className="w-full h-[240px] rounded-lg flex flex-col justify-between cursor-pointer border border-[#DADADA] hover:shadow-lg transition-shadow duration-300 bg-white"
+      onClick={() => handleProductClick(product.id)}
     >
-      <div className="h-32 rounded bg-[#D9D9D9] flex justify-center items-center relative lg:h-44">
-        {product.images && (
-          <div className="w-4/5 h-4/5 flex justify-center items-center">
-            {product.images.length >= 1 ? (
-              <img
-                loading="lazy"
-                src={product.images[0].image}
-                alt={product.name || ""}
-                className="max-w-full max-h-full"
-              />
-            ) : (
-              <img
-                src={IMAGES.icons.cartGreen}
-                alt={""}
-                className="max-w-full max-h-full w-[50px]"
-              />
-            )}
-          </div>
-        )}
-        <div
-          className="bg-green text-white font-medium capitalize w-9 h-4 rounded-sm flex justify-center items-center absolute top-4 right-2 z-10"
-          style={{
-            fontSize: "10px",
-          }}
-        >
-          {product.category == "BRAND NEW" ? "new" : "used"}
-        </div>
-        {/* <button
-          type="button"
-          className="hidden lg:flex justify-center items-center text-dark-blue absolute bottom-2 right-2 z-10"
-          onClick={(e) => {
-            e.stopPropagation();
-
-            addToCart(product);
-          }}
-        >
-          <i className="bx bx-cart-add bx-sm"></i>
-        </button> */}
-      </div>
-      <div className="flex flex-col gap-1 justify-between h-20 px-2 pb-3 lg:h-28 lg:pt-2">
-        <p className="text-xs md:text-sm font-medium capitalize">
-          {product.name}
-        </p>
-
-        <div className="flex justify-between items-center gap-2">
-          <p className="text-base font-bold text-green">
-            <NairaSymbol />
-            {product.price}
-          </p>
-
-          <button
-            type="button"
-            className="bg-green text-white text-xs capitalize py-1 px-2 rounded flex justify-between items-center md:gap-1 lg:px-4"
-            onClick={(e) => {
-              e.stopPropagation();
-
-              addToCart(product);
+      {/* Image Section - Fixed height for complete uniformity */}
+      <div className="h-[140px] rounded-t-lg bg-[#F8F9FA] flex justify-center items-center relative p-2">
+        <div className="w-full h-full flex items-center justify-center">
+          <img
+            loading="lazy"
+            src={product.images?.[0]?.image || product.images?.[0] || "default-image-url"}
+            alt={product.name || "Product"}
+            className="w-full h-full object-contain max-w-[120px] max-h-[120px]"
+            onError={(e) => {
+              e.target.src = "default-fallback-image.png";
+              e.target.className = "w-[40px] h-[40px] object-contain";
             }}
-          >
-            <i className="bx bx-cart-add lg:text-base"></i> add
-          </button>
+          />
+        </div>
+        
+        <div className="absolute top-2 right-2 bg-green text-white font-medium capitalize px-2 py-0.5 rounded-sm text-[10px]">
+          {getConditionText(product)}
+        </div>
+      </div>
+
+      {/* Product Info Section - Fixed height for uniformity */}
+      <div className="flex flex-col gap-1 p-2 h-[80px] justify-between">
+        <p
+          className="text-xs font-medium capitalize line-clamp-2 leading-tight"
+          title={product.name}
+        >
+          {product.name || "Product Name"}
+        </p>
+        
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-bold text-green">
+            &#8358;{formatPrice(product.price)}
+          </p>
+          
+          <div className="flex items-center gap-1">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                addToWishlist(product);
+              }}
+              className="text-gray-400 hover:text-red-500 transition-colors p-1"
+              title="Add to Wishlist"
+            >
+              <i className="bx bx-heart text-sm"></i>
+            </button>
+            
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                addToCart(product);
+              }}
+              className="bg-green text-white text-[10px] px-2 py-1 rounded hover:bg-dark-green transition-colors"
+              title="Add to Cart"
+            >
+              <i className="bx bx-cart-add"></i>
+            </button>
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-function MainGroups({ heading, products, seeMore, addToCart }) {
+function MainGroups({ heading, products, seeMore, addToCart, addToWishlist }) {
+  // Handle the case where ProductsListing passes a single product in an array
+  if (products && products.length === 1 && !heading) {
+    return (
+      <ProductContainer
+        addToCart={addToCart}
+        addToWishlist={addToWishlist}
+        product={products[0]}
+      />
+    );
+  }
+
+  // Handle the normal case with heading and multiple products (ProductGroups)
   return (
-    <div className="max-w-full w-fit">
+    <div className="w-full">
       {heading && (
-        <h1 className="text-xl font-semibold capitalize lg:text-2xl">
-          {heading}
-        </h1>
+        <div className="mb-3">
+          <h2 className="text-lg font-bold capitalize">{heading}</h2>
+        </div>
       )}
 
-      <div className="mt-8 lg:mt-14 flex flex-wrap justify-around gap-x-2 gap-y-4 md:justify-start md:gap-8 lg:gap-y-10">
+      {/* Grid layout for ProductGroups */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
         {products &&
-          products.map((product, index) => {
-            return (
-              <ProductContainer
-                key={index}
-                addToCart={addToCart}
-                product={product}
-              />
-            );
-          })}
+          products.map((product, index) => (
+            <ProductContainer
+              key={product.id || index}
+              addToCart={addToCart}
+              addToWishlist={addToWishlist}
+              product={product}
+            />
+          ))}
       </div>
 
       {seeMore && (
-        <div
-          style={{
-            flexBasis: "100%",
-            flexShrink: 0,
-          }}
-          className="flex justify-end items-center text-sm font-medium mt-4"
-        >
+        <div className="flex justify-end mt-3">
           <Link
             to={{
               pathname: "/products",
               search: `?filter=${heading}`,
             }}
-            className="flex justify-between items-center hover:text-green hover:font-bold"
+            className="text-green hover:text-dark-green transition-colors font-medium text-sm"
           >
-            See more <i className="bx bx-chevron-right bx-sm ml-0"></i>
+            See more &gt;
           </Link>
         </div>
       )}

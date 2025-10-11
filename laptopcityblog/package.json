@@ -17,11 +17,11 @@
   "dependencies": {
     "@portabletext/react": "^3.2.1",
     "@sanity/client": "^6.28.4",
-    "@sanity/vision": "^3.82.0",
+    "@sanity/vision": "^4.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "sanity": "^3.82.0",
-    "styled-components": "^6.1.8"
+    "sanity": "^4.6.0",
+    "styled-components": "^6.1.19"
   },
   "devDependencies": {
     "@sanity/eslint-config-studio": "^5.0.2",

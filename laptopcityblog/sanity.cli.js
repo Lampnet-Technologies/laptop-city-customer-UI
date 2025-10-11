@@ -1,10 +1,9 @@
-import { createClient } from "@sanity/client";
+import {defineCliConfig} from 'sanity/cli'
 
-const client = createClient({
-  projectId: "mfhxtuoq",     
-  dataset: "production",
-  useCdn: true,
-  apiVersion: "2025-04-04",       
-});
-
-export default client;
+export default defineCliConfig({
+  api: {
+    projectId: 'mfhxtuoq',
+    dataset: 'production',
+    apiVersion: "2025-08-28",
+  },
+})

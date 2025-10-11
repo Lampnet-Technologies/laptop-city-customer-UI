@@ -1,421 +1,660 @@
-import React, { lazy, Suspense, useEffect, useState, useContext } from "react";
+import { lazy, Suspense, useEffect, useState, useContext, useCallback, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 import Pagination from "@mui/material/Pagination";
 import PaginationItem from "@mui/material/PaginationItem";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { IconButton } from "@mui/material";
 
 import Loading from "../../component/loading";
 import LaptopCityButton from "../../component/button";
 import ScrollToTop from "../../utils/ScrollToTop";
 import { LoginContext, UserCartDependency } from "../../App";
 import CustomAlert from "../../component/CustomAlert";
+import EmptyState from "../../component/EmptyState";
 
+// Lazy loaded components for better initial page load
 const AdSlider = lazy(() => import("../../component/adSlider"));
 const Banner = lazy(() => import("../../component/homepage/banner"));
 const ProductFilter = lazy(() => import("../../component/ProductFilter"));
 const SearchBox = lazy(() => import("../../component/searchBox"));
 const MainGroups = lazy(() => import("../../views/products/MainGroups"));
-const SubProducts = lazy(() => import("../../views/products/SubProducts"));
 
+// MUI theme configuration
 const theme = createTheme({
   palette: {
-    primary: {
-      main: "#009F7F",
-    },
+    primary: { main: "#009F7F" },
   },
 });
 
+const baseUrl = process.env.REACT_APP_BASE_URL;
+
+// ==================== CACHING UTILITIES ====================
+
+class SimpleCache {
+  constructor() {
+    this.cache = new Map();
+  }
+
+  get(key) {
+    const item = this.cache.get(key);
+    if (!item) return null;
+
+    if (Date.now() > item.expiry) {
+      this.cache.delete(key);
+      return null;
+    }
+
+    return item.data;
+  }
+
+  set(key, data, ttl = 5 * 60 * 1000) {
+    this.cache.set(key, {
+      data,
+      expiry: Date.now() + ttl
+    });
+  }
+
+  clear() {
+    this.cache.clear();
+  }
+}
+
+// Global cache instance
+const apiCache = new SimpleCache();
+
+// ==================== LOADING COMPONENTS ====================
+
+function ProductLoadingFlex({ count = 20 }) {
+  return (
+    <div className="flex flex-wrap gap-1">
+      {Array.from({ length: count }, (_, index) => (
+        <div
+          key={index}
+          className="flex-shrink-0 w-[calc(50%-2px)] sm:w-[calc(33.333%-3px)] md:w-[calc(25%-3px)] lg:w-[calc(20%-4px)] h-[240px] rounded-lg border border-[#DADADA] animate-pulse bg-white"
+        >
+          <div className="h-[140px] rounded-t-lg bg-gray-200 flex justify-center items-center relative p-2">
+            <div className="w-10 h-10 bg-gray-300 rounded animate-pulse"></div>
+            <div className="absolute top-2 right-2 w-8 h-4 bg-gray-300 rounded-sm animate-pulse"></div>
+          </div>
+          <div className="flex flex-col gap-2 p-2 h-[80px] justify-between">
+            <div className="space-y-1">
+              <div className="h-3 bg-gray-300 rounded w-3/4 animate-pulse"></div>
+              <div className="h-3 bg-gray-300 rounded w-1/2 animate-pulse"></div>
+            </div>
+            <div className="h-4 bg-gray-300 rounded w-1/3 animate-pulse"></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ==================== MAIN COMPONENT ====================
+
 function ProductsListing() {
-  const [loggedIn, setLoggedIn] = useContext(LoginContext);
+  // ==================== CONTEXT & STATE ====================
+
+  const { loggedIn, token } = useContext(LoginContext);
   const [cartDep, setCartDep] = useContext(UserCartDependency);
+
+  // UI State
   const [showFilters, setShowFilters] = useState(false);
-  const [products, setProducts] = useState(null);
-  const [totalPages, setTotalPages] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
-
-  const [brandId, setBrandId] = useState("");
-  const [categoryId, setCategoryId] = useState("");
-  const [productTypeId, setProductTypeId] = useState("");
-
   const [isLoading, setIsLoading] = useState(true);
-
   const [alert, setAlert] = useState({
     open: false,
     severity: "",
     message: "",
     title: "",
   });
-  const handleCloseAlert = () => {
-    setAlert({ ...alert, open: false });
-  };
 
+  // Products State
+  const [products, setProducts] = useState(null);
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+
+  // Filter State
+  const [brandId, setBrandId] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [productTypeId, setProductTypeId] = useState("");
+
+  // Router hooks
   const location = useLocation();
   const navigate = useNavigate();
 
-  const myFilter = new URLSearchParams(location.search).get("filter");
-// https://apps-1.lampnets.com/ecommb-prod/products
-// https://apps-1.lampnets.com/ecommb-prod/products
-  const getFetchURL = (page) => {
-    if (myFilter == "new_products") {
-      return `https://apps-1.lampnets.com/ecommb-prod/products/customers/category/1/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
-    } else if (myFilter == "used_products") {
-      return `https://apps-1.lampnets.com/ecommb-prod/products/customers/category/2/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
-    } else if (myFilter == "new arrivals") {
-      return `https://apps-1.lampnets.com/ecommb-prod/products/pagination/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
-    } else if (myFilter == "best selling products") {
-      return `https://apps-1.lampnets.com/ecommb-prod/products/best-selling?pageNo=${page}&pageSize=12`;
-    } else if (myFilter == "recently viewed") {
-      return `https://apps-1.lampnets.com/ecommb-prod/products/reviewed?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
-    } else if (myFilter) {
-      const encoded = encodeURI(myFilter);
-      return `https://apps-1.lampnets.com/ecommb-prod/products/search?pageNo=${page}&pageSize=12&query=${encoded}&sortBy=id&sortDir=asc`;
-    } else if (myFilter === null) {
-      return `https://apps-1.lampnets.com/ecommb-prod/products/pagination/active?pageNo=${page}&pageSize=12&sortBy=createdOn&sortDir=desc`;
+  // URL parameters
+  const urlParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
+  const brandQuery = urlParams.get("brand");
+  const typeQuery = urlParams.get("type");
+  const conditionQuery = urlParams.get("condition");
+  const myFilter = urlParams.get("filter");
+
+  // ==================== MEMOIZED VALUES ====================
+
+  // Current filter state for cache key and pagination reset detection
+  const filterState = useMemo(() => ({
+    brandId,
+    categoryId,
+    productTypeId,
+    myFilter
+  }), [brandId, categoryId, productTypeId, myFilter]);
+
+  const cacheKey = useMemo(() => {
+    return `products_${currentPage}_${brandId}_${categoryId}_${productTypeId}_${myFilter || 'none'}`;
+  }, [currentPage, brandId, categoryId, productTypeId, myFilter]);
+
+  // Track if filters have changed to reset pagination
+  const [prevFilterState, setPrevFilterState] = useState(filterState);
+
+  // ==================== EVENT HANDLERS ====================
+
+  const handleCloseAlert = useCallback(() => {
+    setAlert(prev => ({ ...prev, open: false }));
+  }, []);
+
+  const handleOpen = useCallback(() => {
+    setShowFilters(prev => !prev);
+  }, []);
+
+  // ==================== API UTILITIES ====================
+
+  const fetchProducts = useCallback(async (url, cacheKey, cacheTTL = 5 * 60 * 1000) => {
+    // Check cache first
+    const cached = apiCache.get(cacheKey);
+    if (cached) {
+      console.log('🎯 Cache hit for:', cacheKey);
+      return cached;
     }
-  };
 
-  useEffect(() => {
-    const url = getFetchURL(currentPage);
+    try {
+      console.log('🌐 Fetching from API:', url);
+      const response = await fetch(url, {
+        headers: {
+          Accept: "application/json",
+          'Cache-Control': 'public, max-age=300'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server responded with ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      // Normalize response format
+      let result;
+      if (Array.isArray(data)) {
+        result = {
+          products: data,
+          totalPages: Math.ceil(data.length / 20)
+        };
+      } else {
+        result = {
+          products: data.content || [],
+          totalPages: data.totalPages || Math.ceil((data.totalElements || 0) / 20),
+        };
+      }
+
+      // Cache the result
+      apiCache.set(cacheKey, result, cacheTTL);
+      console.log('💾 Cached result for:', cacheKey);
+
+      return result;
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+      return { products: [], totalPages: 0 };
+    }
+  }, []);
+
+  // ==================== SEARCH FUNCTIONALITY ====================
+
+  const handleSearch = useCallback(async (searchTerm, page = 0) => {
+    if (!searchTerm?.trim()) return;
 
     setIsLoading(true);
 
-    fetch(url)
-      .then((res) => {
-        return res.json();
-      })
-      .then((result) => {
-        // window.scrollTo(0, 0);
-        setProducts(result.content);
-        setTotalPages(result.totalPages);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error();
-      });
-  }, [currentPage, myFilter]);
+    try {
+      const url = `${baseUrl}/products/search?pageNo=${page}&pageSize=20&query=${encodeURIComponent(
+        searchTerm.trim()
+      )}&sortBy=id&sortDir=desc`;
 
-  const handleSearch = (searchTerm) => {
+      const searchCacheKey = `search_${encodeURIComponent(searchTerm.trim())}_${page}`;
+      const { products: searchResults, totalPages } = await fetchProducts(url, searchCacheKey);
+
+      setProducts(searchResults);
+      setTotalPages(totalPages);
+      setCurrentPage(page); 
+    } catch (error) {
+      setAlert({
+        open: true,
+        severity: "error",
+        title: "Search Error",
+        message: error.message || "Search failed. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [fetchProducts, baseUrl]);
+
+  // ==================== PRODUCT LOADING ====================
+
+  const loadProducts = useCallback(async (page = 0) => {
     setIsLoading(true);
 
-    const encoded = encodeURI(searchTerm);
+    try {
+      let url = `${baseUrl}/products/pagination/active?pageNo=${page}&pageSize=20&sortBy=id&sortDir=desc`;
 
-    fetch(
-      `https://apps-1.lampnets.com/ecommb-prod/products/search?pageNo=0&pageSize=12&query=${encoded}&sortBy=id&sortDir=asc`
-    )
-      .then((res) => {
-        return res.json();
-      })
-      .then((result) => {
-        setProducts(result.content);
-        setTotalPages(result.totalPages);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        alert(error);
-        setIsLoading(false);
+      // Apply filters if any are selected
+      if (brandId || categoryId || productTypeId) {
+        const params = new URLSearchParams({
+          pageNo: page,
+          pageSize: 20,
+          sortBy: "id",
+          sortDir: "desc",
+          ...(categoryId && { categoryId }),
+          ...(brandId && { brandId }),
+          ...(productTypeId && { productTypeId }),
+        });
+        url = `${baseUrl}/products/filter-products?${params}`;
+      }
+
+      const productsCacheKey = `products_${page}_${brandId}_${categoryId}_${productTypeId}`;
+      const { products, totalPages } = await fetchProducts(url, productsCacheKey);
+
+      setProducts(products);
+      setTotalPages(totalPages);
+      setCurrentPage(page);
+    } catch (error) {
+      setAlert({
+        open: true,
+        severity: "error",
+        title: "Error",
+        message: "Failed to load products.",
       });
-  };
+    } finally {
+      setIsLoading(false);
+    }
+  }, [fetchProducts, baseUrl, brandId, categoryId, productTypeId]);
 
-  const handleFilter = () => {
-    fetch(
-      `https://apps-1.lampnets.com/ecommb-prod/products/filter-products?${
-        brandId && `brandId=${brandId}`
-      }${categoryId && `&categoryId=${categoryId}`}&pageNo=0&pageSize=12${
-        productTypeId && `&productTypeId=${productTypeId}`
-      }&sortBy=id&sortDir=desc`
-    )
-      .then((res) => {
-        return res.json();
-      })
-      .then((result) => {
-        setProducts(result.content);
-        setTotalPages(result.totalPages);
-        setCurrentPage(result.pageNo);
-      })
-      .catch((error) => {
-        console.error();
-      });
-  };
+  // ==================== CART & WISHLIST FUNCTIONALITY ====================
 
-  const viewAll = () => {
-    // const url = getFetchURL(0);
+  const handleAddToCart = useCallback(async (product) => {
+    // Check if user is logged in
+    if (!loggedIn || !token) {
+      navigate("/login", { state: { previousUrl: location.pathname } });
+      return;
+    }
 
-    setIsLoading(true);
-    setBrandId("");
-    setCategoryId("");
-    setProductTypeId("");
-
-    fetch(
-      "https://apps-1.lampnets.com/ecommb-prod/products/pagination/active?pageNo=0&pageSize=12&sortBy=createdOn&sortDir=desc"
-    )
-      .then((res) => {
-        return res.json();
-      })
-      .then((result) => {
-        setProducts(result.content);
-        setTotalPages(result.totalPages);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error();
-      });
-  };
-
-  const handleChangePage = (event, page) => {
-    setCurrentPage(page - 1);
-    window.scroll({
-      top: 400,
-      behavior: "smooth",
-    });
-  };
-
-  const handleOpen = () => {
-    setShowFilters((prev) => !prev);
-  };
-
-  const handleAddToCart = (product) => {
-    const dataToSend = { productId: product.id, quantity: 1 };
-
-    const accessToken = localStorage.getItem("token");
-
-    if (!loggedIn) {
-      navigate("/login", {
-        state: {
-          previousUrl: location.pathname,
-        },
-      });
-    } else {
-      fetch("https://apps-1.lampnets.com/ecommb-prod/cart-items/add", {
+    try {
+      const response = await fetch(`${baseUrl}/cart-items/add`, {
         method: "POST",
         headers: {
-          "content-type": "application/json",
-          Authorization: "Bearer " + accessToken,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(dataToSend),
-      })
-        .then((res) => {
-          if (res.status == 200) {
-            setCartDep(product.id);
-            setAlert({
-              ...alert,
-              open: true,
-              severity: "success",
-              title: "1 item added to cart",
-              message: `${product.name} is added to cart`,
-            });
-          } else {
-            setAlert({
-              ...alert,
-              open: true,
-              severity: "info",
-              title: "Item was not added to cart",
-            });
-          }
-        })
-        .catch((error) => {
-          setAlert({
-            ...alert,
-            open: true,
-            severity: "error",
-            title: "Failed to add item to cart",
-            message: error.message,
-          });
-        });
+        body: JSON.stringify({
+          productId: product.id,
+          quantity: 1
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
+
+      // Update cart dependency to trigger cart updates
+      setCartDep(product.id);
+
+      setAlert({
+        open: true,
+        severity: "success",
+        title: "1 item added to cart",
+        message: `${product.name} added to cart`,
+      });
+    } catch (error) {
+      setAlert({
+        open: true,
+        severity: "error",
+        title: "Failed to add to cart",
+        message: error.message || "Unable to add item to cart",
+      });
     }
-  };
+  }, [loggedIn, token, baseUrl, navigate, location.pathname, setCartDep]);
+
+  const handleAddToWishlist = useCallback(async (product) => {
+    // Check if user is logged in
+    if (!loggedIn || !token) {
+      navigate("/login", { state: { previousUrl: location.pathname } });
+      return;
+    }
+
+    try {
+      const response = await fetch(`${baseUrl}/wish-lists/add`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          basketId: 1,
+          productId: product.id,
+          quantity: 1
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
+
+      setAlert({
+        open: true,
+        severity: "success",
+        title: "Added to wishlist",
+        message: `${product.name} added to wishlist`,
+      });
+    } catch (error) {
+      setAlert({
+        open: true,
+        severity: "error",
+        title: "Failed to add to wishlist",
+        message: error.message || "Unable to add item to wishlist",
+      });
+    }
+  }, [loggedIn, token, baseUrl, navigate, location.pathname]);
+
+  // ==================== FILTER RESOLUTION EFFECTS ====================
+
+  // Resolve brand name to brandId
+  useEffect(() => {
+    if (!brandQuery) {
+      setBrandId("");
+      return;
+    }
+
+    const fetchBrandId = async () => {
+      try {
+        let brands = apiCache.get("all_brands");
+        if (!brands) {
+          const response = await fetch(`${baseUrl}/brands`);
+          brands = await response.json();
+          apiCache.set("all_brands", brands, 10 * 60 * 1000);
+        }
+
+        const brand = brands.find(
+          (b) => b.name.toLowerCase() === brandQuery.toLowerCase()
+        );
+        setBrandId(brand ? brand.id : "");
+        if (!brand) console.warn("Brand not found for query:", brandQuery);
+      } catch (err) {
+        console.error("Error fetching brand:", err);
+        setBrandId("");
+      }
+    };
+    fetchBrandId();
+  }, [brandQuery, baseUrl]);
+
+  // Resolve product type name to productTypeId
+  useEffect(() => {
+    if (!typeQuery) {
+      setProductTypeId("");
+      return;
+    }
+
+    const fetchProductTypeId = async () => {
+      try {
+        let types = apiCache.get("all_types");
+        if (!types) {
+          const response = await fetch(`${baseUrl}/product-types`);
+          types = await response.json();
+          apiCache.set("all_types", types, 10 * 60 * 1000);
+        }
+        const type = types.find(
+          (t) => t.name.toLowerCase() === typeQuery.toLowerCase()
+        );
+        setProductTypeId(type ? type.id : "");
+        if (!type) console.warn("Product type not found for query:", typeQuery);
+      } catch (err) {
+        console.error("Error fetching product types:", err);
+        setProductTypeId("");
+      }
+    };
+    fetchProductTypeId();
+  }, [typeQuery, baseUrl]);
+
+  // Resolve condition to categoryId
+  useEffect(() => {
+    if (!conditionQuery) {
+      setCategoryId("");
+      return;
+    }
+
+    const fetchCategoryId = async () => {
+      try {
+        let categories = apiCache.get("all_categories");
+        if (!categories) {
+          const res = await fetch(`${baseUrl}/categories`);
+          categories = await res.json();
+          apiCache.set("all_categories", categories, 10 * 60 * 1000);
+        }
+        const cat = categories.find(
+          (c) => c.name.toLowerCase() === conditionQuery.toLowerCase()
+        );
+        setCategoryId(cat ? cat.id : "");
+        if (!cat) console.warn("Unknown condition category:", conditionQuery);
+      } catch (err) {
+        console.error("Error resolving category ID:", err);
+        setCategoryId("");
+      }
+    };
+    fetchCategoryId();
+  }, [conditionQuery, baseUrl]);
+
+  // ==================== PAGINATION ====================
+
+  const handleChangePage = useCallback((event, page) => {
+    setCurrentPage(page - 1);
+    window.scroll({ top: 400, behavior: "smooth" });
+  }, []);
+
+  // ==================== FILTER CHANGE DETECTION & PAGINATION RESET ====================
+
+  // Reset page to 0 when filters change
+  useEffect(() => {
+    const hasFilterChanged = (
+      prevFilterState.brandId !== filterState.brandId ||
+      prevFilterState.categoryId !== filterState.categoryId ||
+      prevFilterState.productTypeId !== filterState.productTypeId ||
+      prevFilterState.myFilter !== filterState.myFilter
+    );
+
+    if (hasFilterChanged && currentPage !== 0) {
+      console.log('🔄 Filters changed, resetting to page 0');
+      setCurrentPage(0);
+    }
+
+    setPrevFilterState(filterState);
+  }, [filterState, prevFilterState, currentPage]);
+
+  // ==================== MAIN DATA LOADING EFFECT ====================
+
+  useEffect(() => {
+    if (myFilter) {
+      handleSearch(myFilter, currentPage);
+    } else {
+      loadProducts(currentPage);
+    }
+  }, [currentPage, myFilter, brandId, categoryId, productTypeId, handleSearch, loadProducts]);
+
+  // ==================== RENDER ====================
 
   return (
     <Suspense fallback={<Loading />}>
       <ScrollToTop />
 
+      {/* Alert notifications */}
       {alert && alert.severity && (
-        <CustomAlert
-          open={alert.open}
-          details={alert}
-          close={handleCloseAlert}
-        />
+        <CustomAlert open={alert.open} details={alert} close={handleCloseAlert} />
       )}
 
-      <div className="my-4 flex flex-col gap-8 lg:my-16">
-        <div className="md:mx-12 lg:mx-24">
+      <div className="my-4 flex flex-col gap-2 lg:my-6">
+        {/* Advertisement slider */}
+        <div className="md:mx-8 lg:mx-16">
           <AdSlider />
         </div>
 
+        {/* Main banner */}
         <Banner />
 
-        <div className="flex items-start justify-between lg:px-8 lg:mt-6 mb-8">
-          <div
-            className="filterDesktop hidden lg:block w-80 max-h-[1300px] overflow-y-auto mr-20 bg-filter-green rounded"
-            style={{ scrollBehavior: "smooth", scrollbarWidth: "none" }}
-          >
-            <div className="pb-8 px-3 flex flex-col gap-10">
-              <div className="mt-3 text-right">
-                <IconButton
-                  sx={{ p: 0 }}
-                  onClick={handleFilter}
-                  title="click to send filter"
-                >
-                  <i className="bx bxs-send text-green"></i>
-                </IconButton>
-                <ProductFilter
-                  fetchUrl="https://apps-1.lampnets.com/ecommb-prod/categories"
-                  title="category"
-                  checked={categoryId}
-                  setter={setCategoryId}
-                />
-              </div>
+        <div className="px-2 md:px-8 lg:px-16">
+          <div className="flex flex-col lg:flex-row lg:gap-6">
 
-              <div className="text-right">
-                <IconButton
-                  sx={{ p: 0 }}
-                  onClick={handleFilter}
-                  title="click to send filter"
-                >
-                  <i className="bx bxs-send text-green"></i>
-                </IconButton>
-                <ProductFilter
-                  fetchUrl="https://apps-1.lampnets.com/ecommb-prod/brands"
-                  title="brands"
-                  checked={brandId}
-                  setter={setBrandId}
-                />
-              </div>
+            {/* ==================== DESKTOP SIDEBAR FILTERS ==================== */}
+            <div className="hidden lg:block w-72 flex-shrink-0">
+              <div className="sticky top-[15%] bg-filter-green rounded-lg shadow-md">
+                <div className="p-4 flex flex-col gap-6">
+                  <ProductFilter
+                    fetchUrl={`${baseUrl}/categories`}
+                    title="category"
+                    checked={categoryId}
+                    setter={setCategoryId}
+                  />
 
-              <div className="text-right">
-                <IconButton
-                  sx={{ p: 0 }}
-                  onClick={handleFilter}
-                  title="click to send filter"
-                >
-                  <i className="bx bxs-send text-green"></i>
-                </IconButton>
-                <ProductFilter
-                  fetchUrl="https://apps-1.lampnets.com/ecommb-prod/product-types"
-                  title="product"
-                  checked={productTypeId}
-                  setter={setProductTypeId}
-                />
-              </div>
+                  <ProductFilter
+                    fetchUrl={`${baseUrl}/brands`}
+                    title="brands"
+                    checked={brandId}
+                    setter={setBrandId}
+                  />
 
-              <div className="flex justify-end items-center">
-                <button className="flex items-center text-sm" onClick={viewAll}>
-                  View all <i className="bx bx-chevron-right bx-sm"></i>
-                </button>
-              </div>
+                  <ProductFilter
+                    fetchUrl={`${baseUrl}/product-types`}
+                    title="product"
+                    checked={productTypeId}
+                    setter={setProductTypeId}
+                  />
 
-              <div className="text-center lg:mt-4 lg:mb-2">
-                <LaptopCityButton onClick={handleFilter}>
-                  search
-                </LaptopCityButton>
-              </div>
-            </div>
-          </div>
-
-          <div className="w-full md:pl-4 lg:pl-0">
-            <div className="sticky top-[9%] z-20 bg-filter-green md:relative md:bg-transparent">
-              <SearchBox show={handleOpen} search={handleSearch} />
-
-              {showFilters ? (
-                <div>
-                  <div
-                    id="mobileFilter"
-                    className={
-                      showFilters ? "#mobileFilter active" : "#mobileFilter"
-                    }
-                  >
-                    <ProductFilter
-                      fetchUrl="https://apps-1.lampnets.com/ecommb-prod/categories"
-                      title="category"
-                      checked={categoryId}
-                      setter={setCategoryId}
-                    />
-                    <ProductFilter
-                      fetchUrl="https://apps-1.lampnets.com/ecommb-prod/brands"
-                      title="brands"
-                      checked={brandId}
-                      setter={setBrandId}
-                    />
-                    <ProductFilter
-                      fetchUrl="https://apps-1.lampnets.com/ecommb-prod/product-types"
-                      title="product"
-                      checked={productTypeId}
-                      setter={setProductTypeId}
-                    />
-
-                    <div className="flex justify-end  items-center">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          handleOpen();
-                          viewAll();
-                        }}
-                        className="flex items-center text-sm"
-                      >
-                        View all <i className="bx bx-chevron-right bx-sm"></i>
-                      </button>
-                    </div>
-
-                    <div className="text-center mt-3 mb-5 sticky bottom-0 bg-filter-green py-4">
-                      <LaptopCityButton
-                        onClick={() => {
-                          handleOpen();
-                          handleFilter();
-                        }}
-                      >
-                        search
-                      </LaptopCityButton>
-                    </div>
+                  <div className="text-center mt-2">
+                    <LaptopCityButton
+                      onClick={() => {
+                        setCurrentPage(0); // Reset page when manually applying filters
+                        loadProducts(0);
+                      }}
+                      className="text-sm py-2 px-4"
+                    >
+                      Apply Filters
+                    </LaptopCityButton>
                   </div>
                 </div>
-              ) : null}
+              </div>
             </div>
 
-            {/* {isLoading && <Loading />} */}
+            {/* ==================== MOBILE FILTERS DROPDOWN ==================== */}
+            <div className="lg:hidden relative">
+              {showFilters && (
+                <div className="absolute top-16 left-0 w-64 shadow-lg rounded-lg p-4 z-30 bg-filter-green">
+                  <ProductFilter
+                    fetchUrl={`${baseUrl}/categories`}
+                    title="category"
+                    checked={categoryId}
+                    setter={setCategoryId}
+                  />
+                  <ProductFilter
+                    fetchUrl={`${baseUrl}/brands`}
+                    title="brands"
+                    checked={brandId}
+                    setter={setBrandId}
+                  />
+                  <ProductFilter
+                    fetchUrl={`${baseUrl}/product-types`}
+                    title="product"
+                    checked={productTypeId}
+                    setter={setProductTypeId}
+                  />
 
-            <div className="my-5 px-2 flex flex-col justify-between gap-10 md:px-6 lg:px-0">
+                  <div className="text-center mt-4">
+                    <LaptopCityButton
+                      onClick={() => {
+                        setCurrentPage(0); // Reset page when applying mobile filters
+                        loadProducts(0);
+                        setShowFilters(false);
+                      }}
+                      className="text-sm py-2 px-4"
+                    >
+                      Apply Filters
+                    </LaptopCityButton>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* ==================== MAIN CONTENT AREA ==================== */}
+            <div className="flex-grow">
+
+              {/* Search box */}
+              <div className="top-[9%] z-20 bg-white mb-4">
+                <SearchBox className="w-full" show={handleOpen} search={handleSearch} />
+              </div>
+
+              {/* ==================== PRODUCTS DISPLAY ==================== */}
               {isLoading ? (
-                <div className="lg:h-screen flex justify-center items-center">
-                  <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-full border-8 border-solid border-green bg-transparent flex justify-center items-center loader">
-                    <div className="w-full h-full rounded-full bg-transparent"></div>
-                    <div
-                      style={{ top: "-10px" }}
-                      className="w-5 h-5 absolute bg-[#fbfbfb] z-50"
-                    ></div>
-                  </div>
-                </div>
+                <ProductLoadingFlex count={20} />
+              ) : !products || products.length === 0 ? (
+                <EmptyState
+                  message={
+                    brandQuery
+                      ? `No products found for brand: ${brandQuery}`
+                      : myFilter
+                        ? `No products found for "${myFilter}"`
+                        : "No products found."
+                  }
+                />
               ) : (
-                <MainGroups addToCart={handleAddToCart} products={products} />
+                <div className="flex flex-wrap gap-1">
+                  {products.map((product) => (
+                    <div
+                      key={product.id}
+                      className="flex-shrink-0 w-[calc(50%-2px)] sm:w-[calc(33.333%-3px)] md:w-[calc(25%-3px)] lg:w-[calc(20%-4px)]"
+                    >
+                      <MainGroups
+                        addToCart={handleAddToCart}
+                        addToWishlist={handleAddToWishlist}
+                        products={[product]}
+                      />
+                    </div>
+                  ))}
+                </div>
               )}
-              {/* <MainGroups products={products} /> */}
+
+              {/* ==================== PAGINATION ==================== */}
+              {!isLoading && totalPages > 1 && (
+                <div className="mt-6 mb-4 flex justify-center">
+                  <ThemeProvider theme={theme}>
+                    <Pagination
+                      count={totalPages}
+                      page={currentPage + 1}
+                      shape="rounded"
+                      color="primary"
+                      size="large"
+                      onChange={handleChangePage}
+                      showFirstButton
+                      showLastButton
+                      renderItem={(item) => (
+                        <PaginationItem
+                          sx={{
+                            backgroundColor: (theme) => `${theme.palette.grey[200]}`,
+                            mx: "2px",
+                            minWidth: "36px",
+                            height: "36px"
+                          }}
+                          {...item}
+                        />
+                      )}
+                    />
+                  </ThemeProvider>
+                </div>
+              )}
             </div>
           </div>
         </div>
-
-        <div className="w-full flex justify-center items-center">
-          <ThemeProvider theme={theme}>
-            <Pagination
-              // sx={{ backgroundColor: "red" }}
-              count={totalPages}
-              shape="rounded"
-              color="primary"
-              size="large"
-              onChange={handleChangePage}
-              renderItem={(item) => (
-                <PaginationItem
-                  sx={{
-                    backgroundColor: (theme) => `${theme.palette.grey[200]}`,
-                    mx: "4px",
-                  }}
-                  {...item}
-                />
-              )}
-            />
-          </ThemeProvider>
-        </div>
-
-        <SubProducts addToCart={handleAddToCart} />
       </div>
     </Suspense>
   );

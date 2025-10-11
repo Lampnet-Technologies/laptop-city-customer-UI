@@ -6,14 +6,15 @@ import StarRating from "../../component/StarRating";
 function ProductContainer({ item, deleteItem, addToCart }) {
   const navigate = useNavigate();
 
-  const handleProductDesc = (id) => {
-    navigate("/product-desc/" + id);
+  // Unified product click handler
+  const handleProductClick = (id) => {
+    navigate(`/product/${id}`);
   };
 
   return (
     <div
       className="h-[330px] xl:h-[420px] rounded-md flex flex-col justify-between cursor-pointer border-[#DADADA] border-tiny border-solid"
-      onClick={() => handleProductDesc(item.product.id)}
+      onClick={() => handleProductClick(item.product.id)}
     >
       <div className="h-[42%] md:h-[45%] rounded-t-md rounded-b bg-[#D9D9D9] flex justify-center items-center relative">
         <div className="w-4/5 h-4/5 flex justify-center items-center">
@@ -25,7 +26,7 @@ function ProductContainer({ item, deleteItem, addToCart }) {
           />
         </div>
         <div className="bg-green text-[10px] text-white font-medium capitalize w-10 h-5 rounded-sm flex justify-center items-center absolute top-4 right-2 z-10">
-          {item.product.category.name == "BRAND NEW" ? "new" : "used"}
+          {item.product.category.name === "BRAND NEW" ? "new" : "used"}
         </div>
       </div>
       <div className="h-[58%] md:h-[55%] flex flex-col gap-1 justify-between px-2 py-3">
@@ -35,7 +36,6 @@ function ProductContainer({ item, deleteItem, addToCart }) {
         <div className="flex justify-between items-center gap-2">
           <p className="text-base font-bold text-green md:text-lg lg:text-xl">
             <NairaSymbol />
-
             {item.product.price}
           </p>
           {/* <StarRating rating={5} /> */}

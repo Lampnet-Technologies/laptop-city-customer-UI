@@ -3,11 +3,11 @@ import EmptyWishlist from "./EmptyWishlist";
 import RenderedWishlist from "./RenderedWishlist";
 import CustomSnackbar from "../../component/CustomSnackbar";
 import DeleteButtonAlert from "../../component/DeleteButtonAlert";
-import { UserCartDependency } from "../../App";
-
-const accessToken = localStorage.getItem("token");
+import { UserCartDependency, LoginContext } from "../../App";
+import { useNavigate } from "react-router-dom";
 
 function MyWishlists() {
+  const { loggedIn, setLoggedIn, token, setToken } = useContext(LoginContext);
   const [cartDep, setCartDep] = useContext(UserCartDependency);
   const [wishlists, setWishlists] = useState(null);
   const [wishlistDep, setWishlistDep] = useState();
@@ -18,26 +18,38 @@ function MyWishlists() {
     message: "",
   });
   const idRef = useRef();
+  
+  // This is the missing line.
+  const navigate = useNavigate();
+
+  const baseUrl = process.env.REACT_APP_BASE_URL;
 
   useEffect(() => {
-    const accessToken = localStorage.getItem("token");
+    // Only fetch if logged in and a token is available
+    if (!loggedIn || !token) {
+      setWishlists([]);
+      return;
+    }
 
-    fetch("https://apps-1.lampnets.com/ecommb-staging/wish-lists/my-wishlist", {
+    fetch(`${baseUrl}/wish-lists/my-wishlist`, {
       headers: {
         "content-type": "application/json",
-        Authorization: "Bearer " + accessToken,
+        Authorization: "Bearer " + token,
       },
     })
       .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
         return res.json();
       })
       .then((result) => {
         setWishlists(result);
       })
       .catch((error) => {
-        console.error();
+        console.error("Failed to fetch wishlists:", error);
       });
-  }, [wishlistDep]);
+  }, [wishlistDep, loggedIn, token]);
 
   const handleCloseToast = () => {
     setToast({ ...toast, open: false });
@@ -46,15 +58,30 @@ function MyWishlists() {
   const handleAddToCart = (id, quantity) => {
     const dataToSend = { productId: id, quantity: quantity };
 
-    fetch("https://apps-1.lampnets.com/ecommb-staging/cart-items/add", {
+    if (!loggedIn || !token) {
+      navigate("/login", {
+        state: {
+          previousUrl: "/wishlist", // You can set this URL
+        },
+      });
+      return;
+    }
+    
+    fetch(`${baseUrl}/cart-items/add`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        Authorization: "Bearer " + accessToken,
+        Authorization: "Bearer " + token,
       },
       body: JSON.stringify(dataToSend),
     })
       .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then(() => {
         setCartDep(id);
         setToast({
           ...toast,
@@ -81,18 +108,28 @@ function MyWishlists() {
   const handleDeleteItem = () => {
     setDeleteAlert(false);
 
+    if (!loggedIn || !token) {
+      setToast({
+        ...toast,
+        open: true,
+        severity: "info",
+        message: "Please log in to delete items from your wishlist.",
+      });
+      return;
+    }
+
     fetch(
-      `https://apps-1.lampnets.com/ecommb-staging/wish-lists/remove/${idRef.current}`,
+      `${baseUrl}/wish-lists/remove/${idRef.current}`,
       {
         method: "DELETE",
         headers: {
           "content-type": "application/json",
-          Authorization: "Bearer " + accessToken,
+          Authorization: "Bearer " + token,
         },
       }
     )
       .then((res) => {
-        if (res.status == 200) {
+        if (res.status === 200) {
           setToast({
             ...toast,
             open: true,

@@ -1,21 +1,21 @@
-import React, { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
 import { Banner } from "../../component/homepage";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-// import LaptopCityButton from "../../component/button";
 import { LoginContext } from "../../App";
 import CustomAlert from "../../component/CustomAlert";
 
-const loginAPI = "https://apps-1.lampnets.com/ecommb-staging/login";
+const baseUrl = process.env.REACT_APP_BASE_URL;
+const loginAPI = `${baseUrl}/login`;
 
 function Login() {
-  const [loggedIn, setLoggedIn] = useContext(LoginContext);
+  const { loggedIn, setLoggedIn, setToken, isLoading: globalLoading, refreshUserData } = useContext(LoginContext);
+  
   const [values, setValues] = useState({
     usernameOrEmail: "",
     password: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
-
   const [loading, setLoading] = useState(false);
 
   const [alert, setAlert] = useState({
@@ -24,12 +24,13 @@ function Login() {
     message: "",
     title: "",
   });
-  const handleCloseAlert = () => {
-    setAlert({ ...alert, open: false });
-  };
 
   const navigate = useNavigate();
   const location = useLocation();
+
+  const handleCloseAlert = () => {
+    setAlert({ ...alert, open: false });
+  };
 
   const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value });
@@ -48,24 +49,49 @@ function Login() {
       const res = await fetch(loginAPI, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        body: JSON.stringify({
+          usernameOrEmail: values.usernameOrEmail,
+          password: values.password,
+        }),
       });
 
       if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || "Login failed");
+        if (res.status === 401) {
+          throw new Error("Invalid username/email/phone number or password");
+        }
+        throw new Error(`Login failed: ${res.status}`);
       }
 
       const result = await res.json();
+
+      // ✅ Update both localStorage and context state immediately
       localStorage.setItem("token", result.accessToken);
+      setToken(result.accessToken); // This triggers the data fetch in App.js
       setLoggedIn(true);
-      navigate(location?.state?.previousUrl || "/products");
+
+      // ✅ Optional: Manually trigger data refresh for immediate effect
+      if (refreshUserData) {
+        await refreshUserData();
+      }
+
+      // Show success alert
+      setAlert({
+        open: true,
+        severity: "success",
+        title: "Login Successful",
+        message: `Welcome back 🎉`,
+      });
+
+      // Navigate after short delay so user sees alert
+      setTimeout(() => {
+        navigate(location?.state?.previousUrl || "/products");
+      }, 800);
     } catch (error) {
       setAlert({
         open: true,
         severity: "error",
         title: "Login Failed",
-        message: error.message,
+        message: error.message || "Invalid credentials",
       });
       setValues({ usernameOrEmail: "", password: "" });
     } finally {
@@ -73,17 +99,15 @@ function Login() {
     }
   };
 
+  // Show loading state during data fetching after login
+  const isProcessing = loading || globalLoading;
 
   return (
     <div className="my-10 md:my-16 lg:my-20">
       <Banner />
 
       {alert && alert.severity && (
-        <CustomAlert
-          open={alert.open}
-          details={alert}
-          close={handleCloseAlert}
-        />
+        <CustomAlert open={alert.open} details={alert} close={handleCloseAlert} />
       )}
 
       <div className="my-8 p-4 lg:my-20 md:w-4/5 lg:w-3/5 md:mx-auto">
@@ -97,25 +121,24 @@ function Login() {
         >
           <div className="flex flex-col gap-3 mb-4 md:gap-5 md:mb-8">
             <label className="text-sm font-medium md:text-lg" htmlFor="usernameOrEmail">
-              Email address or Username *
+              Phone Number or Email or Username *
             </label>
             <input
               required
               autoFocus
+              autoComplete="username"
               name="usernameOrEmail"
               type="text"
               id="usernameOrEmail"
               value={values.usernameOrEmail}
               onChange={handleChange("usernameOrEmail")}
-              className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 outline-0 font-light text-sm"
+              disabled={isProcessing}
+              className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 outline-0 font-light text-sm disabled:opacity-50"
             />
           </div>
 
           <div className="flex flex-col gap-3 mb-4 md:gap-5 md:mb-8">
-            <label
-              className="text-sm font-medium md:text-lg"
-              htmlFor="password"
-            >
+            <label className="text-sm font-medium md:text-lg" htmlFor="password">
               Password *
             </label>
             <div className="relative">
@@ -126,12 +149,15 @@ function Login() {
                 type={showPassword ? "text" : "password"}
                 value={values.password}
                 onChange={handleChange("password")}
-                className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 pr-12 outline-0 font-light text-sm"
+                autoComplete="current-password"
+                disabled={isProcessing}
+                className="w-full h-11 md:h-14 md:rounded rounded-sm bg-[#ECF3F9] p-3 pr-12 outline-0 font-light text-sm disabled:opacity-50"
               />
               <button
                 type="button"
                 onClick={handleShowPassword}
-                className="outline-0 text-green absolute top-1/4 right-[3%] cursor-pointer"
+                disabled={isProcessing}
+                className="outline-0 text-green absolute top-1/4 right-[3%] cursor-pointer disabled:opacity-50"
               >
                 {showPassword ? (
                   <i className="bx bx-hide bx-sm text-[#6D7D8B]"></i>
@@ -143,25 +169,22 @@ function Login() {
           </div>
 
           <div className="mb-4 md:mb-8">
-            <Link
-              to=""
-              className="text-sm text-green font-normal underline md:text-lg"
-            >
+            <Link to="" className="text-sm text-green font-normal underline md:text-lg">
               Forgot Password?
             </Link>
           </div>
 
           <div className="mt-14 flex flex-col items-center gap-10 text-sm font-normal md:text-base md:gap-12 lg:gap-16">
             <button
-              disabled={loading}
-              className="capitalize font-semibold text-white text-sm lg:text-base md:px-16 lg:py-4 lg:px-[86px] rounded bg-green py-[11px] px-12 hover:bg-dark-green"
+              disabled={isProcessing}
+              className="capitalize font-semibold text-white text-sm lg:text-base md:px-16 lg:py-4 lg:px-[86px] rounded bg-green py-[11px] px-12 hover:bg-dark-green disabled:opacity-50 disabled:cursor-not-allowed transition-opacity duration-200"
               type="submit"
             >
-              {loading ? "Logging in..." : "Login"}
+              {loading ? "Logging in..." : globalLoading ? "Loading your data..." : "Login"}
             </button>
 
             <p>
-              Don’t have an account?{" "}
+              Don't have an account?{" "}
               <Link to="/signup" className="text-green font-semibold">
                 Sign up
               </Link>{" "}
